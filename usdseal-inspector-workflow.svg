@@ -1,0 +1,212 @@
+<svg width="800" height="920" viewBox="0 0 800 920"
+     xmlns="http://www.w3.org/2000/svg"
+     font-family="-apple-system, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif">
+
+<defs>
+  <filter id="shadow" x="-4%" y="-4%" width="108%" height="116%">
+    <feDropShadow dx="0" dy="2" stdDeviation="5" flood-color="#000" flood-opacity="0.07"/>
+  </filter>
+  <filter id="shadow-sm" x="-4%" y="-4%" width="108%" height="114%">
+    <feDropShadow dx="0" dy="1" stdDeviation="3" flood-color="#000" flood-opacity="0.06"/>
+  </filter>
+  <marker id="arr" markerWidth="8" markerHeight="8" refX="6.5" refY="3.5" orient="auto">
+    <path d="M0,0 L0,7 L8,3.5 z" fill="#f97316"/>
+  </marker>
+  <marker id="arr-c" markerWidth="8" markerHeight="8" refX="6.5" refY="3.5" orient="auto">
+    <path d="M0,0 L0,7 L8,3.5 z" fill="#0891b2"/>
+  </marker>
+  <marker id="arr-g" markerWidth="8" markerHeight="8" refX="6.5" refY="3.5" orient="auto">
+    <path d="M0,0 L0,7 L8,3.5 z" fill="#bbb"/>
+  </marker>
+</defs>
+
+<!-- Canvas -->
+<rect width="800" height="920" fill="#ffffff"/>
+
+<!-- ── Kopfzeile ── -->
+<text x="400" y="30" text-anchor="middle"
+      font-size="10" font-weight="700" letter-spacing="0.14em" fill="#bbb">USDSEAL INSPECTOR · BROWSER-WORKFLOW · by viSales</text>
+<rect x="16" y="38" width="768" height="2" rx="1" fill="#f97316" opacity="0.25"/>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SCHRITT 1: Input -->
+<!-- ══════════════════════════════════════════════ -->
+<rect x="16" y="56" width="768" height="122" rx="12"
+      fill="#fff" filter="url(#shadow)" stroke="#f0f0f0" stroke-width="1"/>
+<rect x="16" y="56" width="768" height="4" rx="2" fill="#f97316"/>
+<rect x="16" y="56" width="4" height="122" rx="2" fill="#f97316"/>
+
+<!-- Nummer -->
+<circle cx="44" cy="80" r="14" fill="#f97316"/>
+<text x="44" y="85" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">1</text>
+
+<!-- Labels -->
+<text x="68" y="72" font-size="10" font-weight="700" letter-spacing="0.1em" fill="#f97316">INPUT</text>
+<text x="68" y="89" font-size="16" font-weight="700" letter-spacing="-0.01em" fill="#1a1a1a">USDZ-Datei laden</text>
+<text x="68" y="106" font-size="11" fill="#888">Drag &amp; Drop oder Datei-Auswahl — vollständig client-seitig, kein Upload</text>
+
+<!-- Trennlinie -->
+<line x1="36" y1="116" x2="770" y2="116" stroke="#f0f0f0" stroke-width="1"/>
+
+<!-- Sub-Sections -->
+<rect x="36" y="124" width="354" height="44" rx="8" fill="#fafafa" stroke="#e8e8e8" stroke-width="1"/>
+<text x="213" y="141" text-anchor="middle" font-size="9.5" font-weight="700" letter-spacing="0.07em" fill="#bbb">DATEIFORMAT</text>
+<text x="213" y="158" text-anchor="middle" font-size="11" fill="#555">USDZ = ZIP-Container (USD + Texturen)</text>
+
+<rect x="402" y="124" width="366" height="44" rx="8" fill="#fff8f4" stroke="#fbd5bc" stroke-width="1"/>
+<text x="585" y="141" text-anchor="middle" font-size="9.5" font-weight="700" letter-spacing="0.07em" fill="#f97316">DATENSCHUTZ</text>
+<text x="585" y="158" text-anchor="middle" font-size="11" fill="#555">Keine Daten verlassen den Browser</text>
+
+<!-- Pfeil 1→2 -->
+<line x1="400" y1="178" x2="400" y2="200" stroke="#f97316" stroke-width="1.5" stroke-opacity="0.6" marker-end="url(#arr)"/>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SCHRITT 2: Parse -->
+<!-- ══════════════════════════════════════════════ -->
+<rect x="16" y="204" width="768" height="148" rx="12"
+      fill="#fff" filter="url(#shadow)" stroke="#f0f0f0" stroke-width="1"/>
+<rect x="16" y="204" width="768" height="4" rx="2" fill="#f97316"/>
+<rect x="16" y="204" width="4" height="148" rx="2" fill="#f97316"/>
+
+<circle cx="44" cy="228" r="14" fill="#f97316"/>
+<text x="44" y="233" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">2</text>
+
+<text x="68" y="220" font-size="10" font-weight="700" letter-spacing="0.1em" fill="#f97316">ANALYSE</text>
+<text x="68" y="237" font-size="16" font-weight="700" letter-spacing="-0.01em" fill="#1a1a1a">ZIP entpacken &amp; Manifest prüfen</text>
+<text x="68" y="254" font-size="11" fill="#888">JSZip liest alle Einträge — Assets, USD-Layers, Credentials</text>
+
+<line x1="36" y1="264" x2="770" y2="264" stroke="#f0f0f0" stroke-width="1"/>
+
+<!-- 3 Sub-Sections in einer Reihe -->
+<rect x="36" y="272" width="228" height="68" rx="8" fill="#fafafa" stroke="#e8e8e8" stroke-width="1"/>
+<text x="150" y="289" text-anchor="middle" font-size="9.5" font-weight="700" letter-spacing="0.07em" fill="#bbb">USD-METADATEN</text>
+<text x="150" y="307" text-anchor="middle" font-size="11" fill="#555">USDA (Text)</text>
+<text x="150" y="323" text-anchor="middle" font-size="11" fill="#555">USDC (Binary, Heuristik)</text>
+
+<rect x="276" y="272" width="228" height="68" rx="8" fill="#fafafa" stroke="#e8e8e8" stroke-width="1"/>
+<text x="390" y="289" text-anchor="middle" font-size="9.5" font-weight="700" letter-spacing="0.07em" fill="#bbb">TEXTUREN</text>
+<text x="390" y="307" text-anchor="middle" font-size="11" fill="#555">PNG · JPEG · WebP</text>
+<text x="390" y="323" text-anchor="middle" font-size="11" fill="#555">Dimensionen + Thumbnail</text>
+
+<rect x="516" y="272" width="252" height="68" rx="8" fill="#fff8f4" stroke="#fbd5bc" stroke-width="1"/>
+<text x="642" y="289" text-anchor="middle" font-size="9.5" font-weight="700" letter-spacing="0.07em" fill="#f97316">ASSET-INVENTAR</text>
+<text x="642" y="307" text-anchor="middle" font-size="11" fill="#555">SHA-256 aller Dateien</text>
+<text x="642" y="323" text-anchor="middle" font-size="11" fill="#555">Abgleich gegen Manifest</text>
+
+<!-- Pfeil 2→3 -->
+<line x1="400" y1="352" x2="400" y2="374" stroke="#f97316" stroke-width="1.5" stroke-opacity="0.6" marker-end="url(#arr)"/>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SCHRITT 3: State Detection -->
+<!-- ══════════════════════════════════════════════ -->
+<rect x="16" y="378" width="768" height="172" rx="12"
+      fill="#fff" filter="url(#shadow)" stroke="#f0f0f0" stroke-width="1"/>
+<rect x="16" y="378" width="768" height="4" rx="2" fill="#f97316"/>
+<rect x="16" y="378" width="4" height="172" rx="2" fill="#f97316"/>
+
+<circle cx="44" cy="402" r="14" fill="#f97316"/>
+<text x="44" y="407" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">3</text>
+
+<text x="68" y="394" font-size="10" font-weight="700" letter-spacing="0.1em" fill="#f97316">STATE DETECTION</text>
+<text x="68" y="411" font-size="16" font-weight="700" letter-spacing="-0.01em" fill="#1a1a1a">Vier mögliche Zustände</text>
+<text x="68" y="428" font-size="11" fill="#888">Basiert auf Manifest-Inhalt, Asset-Hashes und Signatur-Feldern</text>
+
+<line x1="36" y1="438" x2="770" y2="438" stroke="#f0f0f0" stroke-width="1"/>
+
+<!-- 4 State-Badges -->
+<!-- SIGNED -->
+<rect x="36" y="446" width="174" height="90" rx="8" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+<text x="123" y="463" text-anchor="middle" font-size="9.5" font-weight="700" letter-spacing="0.08em" fill="#16a34a">SIGNED</text>
+<text x="123" y="481" text-anchor="middle" font-size="11" fill="#555">Manifest vorhanden</text>
+<text x="123" y="497" text-anchor="middle" font-size="11" fill="#555">Hashes stimmen</text>
+<text x="123" y="513" text-anchor="middle" font-size="10" fill="#888">Signatur erkannt</text>
+
+<!-- DRAFT -->
+<rect x="222" y="446" width="174" height="90" rx="8" fill="#fff8f4" stroke="#fbd5bc" stroke-width="1"/>
+<text x="309" y="463" text-anchor="middle" font-size="9.5" font-weight="700" letter-spacing="0.08em" fill="#f97316">DRAFT</text>
+<text x="309" y="481" text-anchor="middle" font-size="11" fill="#555">Manifest vorhanden</text>
+<text x="309" y="497" text-anchor="middle" font-size="11" fill="#555">Noch nicht signiert</text>
+<text x="309" y="513" text-anchor="middle" font-size="10" fill="#888">In Arbeit</text>
+
+<!-- INVALID -->
+<rect x="408" y="446" width="174" height="90" rx="8" fill="#fff1f2" stroke="#fecdd3" stroke-width="1"/>
+<text x="495" y="463" text-anchor="middle" font-size="9.5" font-weight="700" letter-spacing="0.08em" fill="#dc2626">INVALID</text>
+<text x="495" y="481" text-anchor="middle" font-size="11" fill="#555">Manifest vorhanden</text>
+<text x="495" y="497" text-anchor="middle" font-size="11" fill="#555">Hash-Mismatch</text>
+<text x="495" y="513" text-anchor="middle" font-size="10" fill="#888">Manipulation erkannt</text>
+
+<!-- NO MANIFEST -->
+<rect x="594" y="446" width="174" height="90" rx="8" fill="#fafafa" stroke="#e5e5e5" stroke-width="1"/>
+<text x="681" y="463" text-anchor="middle" font-size="9.5" font-weight="700" letter-spacing="0.07em" fill="#bbb">NO MANIFEST</text>
+<text x="681" y="481" text-anchor="middle" font-size="11" fill="#555">Standard-USDZ</text>
+<text x="681" y="497" text-anchor="middle" font-size="11" fill="#555">Kein USDseal</text>
+<text x="681" y="513" text-anchor="middle" font-size="10" fill="#888">Keine Signatur</text>
+
+<!-- Pfeil 3→4 -->
+<line x1="400" y1="550" x2="400" y2="572" stroke="#0891b2" stroke-width="1.5" stroke-opacity="0.6" marker-end="url(#arr-c)"/>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SCHRITT 4: Dashboard Output -->
+<!-- ══════════════════════════════════════════════ -->
+<rect x="16" y="576" width="768" height="172" rx="12"
+      fill="#fff" filter="url(#shadow)" stroke="#f0f0f0" stroke-width="1"/>
+<rect x="16" y="576" width="768" height="4" rx="2" fill="#0891b2"/>
+<rect x="16" y="576" width="4" height="172" rx="2" fill="#0891b2"/>
+
+<circle cx="44" cy="600" r="14" fill="#0891b2"/>
+<text x="44" y="605" text-anchor="middle" font-size="12" font-weight="800" fill="#fff">4</text>
+
+<text x="68" y="592" font-size="10" font-weight="700" letter-spacing="0.1em" fill="#0891b2">OUTPUT</text>
+<text x="68" y="609" font-size="16" font-weight="700" letter-spacing="-0.01em" fill="#1a1a1a">Dashboard — fünf Panels</text>
+<text x="68" y="626" font-size="11" fill="#888">Alle Ergebnisse strukturiert, auf einen Blick</text>
+
+<line x1="36" y1="636" x2="770" y2="636" stroke="#e5e5e5" stroke-width="1"/>
+
+<!-- 5 Dashboard-Panels in zwei Zeilen -->
+<!-- Zeile 1: 3 Panels -->
+<rect x="36" y="644" width="226" height="46" rx="8" fill="#f0fdfe" stroke="#a5f0f9" stroke-width="1"/>
+<text x="149" y="661" text-anchor="middle" font-size="9.5" font-weight="700" letter-spacing="0.07em" fill="#0891b2">PROVENANCE CHAIN</text>
+<text x="149" y="678" text-anchor="middle" font-size="11" fill="#555">Signatur · Autor · Version</text>
+
+<rect x="274" y="644" width="226" height="46" rx="8" fill="#f0fdfe" stroke="#a5f0f9" stroke-width="1"/>
+<text x="387" y="661" text-anchor="middle" font-size="9.5" font-weight="700" letter-spacing="0.07em" fill="#0891b2">USD-METADATEN</text>
+<text x="387" y="678" text-anchor="middle" font-size="11" fill="#555">defaultPrim · upAxis · Einheit</text>
+
+<rect x="512" y="644" width="246" height="46" rx="8" fill="#f0fdfe" stroke="#a5f0f9" stroke-width="1"/>
+<text x="635" y="661" text-anchor="middle" font-size="9.5" font-weight="700" letter-spacing="0.07em" fill="#0891b2">ASSET-INVENTAR</text>
+<text x="635" y="678" text-anchor="middle" font-size="11" fill="#555">Dateien · SHA-256 · Status</text>
+
+<!-- Zeile 2: 2 Panels -->
+<rect x="36" y="700" width="356" height="36" rx="8" fill="#fafafa" stroke="#e8e8e8" stroke-width="1"/>
+<text x="214" y="717" text-anchor="middle" font-size="9.5" font-weight="700" letter-spacing="0.07em" fill="#bbb">TEXTUREN</text>
+<text x="214" y="729" text-anchor="middle" font-size="10.5" fill="#555">PNG · JPEG · WebP — Dimensionen &amp; Thumbnail</text>
+
+<rect x="404" y="700" width="354" height="36" rx="8" fill="#fafafa" stroke="#e8e8e8" stroke-width="1"/>
+<text x="581" y="717" text-anchor="middle" font-size="9.5" font-weight="700" letter-spacing="0.07em" fill="#bbb">SIGNATUR-DETAILS</text>
+<text x="581" y="729" text-anchor="middle" font-size="10.5" fill="#555">Ed25519 · Public Key · Timestamp</text>
+
+<!-- ── Legende ── -->
+<line x1="16" y1="762" x2="784" y2="762" stroke="#f0f0f0" stroke-width="1"/>
+
+<rect x="36" y="772" width="14" height="14" rx="2" fill="#f97316"/>
+<text x="56" y="783" font-size="10" fill="#888">Input / Verarbeitung (Orange)</text>
+
+<rect x="240" y="772" width="14" height="14" rx="2" fill="#0891b2"/>
+<text x="260" y="783" font-size="10" fill="#888">Output / Darstellung (Cyan)</text>
+
+<!-- USDZ-Badge -->
+<rect x="444" y="770" width="34" height="18" rx="3" fill="#fff" stroke="#0891b2" stroke-width="1.2"/>
+<text x="461" y="782" text-anchor="middle" font-size="7.5" font-weight="700" fill="#0891b2">USDZ</text>
+<text x="486" y="783" font-size="10" fill="#888">ZIP-Container</text>
+
+<rect x="580" y="770" width="46" height="18" rx="3" fill="#fff" stroke="#e5e5e5" stroke-width="1"/>
+<text x="603" y="782" text-anchor="middle" font-size="7.5" font-weight="700" fill="#888">JSON</text>
+<text x="634" y="783" font-size="10" fill="#888">Manifest / Credentials</text>
+
+<!-- ── Fußzeile ── -->
+<line x1="16" y1="800" x2="784" y2="800" stroke="#f0f0f0" stroke-width="1"/>
+<text x="400" y="816" text-anchor="middle" font-size="9.5" fill="#bbb" letter-spacing="0.03em">
+  USDseal Inspector v0.2 · Open Source (Apache-2.0) · Kein Upload · Alle Daten bleiben lokal · viSales GmbH · visales.de
+</text>
+
+</svg>
