@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USDseal Inspector · viSales</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary:        #F97316;
+    --primary-dark:   #C2410C;
+    --accent:         #0891B2;
+    --accent-dark:    #065F73;
+
+    --text-heading:   #1A1A1A;
+    --text-body:      #555555;
+    --text-desc:      #888888;
+    --text-secondary: #999999;
+    --text-muted:     #AAAAAA;
+    --text-disabled:  #CCCCCC;
+
+    --bg-canvas:      #FFFFFF;
+    --bg-neutral:     #FAFAFA;
+    --bg-primary-tint:#FFF8F4;
+    --bg-accent-tint: #F0FDFE;
+
+    --border-card:    #F0F0F0;
+    --border-inner:   #E5E5E5;
+    --border-primary: #FBD5BC;
+    --border-accent:  #A5F0F9;
+
+    --font: -apple-system, SF Pro Display, Segoe UI, system-ui, sans-serif;
+    --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  }
+
+  body {
+    background: var(--bg-neutral);
+    color: var(--text-heading);
+    font-family: var(--font);
+    font-size: 13px;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── Topbar ── */
+  .topbar {
+    background: var(--bg-canvas);
+    border-bottom: 1px solid var(--border-card);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 52px;
+  }
+  .logo {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text-heading);
+  }
+  .logo span { color: var(--primary); }
+  .logo-accent { color: var(--accent); }
+  .version-badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--bg-primary-tint);
+    color: var(--primary-dark);
+    border: 1px solid var(--border-primary);
+  }
+  .topbar-right {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
+  .topbar-right a { color: var(--accent-dark); text-decoration: none; }
+
+  /* ── Drop Zone ── */
+  #drop-zone {
+    max-width: 560px;
+    margin: 56px auto;
+    background: var(--bg-canvas);
+    border: 2px dashed var(--border-inner);
+    border-radius: 12px;
+    padding: 56px 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  #drop-zone:hover, #drop-zone.drag-over {
+    border-color: var(--primary);
+    background: var(--bg-primary-tint);
+  }
+  .drop-icon { font-size: 44px; margin-bottom: 16px; display: block; }
+  .drop-title { font-size: 17px; font-weight: 700; color: var(--text-heading); margin-bottom: 6px; letter-spacing: -0.01em; }
+  .drop-sub { font-size: 12px; color: var(--text-desc); margin-bottom: 24px; }
+  .btn-primary {
+    display: inline-block;
+    padding: 10px 24px;
+    background: var(--primary-dark);
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: var(--font);
+  }
+  .btn-primary:hover { background: var(--primary); }
+  #file-input { display: none; }
+
+  /* ── Dashboard ── */
+  #dashboard { display: none; padding: 24px; max-width: 840px; margin: 0 auto; }
+
+  .dash-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .file-title { font-size: 20px; font-weight: 700; color: var(--text-heading); letter-spacing: -0.01em; }
+  .file-meta { font-size: 12px; color: var(--text-desc); margin-top: 3px; }
+  .btn-reset {
+    padding: 8px 18px;
+    background: transparent;
+    border: 1px solid var(--border-inner);
+    border-radius: 100px;
+    color: var(--text-body);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: var(--font);
+    font-weight: 700;
+    transition: border-color 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+  .btn-reset:hover { border-color: var(--primary); color: var(--primary-dark); }
+
+  /* ── State Banner ── */
+  .state-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border-left: 4px solid transparent;
+  }
+  .state-banner.signed   { background: var(--bg-accent-tint); border-color: var(--accent); }
+  .state-banner.draft    { background: var(--bg-primary-tint); border-color: var(--primary); }
+  .state-banner.invalid  { background: #FFF0F0; border-color: #DC2626; }
+  .state-banner.no_manifest { background: var(--bg-neutral); border-color: var(--border-inner); }
+  .state-icon { font-size: 22px; flex-shrink: 0; }
+  .state-title { font-size: 14px; font-weight: 700; }
+  .state-banner.signed   .state-title { color: var(--accent-dark); }
+  .state-banner.draft    .state-title { color: var(--primary-dark); }
+  .state-banner.invalid  .state-title { color: #DC2626; }
+  .state-banner.no_manifest .state-title { color: var(--text-body); }
+  .state-sub { font-size: 11px; margin-top: 2px; color: var(--text-desc); }
+
+  /* ── Stat Row ── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .stat-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .stat-val { font-size: 22px; font-weight: 700; color: var(--text-heading); }
+  .stat-val.orange { color: var(--primary-dark); }
+  .stat-val.cyan   { color: var(--accent-dark); }
+  .stat-val.green  { color: #166534; }
+  .stat-val.red    { color: #DC2626; }
+  .stat-val.muted  { color: var(--text-disabled); }
+
+  /* ── Section ── */
+  .section { margin-bottom: 20px; }
+  .section-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  /* ── Cards ── */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 10px;
+  }
+  .info-card {
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .info-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--primary);
+    border-radius: 10px 10px 0 0;
+  }
+  .info-card.accent-top::before { background: var(--accent); }
+  .card-title {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    margin-top: 4px;
+  }
+  .kv-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 3px 10px;
+    font-size: 12px;
+    margin-bottom: 5px;
+    align-items: start;
+  }
+  .kv-key { color: var(--text-desc); }
+  .kv-val { color: var(--text-heading); font-family: var(--mono); font-size: 11px; word-break: break-all; }
+  .kv-val.normal { font-family: var(--font); font-size: 12px; }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin: 2px 2px 2px 0;
+    letter-spacing: 0.02em;
+  }
+  .badge-green   { background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; }
+  .badge-red     { background: #FFF0F0; color: #DC2626; border: 1px solid #FECACA; }
+  .badge-orange  { background: var(--bg-primary-tint); color: var(--primary-dark); border: 1px solid var(--border-primary); }
+  .badge-cyan    { background: var(--bg-accent-tint); color: var(--accent-dark); border: 1px solid var(--border-accent); }
+  .badge-neutral { background: var(--bg-neutral); color: var(--text-body); border: 1px solid var(--border-inner); }
+
+  /* ── Inventory Table ── */
+  .inv-wrap {
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .inv-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .inv-table th {
+    text-align: left;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-inner);
+    background: var(--bg-neutral);
+    white-space: nowrap;
+  }
+  .inv-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-card);
+    vertical-align: middle;
+  }
+  .inv-table tr:last-child td { border-bottom: none; }
+  .inv-table tr:hover td { background: var(--bg-neutral); }
+  .inv-table tr.row-structure td { opacity: 0.45; }
+  .path-cell { font-family: var(--mono); font-size: 11px; color: var(--accent-dark); }
+  .hash-cell { font-family: var(--mono); font-size: 10px; color: var(--text-muted); }
+  .size-cell { font-family: var(--mono); font-size: 11px; text-align: right; white-space: nowrap; color: var(--text-body); }
+
+  /* ── Texturen ── */
+  .tex-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .tex-row {
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-card);
+  }
+  .tex-row:last-child { border-bottom: none; }
+  .tex-row:hover { background: var(--bg-neutral); }
+  .tex-thumb {
+    width: 40px; height: 40px;
+    border-radius: 6px;
+    background: var(--bg-neutral);
+    border: 1px solid var(--border-inner);
+    object-fit: cover;
+    display: block;
+  }
+  .tex-thumb.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--text-muted);
+  }
+  .tex-info { min-width: 0; }
+  .tex-path {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-dark);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .tex-meta {
+    font-size: 10px;
+    color: var(--text-desc);
+    margin-top: 3px;
+    font-family: var(--mono);
+  }
+  .tex-stats {
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-body);
+    white-space: nowrap;
+  }
+  .tex-stats .dim { color: var(--primary-dark); font-weight: 700; }
+  .tex-empty {
+    padding: 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ── USD-Metadaten ── */
+  .meta-card {
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .meta-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 10px 10px 0 0;
+  }
+  .meta-empty {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-style: italic;
+    padding: 4px 0;
+  }
+  .meta-block-title {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    margin-top: 4px;
+  }
+  .meta-text {
+    font-size: 12px;
+    color: var(--text-body);
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: var(--bg-neutral);
+    border: 1px solid var(--border-inner);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    margin-bottom: 12px;
+  }
+  .meta-source {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    margin-top: 2px;
+  }
+
+  /* ── Hash Box ── */
+  .hash-full {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-desc);
+    word-break: break-all;
+    background: var(--bg-neutral);
+    border: 1px solid var(--border-inner);
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-top: 6px;
+  }
+
+  /* ── Provenance ── */
+  .prov-card {
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .prov-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-card);
+  }
+  .prov-item:last-child { border-bottom: none; }
+  .prov-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--primary);
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .prov-step { font-weight: 700; color: var(--text-heading); font-size: 13px; text-transform: capitalize; }
+  .prov-meta { font-size: 11px; color: var(--text-desc); margin-top: 2px; }
+
+  /* ── Error ── */
+  .error-box {
+    background: #FFF0F0;
+    border: 1px solid #FECACA;
+    border-left: 4px solid #DC2626;
+    border-radius: 10px;
+    padding: 20px 24px;
+    text-align: center;
+    color: #DC2626;
+    margin: 48px auto;
+    max-width: 480px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 20px 24px;
+    font-size: 11px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-card);
+    margin-top: 32px;
+    background: var(--bg-canvas);
+  }
+  .footer a { color: var(--accent-dark); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">USD<span>seal</span> <span class="logo-accent" style="font-weight:400;">Inspector</span></div>
+  <div class="version-badge">v0.2</div>
+  <div class="topbar-right">by <a href="https://visales.de" target="_blank">viSales GmbH</a></div>
+</div>
+
+<div id="drop-zone" onclick="document.getElementById('file-input').click()">
+  <span class="drop-icon">📦</span>
+  <div class="drop-title">USDZ-Datei hier reinziehen</div>
+  <div class="drop-sub">oder klicken zum Auswählen — läuft vollständig lokal, keine Daten verlassen deinen Rechner</div>
+  <button class="btn-primary" onclick="event.stopPropagation(); document.getElementById('file-input').click()">Datei auswählen</button>
+</div>
+<input type="file" id="file-input" accept=".usdz">
+
+<div id="dashboard">
+  <div id="dash-content"></div>
+</div>
+
+<div class="footer">
+  USDseal Inspector · läuft vollständig im Browser · keine Daten verlassen deinen Rechner ·
+  <a href="https://visales.de/usdseal/" target="_blank">visales.de/usdseal</a>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const dropZone = document.getElementById('drop-zone');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.name.endsWith('.usdz')) processFile(file);
+  else showError('Bitte eine .usdz-Datei laden.');
+});
+document.getElementById('file-input').addEventListener('change', e => {
+  if (e.target.files[0]) processFile(e.target.files[0]);
+});
+
+async function processFile(file) {
+  try {
+    const buf = await file.arrayBuffer();
+    const zip = await JSZip.loadAsync(buf);
+    const sidecarPath = 'credentials/usdseal-manifest.json';
+    let manifest = null;
+    if (zip.files[sidecarPath]) {
+      manifest = JSON.parse(await zip.files[sidecarPath].async('string'));
+    }
+    const members = [];
+    let rootLayerData = null;
+    let rootLayerName = null;
+    const textureEntries = [];
+
+    // erste Pass: Members enumerieren + Root-Layer-Bytes für Metadaten-Extract behalten
+    const entries = Object.entries(zip.files).filter(([_, e]) => !e.dir);
+    for (const [name, entry] of entries) {
+      const data = await entry.async('uint8array');
+      const sha = await sha256hex(data);
+      members.push({ name, size: data.length, sha256: sha });
+
+      // Root-Layer = erster USD-File-Eintrag (per USDZ-Spec)
+      if (!rootLayerName && /\.(usda|usdc|usd)$/i.test(name)) {
+        rootLayerName = name;
+        rootLayerData = data;
+      }
+
+      // Texturen sammeln für späteren Zugriff
+      if (/\.(png|jpg|jpeg|exr|hdr|ktx|ktx2|webp|tif|tiff)$/i.test(name)) {
+        textureEntries.push({ name, data, size: data.length, sha });
+      }
+    }
+
+    // USD-Metadaten aus Root-Layer parsen
+    const usdMeta = rootLayerData ? extractUsdMetadata(rootLayerData, rootLayerName) : null;
+
+    // Texturen analysieren (Bild-Auflösung etc.)
+    const textures = await Promise.all(textureEntries.map(t => analyzeTexture(t)));
+
+    render(file.name, file.size, manifest, members, usdMeta, textures);
+  } catch(e) {
+    showError('Fehler beim Lesen: ' + e.message);
+  }
+}
+
+/* ─── USD-Metadaten-Extraktion ─────────────────────────────────────
+   USDA: Klartext, parsen via Regex
+   USDC: Binärformat — Best-Effort über lesbare Strings im Header */
+function extractUsdMetadata(data, name) {
+  const isAscii = /\.usda$/i.test(name);
+  const result = {
+    sourceFile: name,
+    format: isAscii ? 'USDA (ASCII)' : 'USDC (binär)',
+    customLayerData: {},
+    documentation: null,
+    comment: null,
+    defaultPrim: null,
+    upAxis: null,
+    metersPerUnit: null,
+    raw: null,
+  };
+
+  if (isAscii) {
+    const text = new TextDecoder('utf-8', { fatal: false }).decode(data);
+    parseUsdaMetadata(text, result);
+  } else {
+    const slice = data.subarray(0, Math.min(data.length, 65536));
+    const text = new TextDecoder('utf-8', { fatal: false }).decode(slice);
+    parseUsdcStrings(text, result);
+  }
+
+  return result;
+}
+
+function parseUsdaMetadata(text, result) {
+  const headerMatch = text.match(/^[\s\S]*?(?=\n\s*(?:def|over|class)\s)/);
+  const header = headerMatch ? headerMatch[0] : text.substring(0, 4000);
+
+  const dp = header.match(/defaultPrim\s*=\s*"([^"]+)"/);
+  if (dp) result.defaultPrim = dp[1];
+  const ua = header.match(/upAxis\s*=\s*"([^"]+)"/);
+  if (ua) result.upAxis = ua[1];
+  const mpu = header.match(/metersPerUnit\s*=\s*([0-9.]+)/);
+  if (mpu) result.metersPerUnit = parseFloat(mpu[1]);
+
+  const doc = header.match(/\bdoc\s*=\s*"((?:[^"\\]|\\.)*)"/);
+  if (doc) result.documentation = unescapeUsdString(doc[1]);
+
+  // Top-of-file comment block
+  const commentLines = [];
+  const lines = text.split('\n');
+  let pastHeader = false;
+  for (const line of lines) {
+    const t = line.trim();
+    if (!pastHeader && t.startsWith('#usda')) { pastHeader = true; continue; }
+    if (pastHeader) {
+      if (t.startsWith('#')) commentLines.push(t.replace(/^#\s?/, ''));
+      else if (t === '') continue;
+      else break;
+    }
+  }
+  if (commentLines.length) result.comment = commentLines.join('\n');
+
+  // customLayerData = { ... } — Klammer-Zähler
+  const cldStart = header.indexOf('customLayerData');
+  if (cldStart !== -1) {
+    const braceStart = header.indexOf('{', cldStart);
+    if (braceStart !== -1) {
+      let depth = 0, end = -1;
+      for (let i = braceStart; i < header.length; i++) {
+        if (header[i] === '{') depth++;
+        else if (header[i] === '}') { depth--; if (depth === 0) { end = i; break; } }
+      }
+      if (end !== -1) {
+        const block = header.substring(braceStart + 1, end);
+        result.customLayerData = parseUsdDict(block);
+      }
+    }
+  }
+}
+
+function parseUsdDict(block) {
+  const out = {};
+  const strRe = /(?:string\s+)?([A-Za-z_][A-Za-z0-9_:]*)\s*=\s*"((?:[^"\\]|\\.)*)"/g;
+  let m;
+  while ((m = strRe.exec(block)) !== null) {
+    out[m[1]] = unescapeUsdString(m[2]);
+  }
+  const numRe = /(?:int|float|double|bool|uint)\s+([A-Za-z_][A-Za-z0-9_:]*)\s*=\s*([^\n,}]+)/g;
+  while ((m = numRe.exec(block)) !== null) {
+    if (!(m[1] in out)) out[m[1]] = m[2].trim();
+  }
+  return out;
+}
+
+function unescapeUsdString(s) {
+  return s.replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+}
+
+function parseUsdcStrings(text, result) {
+  const candidates = ['author', 'creator', 'copyright', 'comment', 'documentation', 'notes', 'title', 'description'];
+  const found = {};
+  for (const key of candidates) {
+    const re = new RegExp('\\b' + key + '\\b[\\s\\S]{0,8}([\\x20-\\x7E]{4,256})', 'i');
+    const m = text.match(re);
+    if (m) {
+      const val = m[1].replace(/[^\x20-\x7E]/g, '').trim();
+      if (val.length >= 3 && !/^[\s\W_]+$/.test(val)) found[key] = val;
+    }
+  }
+  const ua = text.match(/upAxis[\s\S]{0,16}([YZyz])\b/);
+  if (ua) result.upAxis = ua[1].toUpperCase();
+  result.customLayerData = found;
+  result.raw = '⚠ USDC ist binär — nur Best-Effort-Extraktion lesbarer Strings möglich';
+}
+
+/* ─── Texturen-Analyse ─────────────────────────────────────────── */
+async function analyzeTexture({ name, data, size, sha }) {
+  const ext = (name.match(/\.([^.]+)$/) || [,''])[1].toLowerCase();
+  const result = {
+    name, size, sha,
+    extension: ext,
+    width: null, height: null,
+    colorType: null,
+    thumbnail: null,
+    error: null,
+  };
+
+  if (ext === 'png') {
+    const dims = readPngDimensions(data);
+    if (dims) { result.width = dims.w; result.height = dims.h; result.colorType = dims.colorType; }
+  } else if (ext === 'jpg' || ext === 'jpeg') {
+    const dims = readJpegDimensions(data);
+    if (dims) { result.width = dims.w; result.height = dims.h; result.colorType = 'JPEG'; }
+  } else if (ext === 'webp') {
+    const dims = readWebpDimensions(data);
+    if (dims) { result.width = dims.w; result.height = dims.h; result.colorType = 'WebP'; }
+  }
+
+  if (['png', 'jpg', 'jpeg', 'webp'].includes(ext)) {
+    try {
+      const mime = ext === 'jpg' ? 'image/jpeg' : 'image/' + ext;
+      const blob = new Blob([data], { type: mime });
+      const url = URL.createObjectURL(blob);
+      result.thumbnail = url;
+      if (!result.width) {
+        const img = await loadImage(url);
+        result.width = img.naturalWidth;
+        result.height = img.naturalHeight;
+      }
+    } catch (e) {
+      result.error = e.message;
+    }
+  } else if (ext === 'exr' || ext === 'hdr') {
+    result.colorType = ext.toUpperCase() + ' (HDR, kein Browser-Preview)';
+  } else if (ext === 'ktx' || ext === 'ktx2') {
+    result.colorType = 'KTX (GPU-Texture, kein Browser-Preview)';
+  }
+
+  return result;
+}
+
+function loadImage(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('Image-Decode fehlgeschlagen'));
+    img.src = url;
+  });
+}
+
+function readPngDimensions(data) {
+  if (data.length < 26 || data[0] !== 0x89 || data[1] !== 0x50) return null;
+  const dv = new DataView(data.buffer, data.byteOffset, data.byteLength);
+  const w = dv.getUint32(16);
+  const h = dv.getUint32(20);
+  const bitDepth = data[24];
+  const colorTypeByte = data[25];
+  const colorTypeMap = { 0: 'Grayscale', 2: 'RGB', 3: 'Indexed', 4: 'Grayscale+A', 6: 'RGBA' };
+  return { w, h, colorType: `PNG ${colorTypeMap[colorTypeByte]||'?'} ${bitDepth}-bit` };
+}
+
+function readJpegDimensions(data) {
+  if (data[0] !== 0xFF || data[1] !== 0xD8) return null;
+  let i = 2;
+  while (i < data.length - 8) {
+    if (data[i] !== 0xFF) { i++; continue; }
+    const marker = data[i + 1];
+    if (marker >= 0xC0 && marker <= 0xCF && marker !== 0xC4 && marker !== 0xC8 && marker !== 0xCC) {
+      const h = (data[i + 5] << 8) | data[i + 6];
+      const w = (data[i + 7] << 8) | data[i + 8];
+      return { w, h };
+    }
+    const segLen = (data[i + 2] << 8) | data[i + 3];
+    if (segLen < 2) return null;
+    i += 2 + segLen;
+  }
+  return null;
+}
+
+function readWebpDimensions(data) {
+  if (data.length < 30) return null;
+  const sig = String.fromCharCode(data[0], data[1], data[2], data[3]);
+  if (sig !== 'RIFF') return null;
+  const fourcc = String.fromCharCode(data[12], data[13], data[14], data[15]);
+  if (fourcc === 'VP8 ') {
+    const w = ((data[26] | (data[27] << 8)) & 0x3FFF);
+    const h = ((data[28] | (data[29] << 8)) & 0x3FFF);
+    return { w, h };
+  } else if (fourcc === 'VP8L') {
+    const b0 = data[21], b1 = data[22], b2 = data[23], b3 = data[24];
+    const w = 1 + (((b1 & 0x3F) << 8) | b0);
+    const h = 1 + (((b3 & 0x0F) << 10) | (b2 << 2) | ((b1 & 0xC0) >> 6));
+    return { w, h };
+  } else if (fourcc === 'VP8X') {
+    const w = 1 + (data[24] | (data[25] << 8) | (data[26] << 16));
+    const h = 1 + (data[27] | (data[28] << 8) | (data[29] << 16));
+    return { w, h };
+  }
+  return null;
+}
+
+async function sha256hex(data) {
+  const buf = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+function render(filename, filesize, manifest, members, usdMeta, textures) {
+  dropZone.style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+
+  const state = manifest ? detectState(manifest) : 'NO_MANIFEST';
+  const inventory = manifest?.asset_inventory || [];
+  const invByPath = {};
+  inventory.forEach(i => { if(i.path) invByPath[i.path] = i; });
+
+  const sidecarPath = 'credentials/usdseal-manifest.json';
+  const rootLayer = members[0]?.name;
+  let tracked=0, mismatch=0, extra=0, missing=0, structure=0;
+  const rows = [];
+  const memberNames = new Set(members.map(m => m.name));
+
+  members.forEach(m => {
+    if (m.name === sidecarPath) { structure++; rows.push({...m, status:'structure', note:'credentials sidecar'}); return; }
+    if (m.name === rootLayer && /\.(usdc|usda|usdz)$/.test(m.name)) {
+      structure++; rows.push({...m, status:'structure', note:'root USD layer'}); return;
+    }
+    const inv = invByPath[m.name];
+    if (!inv) { extra++; rows.push({...m, status:'extra', note:'nicht im Inventory'}); return; }
+    if (inv.sha256 && inv.sha256 === m.sha256) { tracked++; rows.push({...m, status:'tracked', inv}); }
+    else { mismatch++; rows.push({...m, status:'mismatch', inv, note:'Hash-Mismatch'}); }
+  });
+  inventory.forEach(inv => {
+    if (!inv.path || memberNames.has(inv.path)) return;
+    missing++;
+    rows.push({ name: inv.path, size: null, sha256: null, status:'missing', inv, note:'nicht im ZIP' });
+  });
+  rows.sort((a,b) => {
+    const o = {mismatch:0,missing:1,extra:2,tracked:3,structure:4};
+    return (o[a.status]??9)-(o[b.status]??9) || a.name.localeCompare(b.name);
+  });
+
+  const totalUncompressed = members.reduce((s,m)=>s+m.size,0);
+
+  const stateConf = {
+    'SIGNED':      { cls:'signed',      icon:'✓', title:'Signiert & versiegelt', sub:'COSE_Sign1 / Ed25519 — Manifest ist kryptographisch gesiegelt' },
+    'DRAFT':       { cls:'draft',       icon:'⏳', title:'Draft — noch nicht signiert', sub:'usdseal init ausgeführt, sign steht noch aus' },
+    'INVALID':     { cls:'invalid',     icon:'✗', title:'Signatur ungültig', sub:'Manifest oder Inhalt wurde nach dem Siegeln verändert' },
+    'NO_MANIFEST': { cls:'no_manifest', icon:'○', title:'Kein Manifest vorhanden', sub:'usdseal init noch nicht ausgeführt' },
+  };
+  const sc = stateConf[state] || stateConf['NO_MANIFEST'];
+
+  let html = `
+  <div class="dash-header">
+    <div>
+      <div class="file-title">${esc(filename)}</div>
+      <div class="file-meta">${fmtSize(filesize)} auf Disk · ${members.length} ZIP-Members · ${fmtSize(totalUncompressed)} unkomprimiert</div>
+    </div>
+    <button class="btn-reset" onclick="resetDash()">↩ Neue Datei</button>
+  </div>
+
+  <div class="state-banner ${sc.cls}">
+    <span class="state-icon">${sc.icon}</span>
+    <div>
+      <div class="state-title">${sc.title}</div>
+      <div class="state-sub">${sc.sub}</div>
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-label">State</div><div class="stat-val ${sc.cls==='signed'?'cyan':sc.cls==='draft'?'orange':sc.cls==='invalid'?'red':'muted'}">${state}</div></div>
+    <div class="stat-card"><div class="stat-label">Tracked</div><div class="stat-val ${tracked>0?'green':'muted'}">${tracked}</div></div>
+    <div class="stat-card"><div class="stat-label">Mismatch</div><div class="stat-val ${mismatch>0?'red':'muted'}">${mismatch}</div></div>
+    <div class="stat-card"><div class="stat-label">Extra</div><div class="stat-val ${extra>0?'orange':'muted'}">${extra}</div></div>
+    <div class="stat-card"><div class="stat-label">Missing</div><div class="stat-val ${missing>0?'red':'muted'}">${missing}</div></div>
+    <div class="stat-card"><div class="stat-label">Structure</div><div class="stat-val muted">${structure}</div></div>
+  </div>`;
+
+  if (manifest) {
+    const iss = manifest.issuer || {};
+    const lic = manifest.license || {};
+    const up  = manifest.usage_policy || {};
+    const sub = manifest.subject_asset || {};
+
+    html += `<div class="section"><div class="section-label">Manifest</div><div class="info-grid">`;
+
+    html += `<div class="info-card">
+      <div class="card-title">Aussteller</div>
+      <div class="kv-row"><span class="kv-key">Name</span><span class="kv-val normal">${esc(iss.name||'—')}</span></div>
+      <div class="kv-row"><span class="kv-key">Domain</span><span class="kv-val">${esc(iss.domain||'—')}</span></div>
+      <div class="kv-row"><span class="kv-key">Key ID</span><span class="kv-val">${esc(iss.key_id||'—')}</span></div>
+      <div class="kv-row"><span class="kv-key">Manifest ID</span><span class="kv-val">${esc(manifest.manifest_id||'—')}</span></div>
+      <div class="kv-row"><span class="kv-key">Issued</span><span class="kv-val">${fmtDate(manifest.issued_at)}</span></div>
+      <div class="kv-row"><span class="kv-key">Expires</span><span class="kv-val">${fmtDate(manifest.expires_at)}</span></div>
+    </div>`;
+
+    html += `<div class="info-card accent-top">
+      <div class="card-title">Lizenz</div>
+      <div class="kv-row"><span class="kv-key">Scope</span><span class="kv-val">${esc(lic.scope||'—')}</span></div>
+      <div class="kv-row"><span class="kv-key">Territory</span><span class="kv-val normal">${esc(lic.territory||'—')}</span></div>
+      <div class="kv-row"><span class="kv-key">Valid until</span><span class="kv-val">${esc(lic.valid_until||'—')}</span></div>
+      <div style="margin-top:10px;">
+        ${(lic.permitted_uses||[]).map(u=>`<span class="badge badge-green">✓ ${esc(u)}</span>`).join('')}
+        ${(lic.prohibited_uses||[]).map(u=>`<span class="badge badge-red">✗ ${esc(u)}</span>`).join('')}
+      </div>
+    </div>`;
+
+    if (sub.filename || Object.keys(up).length) {
+      html += `<div class="info-card">
+        <div class="card-title">Asset & Policy</div>`;
+      if (sub.filename) html += `<div class="kv-row"><span class="kv-key">Datei</span><span class="kv-val">${esc(sub.filename)}</span></div>`;
+      if (sub.size_bytes) html += `<div class="kv-row"><span class="kv-key">Größe</span><span class="kv-val normal">${fmtSize(sub.size_bytes)}</span></div>`;
+      if (sub.primary_prim) html += `<div class="kv-row"><span class="kv-key">Primary Prim</span><span class="kv-val">${esc(sub.primary_prim)}</span></div>`;
+      if (up.default_classification) html += `<div class="kv-row"><span class="kv-key">Classification</span><span class="kv-val normal"><span class="badge badge-cyan">${esc(up.default_classification)}</span></span></div>`;
+      if (up.external_disclosure_allowed !== undefined) html += `<div class="kv-row"><span class="kv-key">Ext. Disclosure</span><span class="kv-val normal"><span class="badge ${up.external_disclosure_allowed?'badge-green':'badge-red'}">${up.external_disclosure_allowed?'erlaubt':'verboten'}</span></span></div>`;
+      if (up.narrative) html += `<div style="margin-top:10px;font-size:11px;color:var(--text-desc);font-style:italic;">"${esc(up.narrative)}"</div>`;
+      html += `</div>`;
+    }
+
+    html += `</div></div>`;
+
+    if (sub.sha256) {
+      html += `<div class="section">
+        <div class="section-label">Asset-Hash (SHA-256 der USDZ-Datei)</div>
+        <div class="hash-full">${esc(sub.sha256)}</div>
+      </div>`;
+    }
+  }
+
+  // ── USD-Metadaten-Sektion ──
+  if (usdMeta) {
+    html += renderUsdMetaSection(usdMeta);
+  }
+
+  // ── Texturen-Sektion ──
+  html += renderTexturesSection(textures);
+
+  // Inventory
+  const statusBadgeMap = {
+    tracked:   `<span class="badge badge-green">✓ tracked</span>`,
+    mismatch:  `<span class="badge badge-red">~ mismatch</span>`,
+    extra:     `<span class="badge badge-orange">+ extra</span>`,
+    missing:   `<span class="badge badge-red">− missing</span>`,
+    structure: `<span class="badge badge-neutral">◯ structure</span>`,
+  };
+
+  html += `<div class="section"><div class="section-label">Asset Inventory</div>
+  <div class="inv-wrap"><table class="inv-table">
+    <thead><tr>
+      <th>Status</th><th>Typ</th><th>Pfad</th>
+      <th style="text-align:right;">Größe</th>
+      <th>Source</th><th>Lizenz</th><th>Classification</th><th>SHA-256</th>
+    </tr></thead><tbody>`;
+
+  rows.forEach(r => {
+    const typeBadge = r.inv?.type
+      ? `<span class="badge badge-orange">${esc(r.inv.type)}</span>`
+      : r.status==='structure' ? `<span class="badge badge-neutral">${/\.json$/.test(r.name)?'sidecar':'geometry'}</span>` : '—';
+    const clsBadge = r.inv?.usage_classification
+      ? `<span class="badge badge-cyan">${esc(r.inv.usage_classification)}</span>` : '—';
+    const sha = r.sha256 ? r.sha256.substring(0,16)+'…' : '—';
+    html += `<tr class="${r.status==='structure'?'row-structure':''}">
+      <td>${statusBadgeMap[r.status]||r.status}</td>
+      <td>${typeBadge}</td>
+      <td class="path-cell">${esc(r.name)}</td>
+      <td class="size-cell">${r.size!==null?fmtSize(r.size):'—'}</td>
+      <td style="color:var(--text-body)">${esc(r.inv?.source||'—')}</td>
+      <td style="color:var(--text-body)">${esc(r.inv?.license_ref||'—')}</td>
+      <td>${clsBadge}</td>
+      <td class="hash-cell">${sha}</td>
+    </tr>`;
+  });
+  html += `</tbody></table></div></div>`;
+
+  // Signature
+  if (manifest?.signature) {
+    const sig = manifest.signature;
+    html += `<div class="section"><div class="section-label">Signatur</div>
+    <div class="info-card accent-top">
+      <div class="card-title">COSE_Sign1 / Ed25519</div>
+      <div class="kv-row"><span class="kv-key">Algorithmus</span><span class="kv-val">${esc(sig.algorithm||'—')} / ${esc(sig.format||'—')}</span></div>
+      <div class="kv-row"><span class="kv-key">Canonical Form</span><span class="kv-val">${esc(sig.signed_canonical_form||'—')}</span></div>
+      <div class="kv-row"><span class="kv-key">Public Key</span><span class="kv-val">${esc((manifest.issuer?.public_key_pem||'').replace(/\n/g,' '))}</span></div>
+    </div></div>`;
+  }
+
+  // Provenance
+  if (manifest?.provenance_chain?.length) {
+    html += `<div class="section"><div class="section-label">Provenance Chain</div>
+    <div class="prov-card">`;
+    manifest.provenance_chain.forEach(step => {
+      html += `<div class="prov-item">
+        <div class="prov-dot"></div>
+        <div>
+          <div class="prov-step">${esc(step.step||'?')}</div>
+          <div class="prov-meta">${esc(step.actor||'')} · ${esc(step.tool||'')} · ${fmtDate(step.timestamp)}</div>
+        </div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  document.getElementById('dash-content').innerHTML = html;
+}
+
+function renderUsdMetaSection(meta) {
+  const cld = meta.customLayerData || {};
+  const cldKeys = Object.keys(cld);
+  const hasContent = cldKeys.length || meta.documentation || meta.comment ||
+                     meta.defaultPrim || meta.upAxis || meta.metersPerUnit;
+
+  let inner = '';
+
+  // Stage-Properties
+  const stageProps = [];
+  if (meta.defaultPrim) stageProps.push(['defaultPrim', meta.defaultPrim]);
+  if (meta.upAxis) stageProps.push(['upAxis', meta.upAxis]);
+  if (meta.metersPerUnit !== null) stageProps.push(['metersPerUnit', meta.metersPerUnit + ' m']);
+
+  if (stageProps.length) {
+    inner += `<div class="meta-block-title">Stage</div>`;
+    stageProps.forEach(([k, v]) => {
+      inner += `<div class="kv-row"><span class="kv-key">${esc(k)}</span><span class="kv-val normal">${esc(v)}</span></div>`;
+    });
+  }
+
+  // customLayerData (Author, Notes, Copyright …)
+  if (cldKeys.length) {
+    inner += `<div class="meta-block-title" style="margin-top:14px;">customLayerData</div>`;
+    cldKeys.forEach(k => {
+      const v = cld[k];
+      const isLong = typeof v === 'string' && (v.length > 80 || v.includes('\n'));
+      if (isLong) {
+        inner += `<div class="kv-row" style="grid-template-columns:110px 1fr;"><span class="kv-key">${esc(k)}</span><div class="meta-text" style="margin-bottom:4px;">${esc(v)}</div></div>`;
+      } else {
+        inner += `<div class="kv-row"><span class="kv-key">${esc(k)}</span><span class="kv-val normal">${esc(v)}</span></div>`;
+      }
+    });
+  }
+
+  // doc-Attribut
+  if (meta.documentation) {
+    inner += `<div class="meta-block-title" style="margin-top:14px;">doc</div>`;
+    inner += `<div class="meta-text">${esc(meta.documentation)}</div>`;
+  }
+
+  // Top-of-file Comment
+  if (meta.comment) {
+    inner += `<div class="meta-block-title" style="margin-top:4px;">Header-Kommentar</div>`;
+    inner += `<div class="meta-text">${esc(meta.comment)}</div>`;
+  }
+
+  if (!hasContent) {
+    inner = `<div class="meta-empty">Keine USD-Metadaten gefunden — weder customLayerData, doc-Attribut noch Header-Kommentar im Root-Layer.</div>`;
+  }
+
+  if (meta.raw) {
+    inner += `<div class="meta-source" style="margin-top:12px;">${esc(meta.raw)}</div>`;
+  }
+  inner += `<div class="meta-source">Root-Layer: ${esc(meta.sourceFile)} · ${esc(meta.format)}</div>`;
+
+  return `<div class="section">
+    <div class="section-label">USD-Metadaten · Author / Notes / Stage</div>
+    <div class="meta-card">${inner}</div>
+  </div>`;
+}
+
+function renderTexturesSection(textures) {
+  if (!textures.length) {
+    return `<div class="section">
+      <div class="section-label">Texturen</div>
+      <div class="tex-grid"><div class="tex-empty">Keine Bild-Dateien im USDZ-Container gefunden.</div></div>
+    </div>`;
+  }
+
+  const totalBytes = textures.reduce((s, t) => s + t.size, 0);
+
+  let rows = '';
+  textures.forEach(t => {
+    const thumb = t.thumbnail
+      ? `<img class="tex-thumb" src="${t.thumbnail}" alt="">`
+      : `<div class="tex-thumb placeholder">${t.extension.toUpperCase().substring(0,3)}</div>`;
+    const dims = (t.width && t.height)
+      ? `<span class="dim">${t.width}×${t.height}</span>`
+      : `<span style="color:var(--text-muted);">— × —</span>`;
+    const meta = [t.colorType, t.extension.toUpperCase()].filter(Boolean).join(' · ');
+    rows += `<div class="tex-row">
+      ${thumb}
+      <div class="tex-info">
+        <div class="tex-path">${esc(t.name)}</div>
+        <div class="tex-meta">${esc(meta)}</div>
+      </div>
+      <div class="tex-stats">
+        ${dims}<br>
+        <span style="color:var(--text-desc);">${fmtSize(t.size)}</span>
+      </div>
+    </div>`;
+  });
+
+  return `<div class="section">
+    <div class="section-label">Texturen · ${textures.length} Dateien · ${fmtSize(totalBytes)}</div>
+    <div class="tex-grid">${rows}</div>
+  </div>`;
+}
+
+function detectState(m) {
+  if (!m) return 'NO_MANIFEST';
+  return m.signature?.value_base64 ? 'SIGNED' : 'DRAFT';
+}
+function fmtSize(b) {
+  if (!b && b!==0) return '—';
+  if (b<1024) return b+' B';
+  if (b<1048576) return (b/1024).toFixed(1)+' KB';
+  if (b<1073741824) return (b/1048576).toFixed(1)+' MB';
+  return (b/1073741824).toFixed(2)+' GB';
+}
+function fmtDate(iso) {
+  if (!iso) return '—';
+  try { return new Date(iso).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+iso.substring(11,16)+' UTC'; }
+  catch { return iso; }
+}
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function resetDash() {
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('dash-content').innerHTML = '';
+  document.getElementById('file-input').value = '';
+  dropZone.style.display = 'block';
+}
+function showError(msg) {
+  dropZone.style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('dash-content').innerHTML = `
+    <div class="error-box">
+      <div style="font-size:28px;margin-bottom:10px;">✗</div>
+      <div style="font-weight:700;margin-bottom:6px;">Fehler</div>
+      <div style="font-size:12px;opacity:0.8;">${esc(msg)}</div>
+      <button class="btn-primary" style="margin-top:16px;" onclick="resetDash()">Nochmal versuchen</button>
+    </div>`;
+}
+</script>
+</body>
+</html>
