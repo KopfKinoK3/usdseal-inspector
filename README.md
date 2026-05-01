@@ -27,7 +27,7 @@ USDseal is a companion tool that adds cryptographically signed provenance metada
 ## Usage
 
 **Option A — GitHub Pages (no installation):**
-Open [visales.github.io/usdseal-inspector](https://kopfkinok3.github.io/usdseal-inspector/) in any modern browser.
+Open [kopfkinok3.github.io/usdseal-inspector](https://kopfkinok3.github.io/usdseal-inspector/) in any modern browser.
 
 **Option B — Download:**
 Download `index.html` and open it locally. No web server needed.
