@@ -4,7 +4,7 @@
 
 The USDseal Inspector reads USDZ files entirely in your browser using the [JSZip](https://stuk.github.io/jszip/) library. All processing happens locally. No data leaves your machine.
 
-→ **[Try it live](https://visales.github.io/usdseal-inspector/)** (GitHub Pages)
+→ **[Try it live](https://kopfkinok3.github.io/usdseal-inspector/)** (GitHub Pages)
 
 ---
 
@@ -27,14 +27,14 @@ USDseal is a companion tool that adds cryptographically signed provenance metada
 ## Usage
 
 **Option A — GitHub Pages (no installation):**
-Open [visales.github.io/usdseal-inspector](https://visales.github.io/usdseal-inspector/) in any modern browser.
+Open [visales.github.io/usdseal-inspector](https://kopfkinok3.github.io/usdseal-inspector/) in any modern browser.
 
 **Option B — Download:**
 Download `index.html` and open it locally. No web server needed.
 
 **Option C — Embed (iframe):**
 ```html
-<iframe src="https://visales.github.io/usdseal-inspector/"
+<iframe src="https://kopfkinok3.github.io/usdseal-inspector/"
         width="100%" height="720" style="border:none;">
 </iframe>
 ```
