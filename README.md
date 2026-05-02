@@ -30,7 +30,7 @@ USDseal is a companion tool that adds cryptographically signed provenance metada
 
 ## Origin
 
-The first version of this tool was built on the evening of April 27, 2026 — after day one of the [XR Expo](https://xr-expo.de) in Stuttgart, and the night before a talk on OpenUSD at the same conference. The idea was simple: after explaining provenance and trust for 3D assets on stage, attendees should be able to open a USDZ file and see exactly what was inside — right then, in the browser, with no install. v0.1 was a proof of concept. v0.2 shipped the next day.
+The first version of this tool was built on the evening of April 27, 2026 — after day one of the [XR Expo Stuttgart](https://www.messe-stuttgart.de/xrexpo/), and the night before a talk on OpenUSD by Gerhard Schröder, the developer of this tool. The idea was simple: after explaining provenance and trust for 3D assets on stage, attendees should be able to open a USDZ file and see exactly what was inside — right then, in the browser, with no install. v0.1 was a proof of concept. v0.2 shipped the next day.
 
 ## Usage
 
@@ -83,4 +83,4 @@ USD and USDZ are trademarks of Pixar. OpenUSD is an open standard maintained by 
 
 ---
 
-Built by [viSales GmbH](https://visales.de) · Bochum, Germany · [visales.de](https://visales.de)
+Built by [Gerhard Schröder](https://visales.de) / [viSales GmbH](https://visales.de) · Bochum, Germany
