@@ -83,4 +83,4 @@ USD and USDZ are trademarks of Pixar. OpenUSD is an open standard maintained by 
 
 ---
 
-Built by [Gerhard Schröder](https://visales.de) / [viSales GmbH](https://visales.de) · Bochum, Germany
+Built by [Gerhard Schröder](https://media.visales.de/gerhard-schroeder) / [viSales GmbH](https://visales.de) · Bochum, Germany
