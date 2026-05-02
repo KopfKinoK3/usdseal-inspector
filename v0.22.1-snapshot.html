@@ -649,50 +649,6 @@
     padding: 4px 0;
   }
 
-  /* ── Re-Import-Card (v0.22.2) ── */
-  .reimport-card {
-    background: var(--bg-accent-tint);
-    border: 1px solid var(--border-accent);
-    border-left: 4px solid var(--accent);
-    border-radius: 10px;
-    padding: 14px 16px;
-    margin-bottom: 10px;
-  }
-  .reimport-head {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-  }
-  .reimport-icon { font-size: 15px; color: var(--accent-dark); }
-  .reimport-title { font-size: 13px; font-weight: 700; color: var(--accent-dark); }
-  .reimport-meta { font-size: 12px; color: var(--text-body); line-height: 1.5; }
-  .reimport-meta code {
-    font-family: var(--mono);
-    font-size: 11px;
-    background: var(--bg-canvas);
-    padding: 1px 6px;
-    border-radius: 4px;
-    border: 1px solid var(--border-accent);
-  }
-  .reimport-note { font-size: 11px; color: var(--text-muted); margin-top: 6px; font-style: italic; }
-
-  /* ── Cache-Clear-Button (v0.22.2) ── */
-  .btn-cache-clear {
-    font-family: var(--font);
-    font-size: 10px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 100px;
-    border: 1px solid var(--border-inner);
-    background: transparent;
-    color: var(--text-desc);
-    cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
-    letter-spacing: 0.04em;
-  }
-  .btn-cache-clear:hover { border-color: var(--accent); color: var(--accent-dark); }
-
   /* ── Provenance ── */
   .prov-card {
     background: var(--bg-canvas);
@@ -944,8 +900,7 @@
 
 <div class="topbar">
   <div class="logo">USD<span>seal</span> <span class="logo-accent" style="font-weight:400;">Inspector</span></div>
-  <div class="version-badge">v0.22.2</div>
-  <button id="cache-clear-btn" class="btn-cache-clear" type="button" onclick="clearCache()" title="Lokal gespeicherte Manifest-Spuren löschen">Cache (<span id="cache-count">0</span>)</button>
+  <div class="version-badge">v0.22.1</div>
   <div class="topbar-right">
     <span class="lang-toggle" id="lang-toggle" role="group" aria-label="Sprache / Language">
       <button data-lang="de" id="lang-btn-de" type="button">DE</button>
@@ -988,7 +943,7 @@
    Inspector spiegelt CLI-Schema-Disziplin (CLI-ADR §11.14).
    Erweiterung der Whitelist = neue Render-Funktion + Eintrag.
    Siehe COMPATIBILITY.md für Versions-Matrix. */
-const INSPECTOR_VERSION = '0.22.2';
+const INSPECTOR_VERSION = '0.22.1';
 const SUPPORTED_SPEC_VERSIONS = ['0.1', '0.2'];
 
 /* ─── i18n (DE/EN) — v0.22.1 ───────────────────────────────────
@@ -1032,11 +987,6 @@ const I18N = {
   loading_stage_metadata: { de: 'USD-Metadaten', en: 'USD metadata' },
   loading_stage_textures: { de: 'Texturen', en: 'Textures' },
   loading_stage_render:   { de: 'Render', en: 'Rendering' },
-  reimport_title:   { de: 'Re-Import erkannt', en: 'Re-Import detected' },
-  reimport_note:    { de: 'Bewusster Workflow, kein Schema-Bruch.', en: 'Intentional workflow, no schema violation.' },
-  reimport_master:  { de: 'importiert Pfade aus seiner eigenen Tochter', en: 'imports paths from its own derived asset' },
-  reimport_derived: { de: 'wurde von ihrem eigenen Master importiert', en: 'was imported by its own master' },
-  reimport_seen_at: { de: 'gesehen am', en: 'last seen' },
 };
 
 function t(key) {
@@ -1049,63 +999,6 @@ function getRuleText(rule, field) {
   const v = rule[field];
   if (!v) return '';
   return v[CURRENT_LANG] || v.de || '';
-}
-
-/* ─── localStorage-Cache — v0.22.2 ─────────────────────────────
-   Key: usdseal-inspector.cache.v1 · max 20 Einträge FIFO.
-   Schema: { manifest_id, sha256, role, import_history_ids,
-             parent_manifest_id, filename, seen_at } */
-const CACHE_KEY = 'usdseal-inspector.cache.v1';
-const CACHE_MAX = 20;
-
-function getCachedManifests() {
-  try {
-    const raw = localStorage.getItem(CACHE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (e) { return []; }
-}
-
-function cacheManifest(manifest, filename) {
-  if (!manifest || !manifest.manifest_id) return;
-  const lin = manifest.lineage;
-  const entry = {
-    manifest_id:        manifest.manifest_id,
-    sha256:             manifest.subject_asset?.sha256 || null,
-    role:               lin?.role || null,
-    import_history_ids: lin?.role === 'master'
-      ? (Array.isArray(lin.import_history) ? lin.import_history : [])
-          .map(h => h.imported_from_manifest_id).filter(Boolean)
-      : [],
-    parent_manifest_id: lin?.role === 'derived' ? (lin.parent_manifest_id || null) : null,
-    filename:           filename || null,
-    seen_at:            new Date().toISOString()
-  };
-  try {
-    let cache = getCachedManifests();
-    cache = cache.filter(c => c.manifest_id !== entry.manifest_id);
-    cache.unshift(entry);
-    if (cache.length > CACHE_MAX) cache = cache.slice(0, CACHE_MAX);
-    localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
-  } catch (e) {}
-  updateCacheCounter();
-}
-
-function clearCache() {
-  const count = getCachedManifests().length;
-  if (count === 0) return;
-  const msg = CURRENT_LANG === 'de'
-    ? `Lokal gespeicherte Manifest-Spuren (${count} Eintr${count === 1 ? 'ag' : 'äge'}) werden gelöscht. Geladene USDZs bleiben unverändert.`
-    : `Locally stored manifest traces (${count} entr${count === 1 ? 'y' : 'ies'}) will be deleted. Loaded USDZs remain unchanged.`;
-  if (!confirm(msg)) return;
-  try { localStorage.removeItem(CACHE_KEY); } catch (e) {}
-  updateCacheCounter();
-}
-
-function updateCacheCounter() {
-  const el = document.getElementById('cache-count');
-  if (el) el.textContent = getCachedManifests().length;
 }
 
 /* ─── AR Quick Look Validator-Regel-Set — v0.22 / v0.22.1 ──────
@@ -1639,16 +1532,16 @@ function renderCompatHint(compat) {
  * Re-Import-Detection (↻) ist v0.22 — braucht Cross-Manifest-Cache,
  * siehe COMPATIBILITY.md §3.
  */
-function renderLineageSection(manifest, compat, crossrefs) {
+function renderLineageSection(manifest, compat) {
   if (!manifest || !compat || !compat.hasLineage) return '';
   const lin = manifest.lineage;
   const role = lin.role;
 
-  let html;
-  if (role === 'master') html = renderLineageMaster(lin);
-  else if (role === 'derived') html = renderLineageDerived(lin);
-  else {
-    html = `<div class="section">
+  if (role === 'master') return renderLineageMaster(lin);
+  if (role === 'derived') return renderLineageDerived(lin);
+
+  // Unbekannte Rolle: best-effort, zeige rohe Felder
+  return `<div class="section">
     <div class="section-label">Lineage</div>
     <div class="lineage-card">
       <div class="lineage-header">
@@ -1657,10 +1550,6 @@ function renderLineageSection(manifest, compat, crossrefs) {
       <div class="lineage-empty">Unbekannte Lineage-Rolle. Inspector ${INSPECTOR_VERSION} versteht <code>master</code> und <code>derived</code>.</div>
     </div>
   </div>`;
-  }
-
-  if (crossrefs && crossrefs.length > 0) html += renderReImportCards(crossrefs);
-  return html;
 }
 
 function renderLineageMaster(lin) {
@@ -1736,87 +1625,6 @@ function renderLineageDerived(lin) {
   </div>`;
 }
 
-/* ─── Re-Import-Detection — v0.22.2 ────────────────────────────
-   Erkennt bidirektionale Zyklen zwischen Master und Derived.
-   Master-Seite: prüft ob ein importiertes Derived dessen Parent der
-   aktuelle Master ist. Derived-Seite: prüft ob ein gecachter Master
-   dieses Derived in import_history_ids führt. */
-function detectReImports(manifest, cache) {
-  if (!manifest || !manifest.lineage || !manifest.manifest_id) return [];
-  const results = [];
-  const lin = manifest.lineage;
-  const current_id = manifest.manifest_id;
-
-  if (lin.role === 'master') {
-    const history = Array.isArray(lin.import_history) ? lin.import_history : [];
-    for (const h of history) {
-      const derived_id = h.imported_from_manifest_id;
-      if (!derived_id) continue;
-      const cached = cache.find(c => c.manifest_id === derived_id && c.parent_manifest_id === current_id);
-      if (cached) {
-        results.push({
-          type:             'master_imported_own_derived',
-          master_id:        current_id,
-          derived_id,
-          derived_filename: cached.filename,
-          imported_paths:   Array.isArray(h.imported_paths) ? h.imported_paths : [],
-          seen_at:          cached.seen_at
-        });
-      }
-    }
-  } else if (lin.role === 'derived') {
-    for (const cached of cache) {
-      if (cached.role !== 'master') continue;
-      if (!Array.isArray(cached.import_history_ids)) continue;
-      if (cached.import_history_ids.includes(current_id)) {
-        results.push({
-          type:            'derived_imported_by_master',
-          master_id:       cached.manifest_id,
-          master_filename: cached.filename,
-          derived_id:      current_id,
-          seen_at:         cached.seen_at
-        });
-      }
-    }
-  }
-  return results;
-}
-
-function renderReImportCards(crossrefs) {
-  if (!crossrefs || crossrefs.length === 0) return '';
-  const cards = crossrefs.map(cr => {
-    let msg;
-    if (cr.type === 'master_imported_own_derived') {
-      const pathsHtml = cr.imported_paths.length > 0
-        ? ' ' + cr.imported_paths.slice(0, 3).map(p => `<code>${esc(p)}</code>`).join(', ')
-          + (cr.imported_paths.length > 3 ? ` <span style="color:var(--text-muted)">+${cr.imported_paths.length - 3}</span>` : '')
-        : '';
-      const fnHtml = cr.derived_filename ? ` (<em>${esc(cr.derived_filename)}</em>)` : '';
-      msg = CURRENT_LANG === 'de'
-        ? `Master <code>${esc(cr.master_id)}</code> ${t('reimport_master')}${pathsHtml}: <code>${esc(cr.derived_id)}</code>${fnHtml} — ${t('reimport_seen_at')} ${fmtDate(cr.seen_at)}.`
-        : `Master <code>${esc(cr.master_id)}</code> ${t('reimport_master')}${pathsHtml}: <code>${esc(cr.derived_id)}</code>${fnHtml} — ${t('reimport_seen_at')} ${fmtDate(cr.seen_at)}.`;
-    } else {
-      const fnHtml = cr.master_filename ? ` (<em>${esc(cr.master_filename)}</em>)` : '';
-      msg = CURRENT_LANG === 'de'
-        ? `Tochter <code>${esc(cr.derived_id)}</code> ${t('reimport_derived')} — Master <code>${esc(cr.master_id)}</code>${fnHtml}, ${t('reimport_seen_at')} ${fmtDate(cr.seen_at)}.`
-        : `Derived <code>${esc(cr.derived_id)}</code> ${t('reimport_derived')} — Master <code>${esc(cr.master_id)}</code>${fnHtml}, ${t('reimport_seen_at')} ${fmtDate(cr.seen_at)}.`;
-    }
-    return `<div class="reimport-card">
-      <div class="reimport-head">
-        <span class="reimport-icon">↻</span>
-        <span class="reimport-title">${t('reimport_title')}</span>
-      </div>
-      <div class="reimport-meta">${msg}</div>
-      <div class="reimport-note">${t('reimport_note')}</div>
-    </div>`;
-  }).join('');
-
-  return `<div class="section">
-    <div class="section-label">↻ Re-Import</div>
-    ${cards}
-  </div>`;
-}
-
 const dropZone = document.getElementById('drop-zone');
 dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
@@ -1849,7 +1657,6 @@ document.getElementById('file-input').addEventListener('change', e => {
     location.reload();
   }
   btnDe.addEventListener('click', () => switchTo('de'));
-  updateCacheCounter();
   btnEn.addEventListener('click', () => switchTo('en'));
 })();
 
@@ -2267,11 +2074,6 @@ function render(filename, filesize, manifest, members, usdMeta, textures) {
   document.getElementById('dashboard').style.display = 'block';
 
   const compat = compatCheck(manifest);
-
-  // ── Cache + ↻-Detection (v0.22.2) ──
-  if (manifest) cacheManifest(manifest, filename);
-  const reimports = manifest ? detectReImports(manifest, getCachedManifests()) : [];
-
   // v0.22 fix X-1: state wird unten nach mismatch-Berechnung gesetzt (siehe validatorCtx)
   const inventory = manifest?.asset_inventory || [];
   const invByPath = {};
@@ -2361,7 +2163,7 @@ function render(filename, filesize, manifest, members, usdMeta, textures) {
   html += renderFindingsSection(findings);
 
   // ── Lineage-Sektion (v0.21) — vor Manifest-Block ──
-  html += renderLineageSection(manifest, compat, reimports);
+  html += renderLineageSection(manifest, compat);
 
   if (manifest) {
     const iss = manifest.issuer || {};

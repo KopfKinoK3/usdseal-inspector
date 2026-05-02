@@ -1,0 +1,91 @@
+{
+  "comment": "Test-Vektoren für TEXTURE_PATH_ABSOLUTE (W-3 in v0.22.1). Jeder Eintrag ist ein USDA-Snippet, das die Regel triggern (expected: true) oder nicht triggern (expected: false) soll.",
+  "function": "isAbsoluteTexturePath(text) → boolean",
+  "vectors": [
+    {
+      "stil": "Windows-Drive-Backslash",
+      "input": "asset = @C:\\Users\\joe\\textures\\basecolor.png@",
+      "expected": true
+    },
+    {
+      "stil": "Windows-Drive-Slash",
+      "input": "asset = @C:/Users/joe/textures/basecolor.png@",
+      "expected": true
+    },
+    {
+      "stil": "Windows-D-Drive",
+      "input": "asset = @D:\\projects\\asset.png@",
+      "expected": true
+    },
+    {
+      "stil": "macOS-Volumes",
+      "input": "asset = @/Volumes/External/textures/foo.png@",
+      "expected": true
+    },
+    {
+      "stil": "macOS-Users",
+      "input": "asset = @/Users/joe/Desktop/file.png@",
+      "expected": true
+    },
+    {
+      "stil": "Unix-Home-Tilde",
+      "input": "asset = @~/textures/basecolor.png@",
+      "expected": true
+    },
+    {
+      "stil": "Unix-Home-Var",
+      "input": "asset = @$HOME/textures/basecolor.png@",
+      "expected": true
+    },
+    {
+      "stil": "Linux-home",
+      "input": "asset = @/home/joe/file.png@",
+      "expected": true
+    },
+    {
+      "stil": "Linux-var",
+      "input": "asset = @/var/data/file.png@",
+      "expected": true
+    },
+    {
+      "stil": "Linux-tmp",
+      "input": "asset = @/tmp/temp.png@",
+      "expected": true
+    },
+    {
+      "stil": "UNC-Path",
+      "input": "asset = @\\\\fileserver\\share\\textures\\foo.png@",
+      "expected": true
+    },
+    {
+      "stil": "File-URI",
+      "input": "asset = @file:///Users/joe/file.png@",
+      "expected": true
+    },
+    {
+      "stil": "Relative-DotSlash",
+      "input": "asset = @./textures/basecolor.png@",
+      "expected": false
+    },
+    {
+      "stil": "Relative-Subfolder",
+      "input": "asset = @hull/textures/basecolor.png@",
+      "expected": false
+    },
+    {
+      "stil": "Relative-Plain",
+      "input": "asset = @textures/basecolor.png@",
+      "expected": false
+    },
+    {
+      "stil": "ParentRelative",
+      "input": "asset = @../shared/foo.png@",
+      "expected": false
+    },
+    {
+      "stil": "Whitespace-vor-Pfad",
+      "input": "asset = @   /Users/joe/file.png@",
+      "expected": true
+    }
+  ]
+}

@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>v0.21 Render-Snapshot</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary:        #F97316;
+    --primary-dark:   #C2410C;
+    --accent:         #0891B2;
+    --accent-dark:    #065F73;
+
+    --text-heading:   #1A1A1A;
+    --text-body:      #555555;
+    --text-desc:      #888888;
+    --text-secondary: #999999;
+    --text-muted:     #AAAAAA;
+    --text-disabled:  #CCCCCC;
+
+    --bg-canvas:      #FFFFFF;
+    --bg-neutral:     #FAFAFA;
+    --bg-primary-tint:#FFF8F4;
+    --bg-accent-tint: #F0FDFE;
+
+    --border-card:    #F0F0F0;
+    --border-inner:   #E5E5E5;
+    --border-primary: #FBD5BC;
+    --border-accent:  #A5F0F9;
+
+    --font: -apple-system, SF Pro Display, Segoe UI, system-ui, sans-serif;
+    --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  }
+
+  body {
+    background: var(--bg-neutral);
+    color: var(--text-heading);
+    font-family: var(--font);
+    font-size: 13px;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── Topbar ── */
+  .topbar {
+    background: var(--bg-canvas);
+    border-bottom: 1px solid var(--border-card);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 52px;
+  }
+  .logo {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text-heading);
+  }
+  .logo span { color: var(--primary); }
+  .logo-accent { color: var(--accent); }
+  .version-badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--bg-primary-tint);
+    color: var(--primary-dark);
+    border: 1px solid var(--border-primary);
+  }
+  .topbar-right {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
+  .topbar-right a { color: var(--accent-dark); text-decoration: none; }
+
+  /* ── Drop Zone ── */
+  #drop-zone {
+    max-width: 560px;
+    margin: 56px auto;
+    background: var(--bg-canvas);
+    border: 2px dashed var(--border-inner);
+    border-radius: 12px;
+    padding: 56px 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  #drop-zone:hover, #drop-zone.drag-over {
+    border-color: var(--primary);
+    background: var(--bg-primary-tint);
+  }
+  .drop-icon { font-size: 44px; margin-bottom: 16px; display: block; }
+  .drop-title { font-size: 17px; font-weight: 700; color: var(--text-heading); margin-bottom: 6px; letter-spacing: -0.01em; }
+  .drop-sub { font-size: 12px; color: var(--text-desc); margin-bottom: 24px; }
+  .btn-primary {
+    display: inline-block;
+    padding: 10px 24px;
+    background: var(--primary-dark);
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: var(--font);
+  }
+  .btn-primary:hover { background: var(--primary); }
+  #file-input { display: none; }
+
+  /* ── Dashboard ── */
+  #dashboard { display: none; padding: 24px; max-width: 840px; margin: 0 auto; }
+
+  .dash-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .file-title { font-size: 20px; font-weight: 700; color: var(--text-heading); letter-spacing: -0.01em; }
+  .file-meta { font-size: 12px; color: var(--text-desc); margin-top: 3px; }
+  .btn-reset {
+    padding: 8px 18px;
+    background: transparent;
+    border: 1px solid var(--border-inner);
+    border-radius: 100px;
+    color: var(--text-body);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: var(--font);
+    font-weight: 700;
+    transition: border-color 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+  .btn-reset:hover { border-color: var(--primary); color: var(--primary-dark); }
+
+  /* ── State Banner ── */
+  .state-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border-left: 4px solid transparent;
+  }
+  .state-banner.signed   { background: var(--bg-accent-tint); border-color: var(--accent); }
+  .state-banner.draft    { background: var(--bg-primary-tint); border-color: var(--primary); }
+  .state-banner.invalid  { background: #FFF0F0; border-color: #DC2626; }
+  .state-banner.no_manifest { background: var(--bg-neutral); border-color: var(--border-inner); }
+  .state-icon { font-size: 22px; flex-shrink: 0; }
+  .state-title { font-size: 14px; font-weight: 700; }
+  .state-banner.signed   .state-title { color: var(--accent-dark); }
+  .state-banner.draft    .state-title { color: var(--primary-dark); }
+  .state-banner.invalid  .state-title { color: #DC2626; }
+  .state-banner.no_manifest .state-title { color: var(--text-body); }
+  .state-sub { font-size: 11px; margin-top: 2px; color: var(--text-desc); }
+
+  /* ── Compat-Hints (Übergangs-Toleranz / unbekannte spec_version) ── */
+  .compat-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-left: 3px solid;
+  }
+  .compat-hint.tolerated {
+    background: var(--bg-neutral);
+    border-color: var(--text-disabled);
+    color: var(--text-body);
+  }
+  .compat-hint.warning {
+    background: #FFFBEB;
+    border-color: #F59E0B;
+    color: #92400E;
+  }
+  .compat-hint .hint-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .compat-hint code {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--bg-canvas);
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border-inner);
+  }
+
+  /* ── Stat Row ── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .stat-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .stat-val { font-size: 22px; font-weight: 700; color: var(--text-heading); }
+  .stat-val.orange { color: var(--primary-dark); }
+  .stat-val.cyan   { color: var(--accent-dark); }
+  .stat-val.green  { color: #166534; }
+  .stat-val.red    { color: #DC2626; }
+  .stat-val.muted  { color: var(--text-disabled); }
+
+  /* ── Section ── */
+  .section { margin-bottom: 20px; }
+  .section-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  /* ── Cards ── */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 10px;
+  }
+  .info-card {
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .info-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--primary);
+    border-radius: 10px 10px 0 0;
+  }
+  .info-card.accent-top::before { background: var(--accent); }
+  .card-title {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    margin-top: 4px;
+  }
+  .kv-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 3px 10px;
+    font-size: 12px;
+    margin-bottom: 5px;
+    align-items: start;
+  }
+  .kv-key { color: var(--text-desc); }
+  .kv-val { color: var(--text-heading); font-family: var(--mono); font-size: 11px; word-break: break-all; }
+  .kv-val.normal { font-family: var(--font); font-size: 12px; }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin: 2px 2px 2px 0;
+    letter-spacing: 0.02em;
+  }
+  .badge-green   { background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; }
+  .badge-red     { background: #FFF0F0; color: #DC2626; border: 1px solid #FECACA; }
+  .badge-orange  { background: var(--bg-primary-tint); color: var(--primary-dark); border: 1px solid var(--border-primary); }
+  .badge-cyan    { background: var(--bg-accent-tint); color: var(--accent-dark); border: 1px solid var(--border-accent); }
+  .badge-neutral { background: var(--bg-neutral); color: var(--text-body); border: 1px solid var(--border-inner); }
+
+  /* ── Inventory Table ── */
+  .inv-wrap {
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .inv-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .inv-table th {
+    text-align: left;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-inner);
+    background: var(--bg-neutral);
+    white-space: nowrap;
+  }
+  .inv-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-card);
+    vertical-align: middle;
+  }
+  .inv-table tr:last-child td { border-bottom: none; }
+  .inv-table tr:hover td { background: var(--bg-neutral); }
+  .inv-table tr.row-structure td { opacity: 0.45; }
+  .path-cell { font-family: var(--mono); font-size: 11px; color: var(--accent-dark); }
+  .hash-cell { font-family: var(--mono); font-size: 10px; color: var(--text-muted); }
+  .size-cell { font-family: var(--mono); font-size: 11px; text-align: right; white-space: nowrap; color: var(--text-body); }
+
+  /* ── Texturen ── */
+  .tex-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .tex-row {
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-card);
+  }
+  .tex-row:last-child { border-bottom: none; }
+  .tex-row:hover { background: var(--bg-neutral); }
+  .tex-thumb {
+    width: 40px; height: 40px;
+    border-radius: 6px;
+    background: var(--bg-neutral);
+    border: 1px solid var(--border-inner);
+    object-fit: cover;
+    display: block;
+  }
+  .tex-thumb.placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: var(--text-muted);
+  }
+  .tex-info { min-width: 0; }
+  .tex-path {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-dark);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .tex-meta {
+    font-size: 10px;
+    color: var(--text-desc);
+    margin-top: 3px;
+    font-family: var(--mono);
+  }
+  .tex-stats {
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-body);
+    white-space: nowrap;
+  }
+  .tex-stats .dim { color: var(--primary-dark); font-weight: 700; }
+  .tex-empty {
+    padding: 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ── USD-Metadaten ── */
+  .meta-card {
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .meta-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 10px 10px 0 0;
+  }
+  .meta-empty {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-style: italic;
+    padding: 4px 0;
+  }
+  .meta-block-title {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    margin-top: 4px;
+  }
+  .meta-text {
+    font-size: 12px;
+    color: var(--text-body);
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: var(--bg-neutral);
+    border: 1px solid var(--border-inner);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    margin-bottom: 12px;
+  }
+  .meta-source {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    margin-top: 2px;
+  }
+
+  /* ── Hash Box ── */
+  .hash-full {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-desc);
+    word-break: break-all;
+    background: var(--bg-neutral);
+    border: 1px solid var(--border-inner);
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-top: 6px;
+  }
+
+  /* ── Lineage ── */
+  .lineage-card {
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    padding: 16px 18px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .lineage-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 10px 10px 0 0;
+  }
+  .lineage-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .lineage-role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .lineage-role-badge.master {
+    background: var(--bg-primary-tint);
+    color: var(--primary-dark);
+    border: 1px solid var(--border-primary);
+  }
+  .lineage-role-badge.derived {
+    background: var(--bg-accent-tint);
+    color: var(--accent-dark);
+    border: 1px solid var(--border-accent);
+  }
+  .lineage-narrative {
+    font-size: 12px;
+    color: var(--text-body);
+    font-style: italic;
+  }
+  .lineage-block {
+    border: 1px solid var(--border-inner);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 10px;
+    background: var(--bg-neutral);
+  }
+  .lineage-block + .lineage-block { margin-top: 8px; }
+  .lineage-block-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .lineage-mid {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-dark);
+    word-break: break-all;
+  }
+  .lineage-mid-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .lineage-meta {
+    font-size: 11px;
+    color: var(--text-desc);
+    margin-top: 4px;
+  }
+  .lineage-paths {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-inner);
+  }
+  .lineage-path-item {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-body);
+    padding: 3px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .lineage-path-item::before {
+    content: '↳';
+    color: var(--text-muted);
+    font-family: var(--font);
+  }
+  .lineage-classifications {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+  }
+  .lineage-empty {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-style: italic;
+    padding: 4px 0;
+  }
+
+  /* ── Provenance ── */
+  .prov-card {
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-card);
+    border-radius: 10px;
+    padding: 16px 18px 12px 18px;
+    position: relative;
+  }
+  .prov-item {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px 0;
+    position: relative;
+  }
+  .prov-item + .prov-item::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: -10px;
+    height: 22px;
+    width: 2px;
+    background: var(--border-inner);
+  }
+  .prov-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    margin-top: 2px;
+  }
+  .prov-dot.sealed  { background: var(--accent); }
+  .prov-dot.merged  { background: var(--primary); }
+  .prov-dot.derived { background: linear-gradient(135deg, var(--primary), var(--accent)); }
+  .prov-dot.other   { background: var(--text-disabled); }
+  .prov-row1 {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .prov-step {
+    font-weight: 700;
+    color: var(--text-heading);
+    font-size: 13px;
+    text-transform: capitalize;
+  }
+  .prov-tool {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent-dark);
+    background: var(--bg-accent-tint);
+    border: 1px solid var(--border-accent);
+    border-radius: 12px;
+    padding: 1px 8px;
+  }
+  .prov-meta {
+    font-size: 11px;
+    color: var(--text-desc);
+    margin-top: 3px;
+  }
+  .prov-notes {
+    font-size: 11px;
+    color: var(--text-body);
+    background: var(--bg-neutral);
+    border: 1px solid var(--border-inner);
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* ── Error ── */
+  .error-box {
+    background: #FFF0F0;
+    border: 1px solid #FECACA;
+    border-left: 4px solid #DC2626;
+    border-radius: 10px;
+    padding: 20px 24px;
+    text-align: center;
+    color: #DC2626;
+    margin: 48px auto;
+    max-width: 480px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 20px 24px;
+    font-size: 11px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-card);
+    margin-top: 32px;
+    background: var(--bg-canvas);
+  }
+  .footer a { color: var(--accent-dark); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+body { padding: 20px; }
+.snapshot-divider { border-top: 1px dashed #ccc; margin: 24px 0; }
+</style>
+</head>
+<body>
+<div style="max-width:840px;margin:0 auto;padding:20px;background:#FFF8F4;border:1px solid #FBD5BC;border-radius:10px;margin-bottom:32px;">
+  <div style="font-weight:700;font-size:15px;">USDseal Inspector v0.21 — Lineage- & Provenance-Snapshot</div>
+  <div style="font-size:12px;color:#555;margin-top:6px;">Rendert die Lineage- und Provenance-Sektionen der beiden DIEGOsat-Manifeste außerhalb des vollen Inspectors. Reine Vorschau — keine USDZ-Verarbeitung.</div>
+</div>
+
+  <div style="max-width: 840px; margin: 0 auto 32px auto; padding: 20px;">
+    <div style="font-size: 11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#888; margin-bottom: 12px;">Snapshot: Master — DIEGOsat_master.usdz</div>
+    <div class="compat-hint tolerated">
+    <span class="hint-icon">ℹ</span>
+    <div>Manifest stammt aus pre-bump CLI v0.2 (<code>spec_version: "0.1"</code> mit <code>lineage</code>-Block). Empfohlen: <code>usdseal migrate</code> ausführen.</div>
+  </div>
+    <div class="section">
+    <div class="section-label">Lineage</div>
+    <div class="lineage-card">
+      <div class="lineage-header">
+        <span class="lineage-role-badge master">⬇ Master</span>
+        <span class="lineage-narrative">Importiert Sub-Assets aus 1 Eltern-Manifest.</span>
+      </div>
+      <div class="lineage-block">
+        <div class="lineage-block-head">
+          <span class="lineage-mid-label">From</span>
+          <span class="lineage-mid">visales-derived-c8c4</span>
+          <span class="badge badge-neutral" title="SHA-256 prefix">569d460ed25656aa…</span>
+        </div>
+        <div class="lineage-meta">
+          01.05.2026 12:50 UTC · viSales GmbH
+           · <strong>3</strong> Pfade
+        </div>
+        <div class="lineage-paths"><div class="lineage-path-item">hull/hull.usda</div><div class="lineage-path-item">hull/textures/basecolor.png</div><div class="lineage-path-item">hull/textures/normal.png</div></div>
+      </div>
+    </div>
+  </div>
+    <div class="section"><div class="section-label">Provenance Chain</div>
+    <div class="prov-card"><div class="prov-item">
+      <div class="prov-dot sealed">✓</div>
+      <div>
+        <div class="prov-row1">
+          <span class="prov-step">sealed</span>
+          <span class="prov-tool">USDseal/0.1.0</span>
+        </div>
+        <div class="prov-meta">viSales GmbH · 01.05.2026 12:50 UTC</div>
+        
+      </div>
+    </div><div class="prov-item">
+      <div class="prov-dot merged">⊕</div>
+      <div>
+        <div class="prov-row1">
+          <span class="prov-step">merged</span>
+          <span class="prov-tool">USDseal/0.1.0</span>
+        </div>
+        <div class="prov-meta">viSales GmbH · 01.05.2026 12:50 UTC</div>
+        <div class="prov-notes">Merged 3 path(s) from visales-derived-c8c4</div>
+      </div>
+    </div><div class="prov-item">
+      <div class="prov-dot sealed">✓</div>
+      <div>
+        <div class="prov-row1">
+          <span class="prov-step">sealed</span>
+          <span class="prov-tool">USDseal/0.1.0</span>
+        </div>
+        <div class="prov-meta">viSales GmbH · 01.05.2026 12:50 UTC</div>
+        
+      </div>
+    </div></div>
+  </div>
+  </div>
+  
+<div class="snapshot-divider"></div>
+
+  <div style="max-width: 840px; margin: 0 auto 32px auto; padding: 20px;">
+    <div style="font-size: 11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#888; margin-bottom: 12px;">Snapshot: Derived — DIEGOsat_master_marketing.usdz</div>
+    <div class="compat-hint tolerated">
+    <span class="hint-icon">ℹ</span>
+    <div>Manifest stammt aus pre-bump CLI v0.2 (<code>spec_version: "0.1"</code> mit <code>lineage</code>-Block). Empfohlen: <code>usdseal migrate</code> ausführen.</div>
+  </div>
+    <div class="section">
+    <div class="section-label">Lineage</div>
+    <div class="lineage-card">
+      <div class="lineage-header">
+        <span class="lineage-role-badge derived">⬆ Derived</span>
+        <span class="lineage-narrative">Tochter-Asset, abgeleitet aus einem Master-Manifest.</span>
+      </div>
+      <div class="lineage-block">
+        <div class="lineage-block-head">
+          <span class="lineage-mid-label">Parent</span>
+          <span class="lineage-mid">visales-2026-05-fc1e</span>
+          <span class="badge badge-neutral" title="SHA-256 prefix">3803f97fda62a375…</span>
+        </div>
+        <div class="lineage-meta">
+          01.05.2026 12:50 UTC · viSales GmbH · USDseal/0.2.0
+        </div>
+        <div style="margin-top:10px;">
+          <span class="lineage-mid-label">Exported Classifications</span>
+          <div class="lineage-classifications"><span class="badge badge-cyan">marketing</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+    <div class="section"><div class="section-label">Provenance Chain</div>
+    <div class="prov-card"><div class="prov-item">
+      <div class="prov-dot derived">↳</div>
+      <div>
+        <div class="prov-row1">
+          <span class="prov-step">derived</span>
+          <span class="prov-tool">USDseal/0.2.0</span>
+        </div>
+        <div class="prov-meta">viSales GmbH · 01.05.2026 12:50 UTC</div>
+        
+      </div>
+    </div><div class="prov-item">
+      <div class="prov-dot sealed">✓</div>
+      <div>
+        <div class="prov-row1">
+          <span class="prov-step">sealed</span>
+          <span class="prov-tool">USDseal/0.1.0</span>
+        </div>
+        <div class="prov-meta">viSales GmbH · 01.05.2026 12:50 UTC</div>
+        
+      </div>
+    </div></div>
+  </div>
+  </div>
+  
+</body>
+</html>
