@@ -5,7 +5,7 @@
 **Ziel:** Inspector wird zur **Diagnose-Ampel** für AR-Quick-Look-Kompatibilität. USDZ rein → grün/orange/rot mit Klartext-Erklärungen pro Fail. Keine Black-Box-Fehlermeldung mehr.
 **Aufwand:** 3–5 Tage konzentrierter Build.
 
-> Detail-Briefing der v0.21-Sequenz. Master-Übersicht in `ROADMAP.md`. Vorgänger: `ROADMAP-v0.21.md`. Nachfolger-Patch v0.22.2 (Re-Import-Detection) — siehe `ROADMAP-v0.22.2.md`.
+> Detail-Briefing der v0.21-Sequenz. Master-Übersicht in `../ROADMAP.md`. Vorgänger: `ROADMAP-v0.21.md`. Nachfolger-Patch v0.22.2 (Re-Import-Detection) — siehe `ROADMAP-v0.22.2.md`.
 
 ---
 
@@ -216,7 +216,7 @@ Ton: B2B-sachlich, kein Tech-Jargon ohne Übersetzung. Beispiel:
 ## 9. Quellen / Referenz-Links
 
 ### Interne Dokumente
-- Master-Roadmap: `ROADMAP.md`
+- Master-Roadmap: `../ROADMAP.md`
 - Vorgänger-Detail: `ROADMAP-v0.21.md`
 - Nachfolger-Patch: `ROADMAP-v0.22.2.md` (Re-Import-Detection)
 - Compat-Matrix: `COMPATIBILITY.md`

@@ -1,13 +1,13 @@
 # Roadmap v0.22.2 — Re-Import-Detection (Patch)
 
-**Status:** Vorbereitungs-Dokument · 2026-05-02 (umbenannt von `v0.225` für semver-Konformität)
-**Scope-Cut durch Plan-Chat-ADR-PC3 (2026-05-02):** Multi-Drop verschoben nach v0.22.3. Übergangs-Toleranz-Abräumen konditional an CLI-SP-11.
+**Status:** ✅ COMPLETED · released 2026-05-02 (Tag `v0.22.2` online auf GitHub)
 **Story-Slot:** *"Sieht jetzt auch die Schleifen"* — Patch-Release
-**Ziel:** Re-Import-Zyklen sichtbar machen — der ↻-Marker, der in v0.21 bewusst draußen blieb.
-**Aufwand:** 1–1.5 Tage konzentrierter Build (gekürzt durch Scope-Cut).
+**Ziel (erfüllt):** Re-Import-Zyklen sichtbar — der ↻-Marker via localStorage-Cache.
+**Verifikation:** Demo-Sequenz ↻-Card grün, Cache-Clear grün, Headless-Pool 7/7 PASS.
+**Geliefert mit Plan-Chat-Cuts (ADR-PC3):** Multi-Drop verschoben nach v0.22.3, Übergangs-Toleranz-Abräumen pending CLI-SP-11.
 
 > Patch nach v0.22.1 (Polish & Polyglot, ✅ done mit Headless-Pool 7/7).
-> Schließt eine v0.21-Lücke. Master-Übersicht in `ROADMAP.md`.
+> Schließt eine v0.21-Lücke. Master-Übersicht in `../ROADMAP.md`.
 
 ---
 
@@ -197,7 +197,7 @@ Drei Optionen:
 ## 9. Quellen / Referenz-Links
 
 ### Interne Dokumente
-- Master-Roadmap: `ROADMAP.md`
+- Master-Roadmap: `../ROADMAP.md`
 - Vorgänger-Briefings: `ROADMAP-v0.21.md` (Lineage), `ROADMAP-v0.22.md` (AR-Quick-Look), `ROADMAP-v0.22.1.md` (Polish & Polyglot)
 - Nachfolger: `ROADMAP-v0.23.md` (PDF-Audit-Report) — folgt
 - Compat-Matrix: `COMPATIBILITY.md`

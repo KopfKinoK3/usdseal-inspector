@@ -104,7 +104,7 @@ Komplexere Beziehungen als gerichteter Graph. Overkill für 1:N-Fall in v0.21.
 | **5.2 Provenance-Timeline**                  | 0.5–1 Tag   | Chronologische Liste der `provenance_chain[]`-Einträge. Tool-Version-Pille, Timestamp, optional `notes`. |
 | **5.3 Compatibility-Check**                  | 0.5 Tag     | `spec_version`-Lesen, Whitelist-Vergleich, Hint-Banner bei Mismatch. |
 | **5.4 `COMPATIBILITY.md` schreiben**         | 0.5 Tag     | Tabelle Inspector-Version ↔ unterstützte `spec_version`-Range. README-Cross-Link. |
-| **5.5 README + CHANGELOG Update**            | 0.5 Tag     | Roadmap-Sektion erweitern (Cross-Link auf `ROADMAP.md`). CHANGELOG-Eintrag für v0.21. |
+| **5.5 README + CHANGELOG Update**            | 0.5 Tag     | Roadmap-Sektion erweitern (Cross-Link auf `../ROADMAP.md`). CHANGELOG-Eintrag für v0.21. |
 | **5.6 Test gegen DIEGOsat-Asset**            | 0.5 Tag     | Manifeste in den Inspector ziehen, alle drei Modi (Master, Tochter, Re-Import-Zyklus) durchgespielt. Edge-Case-Screenshots für PR-Beschreibung. |
 | **5.7 Git-Tag v0.21 + GitHub-Release**       | 0.25 Tag    | Tag setzen, Release-Notes aus CHANGELOG, GitHub-Pages-Deploy verifizieren. |
 
@@ -209,7 +209,7 @@ Im Inspector-README-Roadmap-Block: kurzen Hinweis, dass v0.21 in Arbeit ist mit 
 ## 9. Quellen / Referenz-Links
 
 ### Interne Dokumente
-- Master-Roadmap: `ROADMAP.md`
+- Master-Roadmap: `../ROADMAP.md`
 - CLI Tech-Spec v0.1 (privat): `../USDseal-Tech-Spec-v0.1.md`
 - Manifest-Schema (privat): `../usdseal-manifest-schema-v0.1.json`
 - Test-Assets: `../usdz/DIEGOsat_master.usdz`, `../usdz/DIEGOsat_master_marketing.usdz`

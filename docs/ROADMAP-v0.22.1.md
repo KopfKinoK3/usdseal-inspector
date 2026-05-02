@@ -6,7 +6,7 @@
 **Aufwand:** 2–4 Tage konzentrierter Build.
 
 > Punkt-Release zwischen v0.22 und v0.23. Detail-Briefings nach Bedarf.
-> Master-Übersicht in `ROADMAP.md`.
+> Master-Übersicht in `../ROADMAP.md`.
 
 ---
 
@@ -203,7 +203,7 @@ Großes USDZ-Beispiel (50+ MB, 30+ Members) für Worker-Pool-Performance-Test. K
 ## 9. Quellen / Referenz-Links
 
 ### Interne Dokumente
-- Master-Roadmap: `ROADMAP.md`
+- Master-Roadmap: `../ROADMAP.md`
 - v0.21-Briefing (historisch): `ROADMAP-v0.21.md`
 
 ### Externe Specs

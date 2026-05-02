@@ -2,13 +2,13 @@
 
 **Repo:** [github.com/KopfKinoK3/usdseal-inspector](https://github.com/KopfKinoK3/usdseal-inspector)
 **Live:** [kopfkinok3.github.io/usdseal-inspector](https://kopfkinok3.github.io/usdseal-inspector/)
-**Aktueller Stand:** v0.22 (Lineage + AR-Quick-Look-Validator + Bugfixes)
+**Aktueller Stand:** v0.22.2 (Re-Import-↻-Detection via localStorage-Cache, released 2026-05-02)
 **Maintainer:** viSales GmbH (Mitglied Alliance for OpenUSD)
 **Lizenz:** Apache 2.0
 **Stand dieses Dokuments:** 2026-05-01
 
 > Übergeordnete Roadmap. Detail-Briefings pro Release liegen als
-> `ROADMAP-v0.21.md`, `ROADMAP-v0.22.md` etc. daneben.
+> `docs/ROADMAP-v0.21.md`, `docs/ROADMAP-v0.22.md` etc.
 
 ---
 
@@ -85,8 +85,9 @@ Jedes Release hat einen **eigenen Talk-Slide**. Drei strategische Story-Punkte v
 |---|---|---|---|
 | ~~**v0.21**~~ | ~~*Sieht jetzt, was die CLI baut*~~ | Lineage-Panel, Provenance-Timeline, spec_version-Compat | ✅ ausgeliefert gebündelt mit v0.22 (2026-05-01) |
 | **v0.22** | *Warum streikt AR Quick Look?* — **USP** | AR-Quick-Look-Validator + alle v0.21-Inhalte + ADR-6 Validator-Suppression + X-1/W-1 Bugfixes | ✅ released 2026-05-01 |
-| **v0.22.1** | *Polish & Polyglot* | EN-Translation-Pfad, W-3 (TEXTURE_PATH_ABSOLUTE Regex), W-4 (TEXTURE_NOT_IN_USDZ Toleranz), W-5/W-6 (Parallel-Hashing + Loading-Indicator) | 🔜 nächster Sprint |
-| **v0.22.2** | *Sieht jetzt auch die Schleifen* | Re-Import-↻-Detection via localStorage-Cache, Multi-File-Drop, Übergangs-Toleranz aus v0.21 abräumen | geplant, 1.5–2.5 Tage (umbenannt von `v0.225`, Briefing in `ROADMAP-v0.22.2.md`) |
+| **v0.22.1** | *Polish & Polyglot* | EN-Translation-Pfad, W-3/W-4-Fixes, Worker-Pool, Sortier-Refinement | ✅ released 2026-05-02 |
+| **v0.22.2** | *Sieht jetzt auch die Schleifen* | Re-Import-↻-Detection via localStorage-Cache (Multi-Drop nach v0.22.3, Toleranz pending CLI-SP-11) | ✅ released 2026-05-02, Tag online |
+| **v0.22.3** | *Multi-File-Drop* | Mehrere USDZs gleichzeitig droppen, gestaffelte Mini-Dashboards, Cross-Reference-Linien | geplant (verschoben aus v0.22.2 via ADR-PC3) |
 | **v0.23** | *Audit-Report für B2B* | PDF-Report via jsPDF (Hash-Integrität + Disclaimer für Crypto-Verify) | geplant, 2–3 Tage |
 | **v0.24** | *Klick & sieh* | Thumbnail-Vollbild-Modal, Texturen-Channel-Erkennung (Diffuse/Normal/Roughness/...) | geplant, 2 Tage |
 | **v0.25** | *Was ist das Modell?* | Geometrie-Kennzahlen (Polycount, BBox, Mesh/Prim/Material/Joint-Count) + 3D-Preview via `<model-viewer>` | geplant, 2–3 Tage |
@@ -173,7 +174,7 @@ Inspector folgt der **CLI-Schema-Disziplin** (CLI-ADR §11.14, accepted 2026-05-
 - **Forward-Compat:** Inspector zeigt bei unbekannter `spec_version` einen gelben Hint, render-best-effort, **keine** Render-Crashes (anders als CLI, die `verify` bei unbekannter Version verweigert — Inspector ist Read-Only-Tool und darf weicher reagieren).
 - **Übergangs-Toleranz** für pre-bump-Bestandsmanifeste fällt schritteweise raus, sobald CLI-Migrate-Welle (CLI-SP-11) durch ist.
 
-Detaillierte Regeln pro Sprint im jeweiligen `ROADMAP-v0.XX.md`.
+Detaillierte Regeln pro Sprint im jeweiligen `docs/ROADMAP-v0.XX.md`.
 
 ---
 
@@ -188,7 +189,7 @@ Detaillierte Regeln pro Sprint im jeweiligen `ROADMAP-v0.XX.md`.
 
 ## 9. Detail-Briefings pro Release
 
-Jeder Sprint bekommt eine eigene Datei `ROADMAP-v0.XX.md` mit:
+Jeder Sprint bekommt eine eigene Datei `docs/ROADMAP-v0.XX.md` mit:
 - Scope (was inhaltlich rein muss)
 - Externe Quellen (Libraries, Specs)
 - Architektur-Optionen für diesen Sprint
@@ -198,7 +199,10 @@ Jeder Sprint bekommt eine eigene Datei `ROADMAP-v0.XX.md` mit:
 - Decision-Log-Template
 
 Aktuell vorhanden:
-- `ROADMAP-v0.21.md` — Lineage Visibility (in Vorbereitung).
+- `docs/ROADMAP-v0.21.md` — Lineage Visibility (✅ released gebündelt mit v0.22)
+- `docs/ROADMAP-v0.22.md` — AR-Quick-Look-Validator (✅ released)
+- `docs/ROADMAP-v0.22.1.md` — Polish & Polyglot (✅ released)
+- `docs/ROADMAP-v0.22.2.md` — Re-Import-Detection (✅ released)
 
 Folge-Briefings werden geschrieben, sobald der jeweilige Sprint startet. Vorlauf: ~1 Tag Briefing-Zeit vor Build-Start reicht.
 

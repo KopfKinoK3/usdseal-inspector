@@ -100,7 +100,7 @@ Download `index.html` and open it locally. No web server needed.
 - **v0.29** — MCP server wrapper (`usdseal-inspector-mcp`, separate repo) — makes any USDZ inspection AI-agent-callable
 - **v0.3** — Ed25519 cryptographic signature verification via WebCrypto API, batch analysis, CSV export
 
-The full roadmap lives in [ROADMAP.md](ROADMAP.md). Compatibility matrix: [COMPATIBILITY.md](COMPATIBILITY.md). AR Quick Look rule catalog: [AR-QL-RULES.md](AR-QL-RULES.md).
+The full roadmap lives in [ROADMAP.md](ROADMAP.md). Compatibility matrix: [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md). AR Quick Look rule catalog: [docs/AR-QL-RULES.md](docs/AR-QL-RULES.md). Per-sprint briefings under [docs/](docs/).
 
 ---
 
