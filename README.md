@@ -84,11 +84,11 @@ Download `index.html` and open it locally. No web server needed.
 - **v0.22** *(2026-05-02)* — AR Quick Look traffic-light validator (20 rules, DE/EN), Lineage panel (Master/Derived), Provenance timeline, spec-version compatibility
 - **v0.22.1** *(2026-05-02)* — Full EN translation, regex hardening, parallel hashing via Web Workers, loading indicator, finding-sort refinement
 - **v0.22.2** *(2026-05-02)* — Re-import ↻ detection via localStorage cross-manifest cache
+- **v0.23** *(2026-05-03)* — PDF Audit Report: client-side A4 PDF export via jsPDF — Cover, Trust-Status, Asset Inventory, AR Quick Look Findings, Provenance + Lineage, Disclaimer
 
 **Plan**
 
 - **v0.22.3** — Optional multi-file drop (visualize cross-manifest relationships in one view)
-- **v0.23** — PDF audit report (jsPDF): hash integrity + AR Quick Look findings + compliance disclaimer
 - **v0.24** — Texture detail view: full-size modal, channel detection (Diffuse / Normal / Roughness / …)
 - **v0.25** — Geometry stats (polycount, bounding box, mesh / material / joint count) + 3D preview via `<model-viewer>`
 - **v0.26** — Composition explorer: layer stack, references, payloads and variants as a tree

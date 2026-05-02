@@ -88,7 +88,7 @@ Jedes Release hat einen **eigenen Talk-Slide**. Drei strategische Story-Punkte v
 | **v0.22.1** | *Polish & Polyglot* | EN-Translation-Pfad, W-3/W-4-Fixes, Worker-Pool, Sortier-Refinement | ✅ released 2026-05-02 |
 | **v0.22.2** | *Sieht jetzt auch die Schleifen* | Re-Import-↻-Detection via localStorage-Cache (Multi-Drop nach v0.22.3, Toleranz pending CLI-SP-11) | ✅ released 2026-05-02, Tag online |
 | **v0.22.3** | *Multi-File-Drop* | Mehrere USDZs gleichzeitig droppen, gestaffelte Mini-Dashboards, Cross-Reference-Linien | geplant (verschoben aus v0.22.2 via ADR-PC3) |
-| **v0.23** | *Audit-Report für B2B* | PDF-Report via jsPDF (Hash-Integrität + Disclaimer für Crypto-Verify) | geplant, 2–3 Tage |
+| **v0.23** | *Audit-Report für B2B* | PDF-Report via jsPDF (Hash-Integrität + Disclaimer für Crypto-Verify) | 🔜 nächster Sprint, 2–3 Tage, Briefing in `docs/ROADMAP-v0.23.md` |
 | **v0.24** | *Klick & sieh* | Thumbnail-Vollbild-Modal, Texturen-Channel-Erkennung (Diffuse/Normal/Roughness/...) | geplant, 2 Tage |
 | **v0.25** | *Was ist das Modell?* | Geometrie-Kennzahlen (Polycount, BBox, Mesh/Prim/Material/Joint-Count) + 3D-Preview via `<model-viewer>` | geplant, 2–3 Tage |
 | **v0.26** | *Komposition entwirrt* | Layer-Stack, References, Payloads, Variants als Baum | geplant, 2–3 Tage |
@@ -203,6 +203,7 @@ Aktuell vorhanden:
 - `docs/ROADMAP-v0.22.md` — AR-Quick-Look-Validator (✅ released)
 - `docs/ROADMAP-v0.22.1.md` — Polish & Polyglot (✅ released)
 - `docs/ROADMAP-v0.22.2.md` — Re-Import-Detection (✅ released)
+- `docs/ROADMAP-v0.23.md` — PDF Audit Report (🔜 nächster Sprint)
 
 Folge-Briefings werden geschrieben, sobald der jeweilige Sprint startet. Vorlauf: ~1 Tag Briefing-Zeit vor Build-Start reicht.
 

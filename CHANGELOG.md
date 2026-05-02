@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.23] — 2026-05-03
+
+### Added
+- **PDF Audit Report** — Button *"PDF Report ↓"* in der Topbar (erscheint nach USDZ-Load). Generiert clientseitig ein strukturiertes A4-PDF ohne Server-Roundtrip. Dateiname-Pattern: `{usdz-name}-inspector-report-{YYYYMMDD}.pdf`.
+- **Cover + Datei-Identität** — Titel, Dateiname, SHA-256-Prefix, Dateigröße (komprimiert + unkomprimiert), Manifest-ID, Generierungs-Zeitstempel, Inspector-Version.
+- **Trust-Status-Banner im PDF** — farbiger Roundrect-Block (grün/orange/rot/grau) analog zum UI-Banner, mit Klartext-Erklärung und Mini-Stats-Zeile (Tracked / Mismatch / Extra / Missing / Structure).
+- **Asset-Inventory-Tabelle** — manuell via `jsPDF.text()/line()` gerendert (Option A / ADR-12). Spalten: Dateiname, Größe, SHA-256-Prefix (8 Zeichen), Status. Mismatch- und Missing-Zeilen rot hinterlegt. Lange Pfade werden front-truncated (`...suffix`).
+- **AR Quick Look Findings** — sortiert nach Severity → Category → ID (ADR-10). Pro Finding: Severity-Badge (farbig), Regel-ID, Kategorie, Klartext-Erklärung, Fix-Hinweis. Leerer Befund erscheint als kompakte Inline-Notiz.
+- **Provenance-Timeline** — konditionell (nur wenn Manifest vorhanden). Chronologische Step-Liste mit Tool-Pille, Actor, Timestamp, Notes.
+- **Lineage-Karte** — konditionell. Master-Modus: `import_history[]`-Einträge. Derived-Modus: `parent_manifest_id`, SHA-256, Exporter-Meta, Classifications.
+- **Disclaimer-Block** (ADR-13) — immer am Ende jedes Reports. DE: *"Hash-Integrität gegen Manifest verifiziert. Kryptographische Signatur-Authentizität: nicht geprüft -- geplant für Inspector v0.3."* EN analog. Kein Apache-2.0-Verweis im Disclaimer.
+- **Footer pro Seite** — `USDseal Inspector v0.23 | {filename} | Page X of Y` (Post-Pass via `doc.setPage()`).
+- **Sprach-Switch** — PDF folgt UI-Sprache (DE/EN-Toggle).
+- **Safari-Fix** — Safari blockiert `a.click()` auf Blob-URLs nach synchroner Berechnung (Gesture-Timeout). Fallback: `doc.output('dataurlnewwindow')` öffnet PDF im neuen Tab, User speichert via Cmd+S.
+- **Fließendes Layout** — keine erzwungenen Seitenumbrüche zwischen Sektionen. `chk(n)` prüft vor jedem Block ob Platz reicht, `np()` nur bei echtem Überlauf. Ergebnis: 1–2 Seiten statt 4 für typische USDZ-Files.
+
+### Architecture
+- **ADR-11** (jsPDF 3.0.3, 2026-05-03): jsPDF (MIT, ~130 KB, CDN `cdnjs.cloudflare.com`) als zweite externe Dep nach JSZip. 100% client-side. Kein Server-Roundtrip. Single-File-Versprechen bleibt — jsPDF via CDN-Script-Tag.
+- **ADR-12** (Tabellen-Strategie: pures `jsPDF.text()/line()`, 2026-05-03): keine AutoTable-Plugin-Dep. Manuelle Spalten mit Farbcoding. Volle Kontrolle über Severity-Markierungen.
+- **ADR-13** (Disclaimer-Pflicht in jedem PDF, 2026-05-03): Bis v0.3 verifiziert Inspector nur Hash-Integrität, nicht Signatur-Authentizität. Disclaimer transparent und zwingend in jedem Report.
+- **ADR-14** (kein SVG-Logo-Cover in v0.23, 2026-05-03): Deferred auf v0.24. jsPDF SVG-Embed erfordert zusätzliche Evaluierung — nicht blockend für v0.23.
+
+### Notes
+- Bundle-Größe: ~100 KB (jsPDF kommt via CDN, nicht in den inline-Bundle).
+- Umlaut-Rendering: jsPDF Helvetica (WinAnsi-Encoding) unterstützt alle Latin-1-Zeichen — ä, ö, ü, ß werden korrekt dargestellt.
+- Headless-Pool-Test 7/7 PASS unverändert (PDF-Generierung ist Browser-only).
+
+---
+
 ## [0.22.2] — 2026-05-02
 
 ### Added
