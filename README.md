@@ -18,7 +18,7 @@ You don't need USDseal to use this tool. Drop **any** USDZ file in and the Inspe
 | **State detection** | SIGNED / DRAFT / INVALID / NO_MANIFEST as a colored banner |
 | **USD metadata** | `defaultPrim`, `upAxis`, `metersPerUnit`, custom layer data |
 | **Asset inventory** | Filenames, sizes, SHA-256 — see exactly what's inside the ZIP |
-| **Texture analysis** | PNG / JPEG / WebP — dimensions, format, live thumbnails. Click any thumbnail for full-size modal with download. PBR channel badges (Diffuse / Normal / Roughness / Metallic / Emissive / Occlusion / Opacity / Displacement / Subsurface / Clearcoat + unknown fallback) *(v0.24)* |
+| **Texture analysis** | PNG / JPEG / WebP — dimensions, format, live thumbnails. Click any thumbnail for full-size modal with download. PBR channel badges (Diffuse / Normal / Roughness / Metallic / Emissive / Occlusion / Opacity / Displacement / Subsurface / Clearcoat). Status-aware: `used` (channel badge), `unused` (yellow-gray, orphaned in ZIP), `unknown` (red-gray, alias gap) *(v0.24 / v0.24.1)* |
 | **Parallel hashing** | Web Workers + loading indicator for large USDZ (50+ MB) *(v0.22.1)* |
 | **DE / EN** | Full bilingual UI — Browser locale by default, persisted in localStorage *(v0.22.1)* |
 
@@ -86,11 +86,9 @@ Download `index.html` and open it locally. No web server needed.
 - **v0.22.2** *(2026-05-02)* — Re-import ↻ detection via localStorage cross-manifest cache
 - **v0.23** *(2026-05-03)* — PDF Audit Report: client-side A4 PDF export via jsPDF — Cover, Trust-Status, Asset Inventory, AR Quick Look Findings, Provenance + Lineage, Disclaimer
 - **v0.24** *(2026-05-03)* — UX polish: full-size texture modal (`<dialog>`) + PBR channel detection (10 channels + unknown fallback via `inputs:*.connect` USDA parsing)
+- **v0.24.1** *(2026-05-03)* — Multi-file drop (stacked mini-dashboards, session-based ↻-cards) + texture status refinement (used / unused / orphaned / unknown) + test-asset sync (new manifest_ids, Normal channel verified)
 
 **Plan**
-
-- **v0.24.1** — Optional multi-file drop (visualize cross-manifest relationships across multiple USDZ files in one view)
-- **v0.24.1** — Optional multi-file drop (visualize cross-manifest relationships across multiple USDZ files in one view)
 - **v0.25** — Geometry stats (polycount, bounding box, mesh / material / joint count) + 3D preview via `<model-viewer>`
 - **v0.26** — Composition explorer: layer stack, references, payloads and variants as a tree
 - **v0.27** — Diff view on hash mismatch: byte delta, texture resolution delta — **last pure single-file release**

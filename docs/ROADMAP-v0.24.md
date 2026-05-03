@@ -1,11 +1,15 @@
 # Roadmap v0.24 — UX Polish: Texture Modal & Channel Detection
 
-**Status:** Vorbereitungs-Dokument · 2026-05-03
+**Status:** ✅ COMPLETED · released 2026-05-03 (Tag `v0.24` online auf GitHub, Commit `03e9cd48`)
 **Story-Slot:** *"Klick & sieh"* — Texture-UX-Welle
-**Ziel:** Texturen werden interaktiv (Vollbild-Modal) und semantisch eingeordnet (Channel-Erkennung). Inspector wird dadurch nicht nur USDZ-Validator, sondern auch **Material-Inspektor** für Designer und Material-Reviewer.
-**Aufwand:** 1.5–2 Tage konzentrierter Build.
+**Ziel (erfüllt):** Texturen sind interaktiv (Vollbild-Modal mit Download-Button) und semantisch eingeordnet (10 PBR-Channels + Fallback).
+**Verifikation:** DIEGOsat_master.usdz im Browser-Test → 3× Diffuse-Badge + 1× unknown-Fallback (normal.png ohne Material-Binding — Real-World-Befund, korrekt erkannt). Headless-Pool 7/7 PASS bleibt.
+**Geliefert mit:** ADR-15 (`<dialog>`-Element), ADR-16 (USDA-Parser-Erweiterung), ADR-17 (Channel-Aliases mit Fallback). Plus IIFE-Bug im initTexModal gefangen via Browser-Test (ADR-PC4 hat gehalten) — fix mit DOMContentLoaded-Wrapper.
 
-> Erster UX-Polish-Sprint nach den drei Architektur-/Story-Releases (v0.22, v0.22.1/v0.22.2, v0.23). Master-Übersicht in `../ROADMAP.md`.
+**Befund für Folgesprints:**
+- DIEGOsat_master.usdz hat `hull/textures/normal.png` als orphaned Texture (kein Material referenziert sie). Inspector hat das korrekt als "unknown" gerendert.
+- v0.24.1 nimmt Mini-Add-On mit: Differenzierung "unused texture" (im ZIP, nicht referenziert) vs. "unknown channel" (Alias unbekannt).
+- CLI-Plan-Chat-Hinweis: Test-Asset könnte um `inputs:normal.connect` im hull.usda erweitert werden, damit Normal-Channel-Badge im Test angezeigt wird.
 
 ---
 

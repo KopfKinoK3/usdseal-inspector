@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.24.1] — 2026-05-03
+
+### Added
+- **Multi-File-Drop** — Mehrere USDZs gleichzeitig in die Drop-Zone ziehen (oder per File-Picker auswählen). Inspector zeigt gestapelte Mini-Dashboards vertikal: je File Trust-Banner, Manifest-ID und kompakte Texture-Liste mit Channel-Badges. Drop-Zone-Subtitle aktualisiert auf "mehrere USDZs gleichzeitig möglich".
+- **Cross-Reference-↻-Cards im Multi-Drop** — Direkte Session-Erkennung ohne Cache-Lookup: wenn ein Derived-Manifest `parent_manifest_id` auf ein anderes Manifest im selben Drop zeigt, erscheint eine ↻-Card oberhalb der Mini-Dashboards. Test: DIEGOsat_master + DIEGOsat_master_marketing → Cross-Reference erkannt.
+- **Texture-Status-Refinement** — Drei semantisch saubere Kategorien statt globalem "unknown"-Fallback:
+  - `used` — Channel-Badge (Diffuse/Normal/…) wie bisher
+  - `unused` (gelb-grau, Hint-Style) — Texture liegt im ZIP, wird von keinem Material referenziert. Tooltip: "Texture orphaned".
+  - `unknown` (rot-grau, Bug-Style) — Texture ist via `inputs:*.connect` verbunden, aber Input-Alias nicht in `CHANNEL_ALIASES`. Echtfehler im Inspector → Alias-Lücke. Tooltip sagt es klar.
+- **Test-Asset-Sync** — Headless-Pool und Browser gegen neue DIEGOsat-Files (CLI-Plan-Chat Cross-Sync 2026-05-03). Neue manifest_ids: `visales-2026-05-bbeb` (Master), `visales-derived-f555` (Marketing-Tochter). `hull.usda` hat jetzt `normal3f inputs:normal.connect → NormalTex`.
+
+### Fixed
+- `INSPECTOR_VERSION` war auf `'0.23'` eingefroren — jetzt `'0.24.1'` (war v0.24-Slip, wo die Version-Badge bereits auf `v0.24` gesetzt war, aber die JS-Konstante nicht).
+
+### Architecture
+- **ADR-18** (Multi-Drop-Layout: gestapelt vertikal, 2026-05-03): Konsistent mit ADR-3 aus v0.22.2. Side-by-Side auf v0.25/v0.26 verschoben.
+- **ADR-19** (Texture-Status: drei Kategorien used/unused/unknown, 2026-05-03): `buildChannelMap` gibt jetzt `{channelMap, unknownMap}` zurück. `renderTexturesSection` und `render` akzeptieren `channelInfo`-Objekt. Backwards-kompatibel via instanceof-Guard.
+- **Phase 5.4 (Channel-Parser-Type-Erweiterung) entfallen**: Verifikation (Phase 5.0) ergab, dass `normal3f inputs:normal.connect` bereits korrekt erkannt wird — der Connect-Regex matcht type-agnostisch auf `inputs:(\w+)\.connect`. Kein ADR-20.
+
+### Notes
+- Multi-Drop nutzt localStorage-Cache aus v0.22.2 (Cache-Key `usdseal-inspector.cache.v1`): jede geladene Datei wird gecacht. Die ↻-Cross-Reference-Card im Multi-Drop läuft jedoch direkt über Session-Vergleich, nicht über Cache.
+- Headless-Pool-Test 7/7 PASS (Multi-Drop und Texture-Status sind Browser-only, kein Headless-Pfad betroffen).
+
+---
+
 ## [0.24] — 2026-05-03
 
 ### Added
