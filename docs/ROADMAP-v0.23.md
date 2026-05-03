@@ -1,11 +1,10 @@
 # Roadmap v0.23 — PDF Audit Report
 
-**Status:** Vorbereitungs-Dokument · 2026-05-02
+**Status:** ✅ COMPLETED · released 2026-05-02 (Tag `v0.23` online auf GitHub, Commit `c3f16cf`)
 **Story-Slot:** *"Audit-Report für B2B"* — der erste persistierbare Output
-**Ziel:** Inspector kann seinen kompletten Befund (State, Manifest, Asset-Inventory, AR-Quick-Look-Findings, Provenance, Lineage) als strukturiertes PDF exportieren — bereit für Compliance-Auditing, Konferenz-Demos und Kunde-an-Lieferant-Verifikation.
-**Aufwand:** 2–3 Tage konzentrierter Build.
-
-> Erster Story-Release nach den drei v0.22.x-Patches. Master-Übersicht in `../ROADMAP.md`.
+**Ziel (erfüllt):** Inspector exportiert kompletten Befund (State, Manifest, Asset-Inventory, AR-Quick-Look-Findings, Provenance, Lineage) als strukturiertes A4-PDF.
+**Verifikation:** Erste Iteration hatte Page-Break-Verschwendung (4 Seiten für DIEGOsat_master), nach Layout-Fix-Pass: zivilisiertes fließendes Rendering. Plus Safari-Fix und Umlaut-Behandlung dokumentiert in CHANGELOG.
+**Geliefert mit:** ADR-11 bis ADR-14 (jsPDF 3.0.3, Tabellen-Strategie Option A, Disclaimer ohne Apache-Hinweis, SVG-Logo-Cover verschoben nach v0.24).
 
 ---
 

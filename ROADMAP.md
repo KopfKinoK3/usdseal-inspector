@@ -2,7 +2,7 @@
 
 **Repo:** [github.com/KopfKinoK3/usdseal-inspector](https://github.com/KopfKinoK3/usdseal-inspector)
 **Live:** [kopfkinok3.github.io/usdseal-inspector](https://kopfkinok3.github.io/usdseal-inspector/)
-**Aktueller Stand:** v0.22.2 (Re-Import-↻-Detection via localStorage-Cache, released 2026-05-02)
+**Aktueller Stand:** v0.23 (PDF Audit Report via jsPDF, released 2026-05-02)
 **Maintainer:** viSales GmbH (Mitglied Alliance for OpenUSD)
 **Lizenz:** Apache 2.0
 **Stand dieses Dokuments:** 2026-05-01
@@ -88,12 +88,13 @@ Jedes Release hat einen **eigenen Talk-Slide**. Drei strategische Story-Punkte v
 | **v0.22.1** | *Polish & Polyglot* | EN-Translation-Pfad, W-3/W-4-Fixes, Worker-Pool, Sortier-Refinement | ✅ released 2026-05-02 |
 | **v0.22.2** | *Sieht jetzt auch die Schleifen* | Re-Import-↻-Detection via localStorage-Cache (Multi-Drop nach v0.22.3, Toleranz pending CLI-SP-11) | ✅ released 2026-05-02, Tag online |
 | **v0.22.3** | *Multi-File-Drop* | Mehrere USDZs gleichzeitig droppen, gestaffelte Mini-Dashboards, Cross-Reference-Linien | geplant (verschoben aus v0.22.2 via ADR-PC3) |
-| **v0.23** | *Audit-Report für B2B* | PDF-Report via jsPDF (Hash-Integrität + Disclaimer für Crypto-Verify) | 🔜 nächster Sprint, 2–3 Tage, Briefing in `docs/ROADMAP-v0.23.md` |
-| **v0.24** | *Klick & sieh* | Thumbnail-Vollbild-Modal, Texturen-Channel-Erkennung (Diffuse/Normal/Roughness/...) | geplant, 2 Tage |
+| **v0.23** | *Audit-Report für B2B* | PDF-Report via jsPDF + Layout-Fix + Safari-Fix + ADR-11-14 | ✅ released 2026-05-02, Tag online (Commit `c3f16cf`) |
+| **v0.24** | *Klick & sieh* | Thumbnail-Vollbild-Modal + Texturen-Channel-Erkennung (10 PBR-Channels: Diffuse/Normal/Roughness/Metallic/Emissive/Occlusion/Opacity/Displacement/Subsurface/Clearcoat + Fallback) | 🔜 nächster Sprint, ~2 Tage, Briefing in `docs/ROADMAP-v0.24.md` |
+| **v0.24.1** | *Multi-Asset im Blick* | Multi-File-Drop (Cross-Manifest-Visualisierung, ursprünglich als v0.22.3 geplant). Patch nach v0.24, vor v0.25. | geplant, 1.5 Tage |
 | **v0.25** | *Was ist das Modell?* | Geometrie-Kennzahlen (Polycount, BBox, Mesh/Prim/Material/Joint-Count) + 3D-Preview via `<model-viewer>` | geplant, 2–3 Tage |
 | **v0.26** | *Komposition entwirrt* | Layer-Stack, References, Payloads, Variants als Baum | geplant, 2–3 Tage |
-| **v0.27** | *Beweise, was sich geändert hat* | Diff-View bei Hash-Mismatch (Bytes / Texturen-Auflösung) | geplant, 1–2 Tage |
-| **v0.28** | *Trag den Inspector überall hin* | Web Component (`<usdseal-inspector>`), QR-Code-Konferenz-Pack | geplant, 2–3 Tage |
+| **v0.27** | *Beweise, was sich geändert hat* | Diff-View bei Hash-Mismatch (Bytes / Texturen-Auflösung) — **letzter pure Single-File-Release** | geplant, 1–2 Tage |
+| **v0.28** | *Trag den Inspector überall hin* | Web Component (`<usdseal-inspector>`), QR-Code-Konferenz-Pack. **Hybrid-Distribution ab hier:** `index.html` (Standalone, Single-File) bleibt erhalten + neues `usdseal-inspector-embed.js` (Embed-Modul). Beide Files auf GitHub Pages, kein Build-Tool. v0.27-Tag bleibt als historischer "pure Single-File"-Anker für Nutzer, die strikt auf eine Datei setzen. | geplant, 2–3 Tage |
 | **v0.29** | *AI-agent-fähig* — **Konferenz-Klimax** | MCP-Server-Wrapper als **eigenes Repo** `usdseal-inspector-mcp` | geplant, 3–5 Tage |
 | **v0.3** | *Trust wird wahr* | Ed25519-WebCrypto-Verify + Batch-Analyse mit CSV-Export | geplant, 4–6 Tage |
 
@@ -149,7 +150,7 @@ Drei Phasen für drei Vortrag-Generationen:
 
 ### Was bleibt
 - **100 % Frontend** für die Inspektor-Web-App — keine Datenübertragung, Privacy-First.
-- **Single-File `index.html`** — eine Datei, lokal öffenbar, embedbar.
+- **Single-File `index.html`** — eine Datei, lokal öffenbar, embedbar. **Ab v0.28 Hybrid-Distribution:** `index.html` (Standalone) bleibt erhalten, plus `usdseal-inspector-embed.js` für Web-Component-Embed auf Drittseiten. v0.27-Tag bleibt als pure-Single-File-Historie-Anker.
 - **JSZip** als einzige externe JS-Abhängigkeit im Browser-Pfad.
 - **Apache 2.0** Lizenz.
 - **Kein User-Account, kein Login, keine Telemetrie.**
@@ -203,7 +204,8 @@ Aktuell vorhanden:
 - `docs/ROADMAP-v0.22.md` — AR-Quick-Look-Validator (✅ released)
 - `docs/ROADMAP-v0.22.1.md` — Polish & Polyglot (✅ released)
 - `docs/ROADMAP-v0.22.2.md` — Re-Import-Detection (✅ released)
-- `docs/ROADMAP-v0.23.md` — PDF Audit Report (🔜 nächster Sprint)
+- `docs/ROADMAP-v0.23.md` — PDF Audit Report (✅ released)
+- `docs/ROADMAP-v0.24.md` — Texture Modal + Channel Detection (🔜 nächster Sprint)
 
 Folge-Briefings werden geschrieben, sobald der jeweilige Sprint startet. Vorlauf: ~1 Tag Briefing-Zeit vor Build-Start reicht.
 

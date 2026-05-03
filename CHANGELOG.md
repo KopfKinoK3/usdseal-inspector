@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.24] — 2026-05-03
+
+### Added
+- **Texture Modal** — Klick auf ein Thumbnail öffnet ein Vollbild-Modal via Browser-nativem `<dialog>`-Element. Backdrop (semi-transparent), Bild mit Schachbrett-Hintergrund, ESC / ✕-Button / Backdrop-Click zum Schließen.
+- **Download-Button im Modal** — `<a download="filename">` mit Original-Dateinamen direkt aus dem ZIP-Pfad. Kein separater Upload oder Server-Roundtrip.
+- **PBR Channel Detection** — Inspector erkennt für jede Textur den Material-Channel via `inputs:*.connect`-Parsing aller USDA-Dateien im ZIP. 10 Channels: Diffuse, Normal, Roughness, Metallic, Emissive, Occlusion, Opacity, Displacement, Subsurface, Clearcoat. Fallback: "unknown" für Texturen ohne erkannte Binding.
+- **Channel-Badges** — Farbcodierte Badge-Labels in der Texture-Card (Warm-Tech-Palette, je Channel eigene Farbe).
+- **Alias-Map** — `CHANNEL_ALIASES` deckt gängige USDA-Varianten ab: `diffuseColor`/`baseColor`/`albedo` → Diffuse, `metallic`/`metalness` → Metallic etc. Erweiterbar ohne Architektur-Änderung.
+
+### Architecture
+- **ADR-15** (`<dialog>`-Element statt Custom Div, 2026-05-03): Browser-nativ, A11y-konform, ESC built-in, Backdrop automatisch. Browser-Support seit 2022 (Chrome 37+, Firefox 98+, Safari 15.4+). Pattern wiederverwendbar in v0.27 (Diff-View).
+- **ADR-16** (Channel-Erkennung im bestehenden USDA-Parser, 2026-05-03): Erweiterung von `parseUsdaMetadata` — kein separater Walker. Refactor zu eigenem Material-Walker frühestens v0.26 (Layer-Stack). Single-Code-Path bleibt intakt.
+- **ADR-17** (Alias-Map für Channel-Inputs, 2026-05-03): `CHANNEL_ALIASES`-Objekt deckt UsdPreviewSurface- und MaterialX-nahe Konventionen ab. Fallback "unknown" für nicht erkannte Inputs — keine stillen Fehlklassifikationen.
+
+### Notes
+- Channel-Erkennung liest ALLE USDA-Dateien im ZIP (nicht nur Root-Layer) — erforderlich weil Material-Bindings typischerweise in Sub-Layern liegen.
+- Memory-Leak: Modal-Close revoke-t keine eigene Blob-URL (Modal teilt die Thumbnail-URL). `resetDash()` schließt Modal vor Blob-URL-Revoke.
+- Headless-Pool-Test 7/7 PASS unverändert (Channel-Detection ist Browser-only, kein Headless-Pfad betroffen).
+
+---
+
 ## [0.23] — 2026-05-03
 
 ### Added
