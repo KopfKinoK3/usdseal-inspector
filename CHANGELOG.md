@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.25.2] — 2026-05-04
+
+### Removed
+- **QR-Code-Brücke zurückgezogen** (ADR-26 / ADR-PC5): Das in v0.25 eingebaute Desktop/Android-QR-Feature ist mit den Architektur-Ankern technisch unvereinbar. Drag&Drop-USDZs haben keine öffentliche URL, die ein iPhone erreichen könnte — QR-Code öffnet nur die Inspector-Seite, nicht die USDZ in AR Quick Look. Alle vier geprüften Alternativen (Data-URI, Blob-URL, Service-Worker-Cache, Temp-Upload) scheitern an Single-File / No-Backend / Privacy-First-Ankern. Empirisch belegt via Spike-Sandbox (`inspector-spikes/`).
+  - `loadQrLib()` + `_qrScriptInjected` entfernt
+  - CDN-Lazy-Load `qrcode-svg@1` entfernt (kein externer `script-src` mehr für diesen Pfad)
+  - CSS-Klassen `.qr-wrap`, `.qr-wrap svg`, `.qr-placeholder` entfernt
+  - I18N-Keys `preview_section_label_qr`, `preview_qr_title`, `preview_qr_sub`, `preview_qr_tip`, `preview_qr_loading` entfernt
+  - ~58 Zeilen weniger, keine neuen Dependencies
+
+### Added
+- **iOS AR-Test-Hilfe** (ersetzt QR-Block, gleicher Platz): Strukturierter Hilfe-Block mit Titel und nummerierter Anleitung (AirDrop / iCloud Drive / Mail) — drei Wege, die USDZ auf das iPhone zu bringen, damit AR Quick Look beim Tap automatisch startet. DE + EN i18n.
+
+### Architecture
+- **ADR-26** (QR-Code-Rollback, 2026-05-04): Bug aus v0.25-Real-World-Test: QR zeigt Inspector-URL, nicht USDZ — AR Quick Look startet nicht. Spike-Auswertung bestätigt: alle QR-Varianten für Drag&Drop-USDZs technisch unmöglich. Feature ersatzlos zurückgezogen, iOS-Hilfe-Block als Privacy-First-konformer Ersatz.
+- **ADR-PC5** (Architektur-Anker schlägt Feature, 2026-05-04): Wenn ein Feature einen Architektur-Anker bricht, fliegt das Feature — nicht der Anker. Die Anker (100% client / Single-File / Privacy-First / no-backend) sind das viSales-Differenzierungsmerkmal.
+
+### Notes
+- Headless-Pool-Test 7/7 PASS (Validator unverändert, reiner UI-Cut).
+- iOS-Live-Test nicht erforderlich — v0.25.2 ändert keine iOS-spezifischen Code-Pfade (nur Desktop-UI-Cut + Hilfe-Text). `<model-viewer>`-Pfad unverändert.
+
+---
+
 ## [0.25] — 2026-05-04
 
 ### Added

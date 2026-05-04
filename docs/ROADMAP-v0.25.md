@@ -1,11 +1,10 @@
 # Roadmap v0.25 — Geometry Stats & 3D-Preview
 
-**Status:** Vorbereitungs-Dokument · 2026-05-04
+**Status:** ✅ COMPLETED · released 2026-05-04 (Tag `v0.25` online auf GitHub, Commit `76c550a8`)
 **Story-Slot:** *"Was ist das Modell?"* — vom Material-Inspektor zum Asset-Inspektor
-**Ziel:** Inspector zeigt **Geometrie-Kennzahlen** (Vollscope) plus **iOS-natives 3D-Preview** via `<model-viewer>`. Auf Desktop/Android: ehrlicher Hinweis + QR-Code-Brücke zum iPhone des Konferenzbesuchers.
-**Aufwand:** 2.5–3 Tage konzentrierter Build.
-
-> Erster Story-Release nach v0.24/v0.24.1 (UX-Polish-Welle). Master-Übersicht in `../ROADMAP.md`.
+**Ziel (erfüllt):** Inspector zeigt 10 Geometrie-Kennzahlen, iOS-conditional 3D-Preview via `<model-viewer>`, Desktop-QR-Code-Brücke. ADR-21 bis ADR-24.
+**Verifikation:** Phase 5.6 Browser-Test gegen DIEGOsat (Geoms=3, Materials=3, Polycount/Vertex). Phase 5.8 Headless-Pool 7/7 PASS.
+**Phase 5.7 (iOS-Live-Test) ausgelassen:** kein iPhone griffbereit, ADR-PC4-Best-Effort dokumentiert. Drei optionale Verifikations-Punkte für später (Desktop-QR, iOS-Live, iOS-Edge-Case Chrome/Firefox) — kein Hotfix-Druck.
 
 ---
 

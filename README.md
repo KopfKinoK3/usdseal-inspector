@@ -20,7 +20,7 @@ You don't need USDseal to use this tool. Drop **any** USDZ file in and the Inspe
 | **Asset inventory** | Filenames, sizes, SHA-256 — see exactly what's inside the ZIP |
 | **Texture analysis** | PNG / JPEG / WebP — dimensions, format, live thumbnails. Click any thumbnail for full-size modal with download. PBR channel badges (Diffuse / Normal / Roughness / Metallic / Emissive / Occlusion / Opacity / Displacement / Subsurface / Clearcoat). Status-aware: `used` (channel badge), `unused` (yellow-gray, orphaned in ZIP), `unknown` (red-gray, alias gap) *(v0.24 / v0.24.1)* |
 | **Geometry stats** | 10 asset metrics: Geom-Count (Mesh + Sphere + Cube + procedural types), Poly-Count (tri-fan), Vertex-Count, Material-Count, Prim-Count, Joint/Bone-Count, UV-Sets, Subdivision-Level, Time-Range, FPS. USDA: full parsing across all sublayers. USDC: `?` (binary, not extractable). Procedural prims (Sphere/Cube): `proc`. *(v0.25)* |
-| **3D Preview & AR bridge** | iOS Safari: `<model-viewer>` with AR Quick Look button (lazy CDN load, ~150 KB). Desktop/Android: QR-code (client-side, no server roundtrip) links to the Inspector page for iPhone scanning. *(v0.25)* |
+| **3D Preview & iOS AR test** | iOS Safari: `<model-viewer>` with AR Quick Look button (lazy CDN load, ~150 KB). Desktop/Android: step-by-step guide to get the USDZ onto iPhone via AirDrop, iCloud Drive, or Mail — tap the file and AR Quick Look launches automatically. *(v0.25 / v0.25.2)* |
 | **Parallel hashing** | Web Workers + loading indicator for large USDZ (50+ MB) *(v0.22.1)* |
 | **DE / EN** | Full bilingual UI — Browser locale by default, persisted in localStorage *(v0.22.1)* |
 
@@ -90,6 +90,7 @@ Download `index.html` and open it locally. No web server needed.
 - **v0.24** *(2026-05-03)* — UX polish: full-size texture modal (`<dialog>`) + PBR channel detection (10 channels + unknown fallback via `inputs:*.connect` USDA parsing)
 - **v0.24.1** *(2026-05-03)* — Multi-file drop (stacked mini-dashboards, session-based ↻-cards) + texture status refinement (used / unused / orphaned / unknown) + test-asset sync (new manifest_ids, Normal channel verified)
 - **v0.25** *(2026-05-04)* — Geometry stats (10 metrics: Geoms, Polys, Vertices, Materials, Prims, Joints, UV-Sets, Subdivision, Time-Range, FPS) + iOS 3D-Preview via `<model-viewer>` (conditional CDN lazy-load, AR Quick Look button) + Desktop QR-code bridge (client-side qrcode-svg, no server roundtrip)
+- **v0.25.2** *(2026-05-04)* — QR-code bridge removed (ADR-26 / ADR-PC5): Drag&Drop USDZs have no public URL reachable by iPhone — QR approach is architecturally incompatible with Privacy-First / Single-File / no-backend anchors. Replaced by iOS AR test guide (AirDrop / iCloud Drive / Mail). ~58 lines removed, no new dependencies.
 
 **Plan**
 - **v0.26** — Composition explorer: layer stack, references, payloads and variants as a tree

@@ -2,10 +2,10 @@
 
 **Repo:** [github.com/KopfKinoK3/usdseal-inspector](https://github.com/KopfKinoK3/usdseal-inspector)
 **Live:** [kopfkinok3.github.io/usdseal-inspector](https://kopfkinok3.github.io/usdseal-inspector/)
-**Aktueller Stand:** v0.25 (Geometry Stats + iOS 3D-Preview + Desktop QR-Code-Brücke, released 2026-05-04)
+**Aktueller Stand:** v0.25 (Geometry Stats + iOS 3D-Preview + Desktop QR-Code-Brücke, released 2026-05-04). Hotfix-Welle v0.25.1/.2/.3 in Vorbereitung.
 **Maintainer:** viSales GmbH (Mitglied Alliance for OpenUSD)
 **Lizenz:** Apache 2.0
-**Stand dieses Dokuments:** 2026-05-01
+**Stand dieses Dokuments:** 2026-05-04
 
 > Übergeordnete Roadmap. Detail-Briefings pro Release liegen als
 > `docs/ROADMAP-v0.21.md`, `docs/ROADMAP-v0.22.md` etc.
@@ -90,14 +90,18 @@ Jedes Release hat einen **eigenen Talk-Slide**. Drei strategische Story-Punkte v
 | **v0.23** | *Audit-Report für B2B* | PDF-Report via jsPDF + Layout-Fix + Safari-Fix + ADR-11-14 | ✅ released 2026-05-02, Tag online (Commit `c3f16cf`) |
 | **v0.24** | *Klick & sieh* | Thumbnail-Vollbild-Modal + Texturen-Channel-Erkennung (10 PBR-Channels + Fallback) + ADR-15/16/17 + IIFE-Bug-Fix | ✅ released 2026-05-03, Tag online (Commit `03e9cd48`) |
 | **v0.24.1** | *Multi-Asset im Blick* | Multi-File-Drop (gestapelt vertikal) + Texture-Status-Refinement (used/unused/unknown) + Test-Asset-Sync. ADR-18/19. Phase 5.0 zeigte: Channel-Parser war schon type-agnostisch → ADR-20 entfallen. Plus `detectCrossRefsInSession` Path B (derived→master) für leeres Master-`lineage:{}`. | ✅ released 2026-05-03, Tag online (Commit `67fe5419`) |
-| **v0.25** | *Was ist das Modell?* | Geometrie-Vollscope (10 Kennzahlen inkl. Time-Range/FPS für AR-Animation) + iOS-only 3D-Preview via `<model-viewer>` (Conditional-CDN-Load) + Desktop-QR-Code-Brücke. ADR-21-24. | ✅ released 2026-05-04 |
-| **v0.26** | *Komposition entwirrt* | Layer-Stack, References, Payloads, Variants als Baum | geplant, 2–3 Tage |
+| **v0.25** | *Was ist das Modell?* | Geometrie-Vollscope (10 Kennzahlen inkl. Time-Range/FPS für AR-Animation) + iOS-only 3D-Preview via `<model-viewer>` (Conditional-CDN-Load) + Desktop-QR-Code-Brücke (qrcode-svg). ADR-21-24. iOS-Live-Test ausgelassen (kein iPhone griffbereit, ADR-PC4 Best-Effort). | ✅ released 2026-05-04, Tag online (Commit `76c550a8`) |
+| **v0.25.1** | *Polyglot wirklich* | EN-Toggle Browser-übergreifend reparieren (Bug 1 aus v0.25-Real-World-Test: Klick auf EN bleibt wirkungslos auf Safari + Chrome). Phase 5.0 Diagnose-Pflicht via Browser-Console (5 Hypothesen A-E). Kein Validator-Impact, reiner UI-Hotfix. | geplant, ~0.5 Tag, Briefing in `docs/ROADMAP-v0.25.1.md` |
+| **v0.25.2** | *QR-Code zurückgezogen — ehrlich Privacy-First* | **Pivot-Release nach Spike-Auswertung 2026-05-04.** QR-Code-Workflow ist mit Architektur-Ankern (100% client / Single-File / Privacy-First) **technisch unvereinbar** — Drag&Drop-USDZs haben keine öffentliche URL, die ein iPhone erreichen kann. Lösung: QR-Feature ersatzlos rausbauen, stattdessen kurze UI-Hilfe "So testest du AR Quick Look auf iOS" (AirDrop / iCloud Drive / Mail). ADR-PC5 dokumentiert die Pivot-Disziplin. | ✅ released 2026-05-04, Briefing `docs/ROADMAP-v0.25.2.md` |
+| **v0.25.3** | *Alle USDZ-Texturen verstanden* | Texture-Format-Coverage gemäß OpenUSD-USDZ-Spec: AVIF, HEIC, KTX2, TIFF, ASTC zusätzlich zu PNG/JPEG/WebP. Magic-Bytes-Detection im Native-Reader, Channel-Erkennung bleibt unverändert. Befund aus Telefonat 2026-05-04 (openusd.org/release/spec_usdz.html#file-types). | geplant, ~0.5–1 Tag, Briefing TBD |
+| **v0.25.4** | *Validator kalibriert — Apple-Realität statt Spec-Strenge* | Severity-Recalibration aller 20 AR-Quick-Look-Regeln gegen reales Apple-Verhalten. Befund aus Real-World-Test 2026-05-04: USDZs die auf iPhone funktionieren werden vom Inspector als Hard-Fail markiert (`STRUCTURE_DEFAULT_PRIM_MISSING` ist Beispiel). 3-Stufen-Severity: **bricht garantiert** / **läuft mit Vorbehalt** / **Schönheitsfehler**. State-Banner-Logik entsprechend angepasst. Voraussetzung: Test-Pool von 5–10 echten "läuft-aber-Inspector-meckert"-Files (Duke liefert). | geplant, ~0.5–1 Tag, Briefing TBD |
+| **v0.26** | *Komposition entwirrt + PDF aufgeholt* | Layer-Stack, References, Payloads, Variants als Baum + **PDF-Template-Erweiterung** um Channel-Erkennung (v0.24), Geometry-Stats (v0.25), neue Texture-Formate (v0.25.3) und kalibriertes Severity-Mapping (v0.25.4) — der v0.23-PDF-Builder hinkt aktuell hinterher und zeigt nur den damaligen Stand. Plus: ADR-Diskussion zur USDC-Material-Heuristik (Befund aus 26 MB Real-World-TK-Asset) | geplant, 3–4 Tage |
 | **v0.27** | *Beweise, was sich geändert hat* | Diff-View bei Hash-Mismatch (Bytes / Texturen-Auflösung) | geplant, 1–2 Tage |
 | **v0.28** | *Trag den Inspector überall hin* | README-Embed-Sektion mit Konsumer-Inline-Boilerplate (`<usdseal-inspector>`-Custom-Element via iframe-Wrapper, ~10 Zeilen Copy-Paste). Plus QR-Code-Konferenz-Pack als separates kleines HTML. **Inspector-Code unverändert** — Single-File-Anker bleibt für immer. Web-Component-Pattern wird **dokumentiert**, nicht **distributed**. | geplant, 1–2 Tage |
 | **v0.29** | *AI-agent-fähig* — **Konferenz-Klimax** | MCP-Server-Wrapper als **eigenes Repo** `usdseal-inspector-mcp` | geplant, 3–5 Tage |
 | **v0.3** | *Trust wird wahr* | Ed25519-WebCrypto-Verify + Batch-Analyse mit CSV-Export | geplant, 4–6 Tage |
 
-**Bisher geliefert:** v0.21 + v0.22 in einem Sprint (2026-05-01). **Nächster Sprint:** v0.22.1 (Polish & EN). **Total verbleibend:** ~22–32 Build-Tage über v0.22.1 → v0.3.
+**Bisher geliefert:** v0.21 → v0.25 in 8 Releases (2026-05-01 bis 2026-05-04). **Nächster Sprint:** v0.25.1 EN-Toggle-Hotfix (Spikes durchgespielt, Lessons-Learned in v0.25.2-Pivot eingeflossen). **Total verbleibend:** ~25–37 Build-Tage über v0.25.1 → v0.3.
 
 ---
 
@@ -206,7 +210,16 @@ Aktuell vorhanden:
 - `docs/ROADMAP-v0.23.md` — PDF Audit Report (✅ released)
 - `docs/ROADMAP-v0.24.md` — Texture Modal + Channel Detection (✅ released)
 - `docs/ROADMAP-v0.24.1.md` — Multi-File-Drop + Status-Refinement + Test-Asset-Sync (✅ released 2026-05-03)
-- `docs/ROADMAP-v0.25.md` — Geometry Vollscope + 3D-Preview iOS-only + QR-Code-Brücke (🔜 nächster Sprint)
+- `docs/ROADMAP-v0.25.md` — Geometry Vollscope + 3D-Preview iOS-only + QR-Code-Brücke (✅ released)
+- `docs/ROADMAP-v0.25.1.md` — EN-Toggle Hotfix mit Phase-5.0-Diagnose-Pflicht (📋 Vorbereitung)
+- `docs/ROADMAP-v0.25.2.md` — QR-Code-Rollback (📋 Vorbereitung, Pivot nach Spike)
+- *(folgt)* `docs/ROADMAP-v0.25.3.md` — Texture-Format-Coverage AVIF/HEIC/KTX2/TIFF/ASTC
+- `docs/ROADMAP-v0.25.4.md` — Severity-Recalibration (📋 Skeleton, Test-Pool von Duke ausstehend)
+
+**Sandbox-Spikes für v0.25.2** (Lessons-Learned: Architektur-Konflikt → Pivot):
+- `inspector-spikes/spike-b-url-parameter.html` — Variante B: `?url=...`-Parameter, clientseitiges Fetch
+- `inspector-spikes/spike-c-direct-ar.html` — Variante C: Direct AR Quick Look via `rel=ar` + QR
+- `inspector-spikes/README.md` — Test-Plan + Befund: Drag&Drop-USDZs sind nicht QR-fähig
 
 Folge-Briefings werden geschrieben, sobald der jeweilige Sprint startet. Vorlauf: ~1 Tag Briefing-Zeit vor Build-Start reicht.
 
