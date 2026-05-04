@@ -634,6 +634,77 @@ h4 { font-size: 14px; }
   line-height: 1.55;
   max-width: 720px;
 }
+
+/* === AR Quick Look Readiness === */
+code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.92em;
+  background: var(--bg-primary-tint);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--primary-dark);
+}
+.qa-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 24px;
+}
+@media (max-width: 760px) {
+  .qa-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .qa-grid { grid-template-columns: 1fr; }
+}
+.qa-tile {
+  background: var(--bg-neutral);
+  border: 1px solid var(--border-inner);
+  border-left: 3px solid var(--primary-dark);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.qa-tile h4 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin: 0 0 4px;
+}
+.qa-tile p {
+  font-size: 11px;
+  color: var(--text-body);
+  margin: 0;
+  line-height: 1.5;
+}
+.qa-legend {
+  display: flex;
+  gap: 18px;
+  margin-top: 20px;
+  font-size: 11px;
+  color: var(--text-body);
+  flex-wrap: wrap;
+}
+.qa-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.qa-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.qa-dot-error { background: #DC2626; }
+.qa-dot-warn  { background: var(--primary); }
+.qa-dot-info  { background: #16A34A; }
+
+/* === GitHub Star Badge === */
+.gh-badge {
+  display: inline-block;
+  height: 20px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
 </style>
 </head>
 <body>
@@ -790,6 +861,54 @@ h4 { font-size: 14px; }
         </p>
       </article>
 
+    </div>
+  </div>
+</section>
+
+<!-- ========== AR QUICK LOOK READINESS ========== -->
+<section id="ar-quick-look">
+  <div class="wrap">
+    <div class="eyebrow eyebrow-primary">AR QUICK LOOK READINESS</div>
+    <h2>21 rules. 7 categories. One file.</h2>
+    <p class="lead">
+      Apple's AR Quick Look has hard requirements — miss the <code>defaultPrim</code>, for example, and the iPhone viewer silently fails to display anything. Inspector checks every USDZ before any handoff against 21 rules across 7 categories and color-codes what breaks or wobbles.
+    </p>
+
+    <div class="qa-grid">
+      <div class="qa-tile">
+        <h4>1 · Structure</h4>
+        <p><code>defaultPrim</code>, ZIP order, no nested USDZ.</p>
+      </div>
+      <div class="qa-tile">
+        <h4>2 · Scale &amp; Axes</h4>
+        <p>Y-up, <code>metersPerUnit</code>, realistic units.</p>
+      </div>
+      <div class="qa-tile">
+        <h4>3 · Textures</h4>
+        <p>Formats (PNG/JPG/WebP), size ≤ 4K, power-of-two, relative paths.</p>
+      </div>
+      <div class="qa-tile">
+        <h4>4 · External References</h4>
+        <p>No HTTP links, no file references outside the USDZ.</p>
+      </div>
+      <div class="qa-tile">
+        <h4>5 · Manifest</h4>
+        <p>For USDseal-signed files: signature and version trace verifiable.</p>
+      </div>
+      <div class="qa-tile">
+        <h4>6 · Animation</h4>
+        <p>Time codes, loop definitions, animation markers in the header.</p>
+      </div>
+      <div class="qa-tile">
+        <h4>7 · Performance</h4>
+        <p>File size ≤ 25 MB, geometry complexity, unused sub-assets.</p>
+      </div>
+    </div>
+
+    <div class="qa-legend">
+      <span><span class="qa-dot qa-dot-error"></span> <strong>Error</strong> — breaks AR Quick Look</span>
+      <span><span class="qa-dot qa-dot-warn"></span> <strong>Warn</strong> — works, but Apple recommends otherwise</span>
+      <span><span class="qa-dot qa-dot-info"></span> <strong>Info</strong> — note, no risk</span>
     </div>
   </div>
 </section>
@@ -1055,7 +1174,10 @@ h4 { font-size: 14px; }
         <h4>Inspector</h4>
         <ul>
           <li><a href="#" id="open-inspector-footer" target="_blank" rel="noopener">Open Inspector</a></li>
-          <li><a href="https://github.com/KopfKinoK3/usdseal-inspector" target="_blank" rel="noopener">Code &amp; docs on GitHub</a></li>
+          <li>
+            <a href="https://github.com/KopfKinoK3/usdseal-inspector" target="_blank" rel="noopener">Code &amp; docs on GitHub</a>
+            <a href="https://github.com/KopfKinoK3/usdseal-inspector/stargazers" target="_blank" rel="noopener" aria-label="GitHub Stars"><img class="gh-badge" src="https://img.shields.io/github/stars/KopfKinoK3/usdseal-inspector?style=flat&logo=github&logoColor=white&label=&color=C2410C" alt="GitHub Stars"></a>
+          </li>
           <li><a href="#faq">FAQ</a></li>
         </ul>
       </div>
