@@ -1,11 +1,12 @@
-# Roadmap v0.25.1 — EN-Toggle-Hotfix
+# Roadmap v0.25.3 — EN-Toggle-Hotfix
 
-**Status:** Vorbereitungs-Dokument · 2026-05-04
+**Status:** Vorbereitungs-Dokument · 2026-05-04 (umnummeriert von v0.25.1 nach v0.25.2-Release)
 **Story-Slot:** *"Polyglot wirklich"* — bekannter Bug-Fix
 **Ziel:** Sprach-Toggle DE↔EN funktioniert browser-übergreifend (heute: Toggle klickbar, aber UI bleibt nach Reload auf DE).
 **Aufwand:** 0.25–0.5 Tag konzentrierter Build (Hotfix).
 
-> Erster Hotfix nach v0.25-Release. Master-Übersicht in `../ROADMAP.md`.
+> Patch-Sprint. Master-Übersicht in `../ROADMAP.md`.
+> **Sequenz-Hinweis:** Ursprünglich als v0.25.1 geplant. Nach v0.25.2-Release umnummeriert auf v0.25.3, damit die Reihenfolge optisch konsistent bleibt (kein "v0.25.1 nach v0.25.2").
 
 ---
 
@@ -81,7 +82,7 @@ Object.keys(i18n).filter(k => !i18n[k].en).length
 
 | # | Vorbedingung | Status |
 |---|---|---|
-| 1 | Inspector v0.25 stabil released | ✓ Tag online seit 2026-05-04 |
+| 1 | Inspector v0.25.2 stabil released | ✓ Tag online seit 2026-05-04, Commit ff8e208 |
 | 2 | Bug-Reproduktion bestätigt (Safari + Chrome) | ✓ User-Report |
 | 3 | Phase 5.0-Diagnose-Plan steht | ✓ siehe §2 |
 
@@ -97,8 +98,8 @@ Object.keys(i18n).filter(k => !i18n[k].en).length
 | **5.1 Fix anwenden** | 0.1–0.25 Tag | Je nach Befund: 1–10 Zeilen Code |
 | **5.2 Verifikation Browser** | 0.05 Tag | Toggle DE→EN→DE Round-Trip auf Safari + Chrome |
 | **5.3 Headless-Pool-Regression** | 0.05 Tag | 7/7 PASS bleibt (Toggle ist UI-Feature, kein Validator-Impact) |
-| **5.4 README + CHANGELOG** | 0.1 Tag | v0.25.1-Hotfix-Eintrag mit Befund-Dokumentation |
-| **5.5 Snapshot + Tag** | 0.1 Tag | Snapshot v0.25.1, Tag, Push |
+| **5.4 README + CHANGELOG** | 0.1 Tag | v0.25.3-Hotfix-Eintrag mit Befund-Dokumentation |
+| **5.5 Snapshot + Tag** | 0.1 Tag | Snapshot v0.25.3, Tag, Push |
 
 **Total: 0.5 Tag konzentrierter Hotfix.**
 
@@ -106,14 +107,14 @@ Object.keys(i18n).filter(k => !i18n[k].en).length
 
 ## 6. Strategischer Hebel
 
-v0.25.1 ist Hotfix — kein Story-Release. Aber zwei stille Hebel:
+v0.25.3 ist Hotfix — kein Story-Release. Aber zwei stille Hebel:
 
-1. **Trust-Anker:** v0.22.1 hat den EN-Pfad versprochen, v0.25.1 macht ihn endlich stabil. Englischsprachige Konferenz-Besucher (AOUSD-Forum-Reichweite) sehen ein funktionierendes Tool.
+1. **Trust-Anker:** v0.22.1 hat den EN-Pfad versprochen, v0.25.3 macht ihn endlich stabil. Englischsprachige Konferenz-Besucher (AOUSD-Forum-Reichweite) sehen ein funktionierendes Tool.
 2. **Diagnose-Disziplin:** Phase 5.0 ist Pflicht. ADR-PC4 wird ein viertes Mal in der Praxis bewährt — diesmal für einen lange offenen Bug, den wir erst jetzt strukturiert ansprechen.
 
 ---
 
-## 7. Konkrete Pre-v0.25.1-Steps
+## 7. Konkrete Pre-v0.25.3-Steps
 
 Keine — Hotfix-Sprint, alle Vorbedingungen aus dem User-Report erfüllt.
 
@@ -122,7 +123,7 @@ Keine — Hotfix-Sprint, alle Vorbedingungen aus dem User-Report erfüllt.
 ## 8. Decision-Log-Template
 
 ```markdown
-### ADR-25 EN-Toggle-Befund — 2026-05-XX
+### ADR-26 EN-Toggle-Befund — 2026-05-XX
 
 **Kontext:** EN-Toggle klickte sichtbar, aber UI blieb auf DE nach Reload. Browser-übergreifend.
 
@@ -143,6 +144,7 @@ Keine — Hotfix-Sprint, alle Vorbedingungen aus dem User-Report erfüllt.
 
 - Master-Roadmap: `../ROADMAP.md`
 - Vorgänger: `ROADMAP-v0.22.1.md` (EN-Pfad ursprünglich angekündigt mit ADR-7)
+- Vorgänger-Patch: `ROADMAP-v0.25.2.md` (QR-Pivot, ADR-PC5)
 
 ### Externe Specs
 
@@ -151,4 +153,4 @@ Keine — Hotfix-Sprint, alle Vorbedingungen aus dem User-Report erfüllt.
 
 ---
 
-**Ende v0.25.1-Roadmap.** Nach Hotfix: Snapshot, Tag `v0.25.1`, Push. Plan-Chat schreibt dann `docs/ROADMAP-v0.25.2.md` (QR-Code-Lösung basierend auf Spike-Tests in `inspector-spikes/`).
+**Ende v0.25.3-Roadmap.** Nach Hotfix: Snapshot, Tag `v0.25.3`, Push. Plan-Chat schreibt dann `docs/ROADMAP-v0.25.4.md` (Texture-Format-Coverage AVIF/HEIC/KTX2/TIFF/ASTC) und `docs/ROADMAP-v0.25.5.md` (Severity-Recalibration mit Test-Pool von Duke).

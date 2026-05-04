@@ -1,11 +1,27 @@
 # Roadmap v0.25.2 — QR-Code-Pivot
 
-**Status:** Vorbereitungs-Dokument · 2026-05-04
+**Status:** ✅ **COMPLETED 2026-05-04** · Commit `ff8e208`, Tag `v0.25.2` online
 **Story-Slot:** *"QR-Code zurückgezogen — ehrlich Privacy-First"*
-**Ziel:** QR-Code-Feature ersatzlos rausbauen + ehrliche UI-Hilfe für iOS-AR-Test einbauen.
-**Aufwand:** 0.5 Tag konzentrierter Build (Pivot-Hotfix).
+**Ziel:** QR-Code-Feature ersatzlos rausbauen + ehrliche UI-Hilfe für iOS-AR-Test einbauen. ✓ erreicht.
+**Aufwand:** 0.5 Tag konzentrierter Build (Pivot-Hotfix). ✓ eingehalten.
 
 > Pivot-Release. Master-Übersicht in `../ROADMAP.md`.
+
+## Release-Befund 2026-05-04
+
+| Phase | Status | Ergebnis |
+|---|---|---|
+| 5.1 Code-Removal | ✅ | ~58 Zeilen raus, null QR-Artefakte |
+| 5.2 iOS-Hilfe-Block | ✅ | DE+EN, AirDrop/iCloud/Mail, ~14 Zeilen HTML |
+| 5.3 Browser-Verifikation | ✅ | Chrome + Safari grün, kein qrcode-svg im Network-Tab |
+| 5.4 Headless-Pool | ✅ | 7/7 PASS |
+| 5.5 README + CHANGELOG | ✅ | Sektion ersetzt, v0.25.2-Eintrag mit Pivot-Begründung |
+| 5.6 ADR-PC5 | ✅ | In `CLAUDE-Inspector-private.md` dokumentiert |
+| 5.7 Snapshot + Tag | ✅ | `v0.25.2-snapshot.html` + Tag `v0.25.2` (Commit `ff8e208`) |
+
+**Mini-Patch (Polish auf gleichen Tag):** `by viSales GmbH`-Space-Fix (Flexbox-Whitespace-Pitfall, Span-Wrap-Lösung) + Cache-Counter nur bei `count > 0` sichtbar (UX-Polish auf leerem Inspector). Phase 3 + 4 erneut grün vor Push.
+
+
 
 ---
 
