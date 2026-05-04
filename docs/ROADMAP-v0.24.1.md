@@ -1,13 +1,18 @@
 # Roadmap v0.24.1 — Multi-File Drop & Texture-Status-Refinement
 
-**Status:** Vorbereitungs-Dokument · 2026-05-03
+**Status:** ✅ COMPLETED · released 2026-05-03 (Tag `v0.24.1` online auf GitHub, Commit `67fe5419`)
 **Story-Slot:** *"Multi-Asset im Blick"* — Patch nach v0.24, vor v0.25
-**Ziel:** Drei Mini-Themen in einem Patch-Sprint:
-1. **Multi-File-Drop** — mehrere USDZs gleichzeitig droppen, gestaffelte Mini-Dashboards, Cross-Reference-↻-Linien (ursprünglich als v0.22.3 geplant)
-2. **Texture-Status-Refinement** — Differenzierung *unused* vs *unknown* (Befund aus v0.24-Test gegen DIEGOsat)
-3. **Test-Asset-Sync** — Headless-Pool gegen die neuen DIEGOsat-Files laufen lassen, Erwartungen aktualisieren (Cross-Sync vom CLI-Plan-Chat)
+**Ziel (erfüllt):** Drei Mini-Themen in einem Patch-Sprint sauber durchgezogen.
+**Verifikation:** DIEGOsat-Pair Multi-Drop → ↻-Card sichtbar. DIEGOsat_master.usdz: 3× Diffuse + 1× Normal. Headless-Pool 7/7 PASS. tests/headless-pool-test-results.md mit neuen manifest_ids aktualisiert.
+**Geliefert mit:**
+- ADR-18 (Multi-Drop-Layout: gestapelt vertikal)
+- ADR-19 (Texture-Status: used / unused / unknown)
+- ADR-20 *entfallen* — Phase 5.0-Verifikation zeigte: Channel-Parser war schon type-agnostisch, `normal3f inputs:normal.connect` wurde korrekt erkannt
+- Plus Diagnose-Fix während Sprint: `detectCrossRefsInSession` brauchte Path B (derived→master via `parent_manifest_id`), weil neuer Master-USDZ leeres `lineage:{}` hat — kein Scope-Creep, sauber gefixt
 
-**Aufwand:** 1.5–2 Tage konzentrierter Build.
+**Aufwand-Schätzung:** 1.5–2.5 Tage geplant, 1.5 Tage tatsächlich (Channel-Parser-Erweiterung entfallen).
+
+**Cross-Sync-Hinweis an CLI-Plan-Chat (zur Akte):** Master-`lineage:{}` ist neu (alter Master hatte `lineage.role="master"` mit `import_history[]`). Inspector funktioniert via Path B, aber Re-Import-↻-Topology ist nicht mehr im Test-Pool getestet. Variante A (gewollt) oder B (Regression) — Antwort vom CLI-Plan-Chat steht aus.
 
 > Patch-Release nach v0.24 (Texture Modal + Channel Detection). Master-Übersicht in `../ROADMAP.md`.
 

@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.25] — 2026-05-04
+
+### Added
+- **Geometry Stats (10 Kennzahlen)** — Neue Sektion "Geometrie · Asset-Kennzahlen" direkt unter dem Trust-Banner. Kompakte 2-Zeilen-Stat-Card-Tabelle (je 5 Werte): Geoms, Polys (Tris), Vertices, Materials, Prims / Joints, UV-Sets, Subdivision, Time-Range, FPS.
+  - USDA: Vollscope-Parsing über alle Member im ZIP (Sublayer-Traversal). Explizite `def Mesh`-Prims: Polycount via tri-fan (`faceVertexCounts`), Vertex-Count via `points`-Array. Prozedurale Prims (`def Sphere`, `def Cube`, `def Cylinder` etc.) werden als Geom-Count gezählt, Poly/Vertex-Felder zeigen `proc`.
+  - USDC (binär): Alle nicht-extrahierbaren Werte als `?` — kein Crash. Hinweis "USDC binär — Werte nicht extrahierbar".
+  - Statische Assets: Time-Range = `static`, FPS = `—`.
+- **iOS 3D-Preview via `<model-viewer>`** — Auf iOS Safari: Conditional-CDN-Lazy-Load von `@google/model-viewer@4` (~150 KB, MIT). `<model-viewer ar ar-modes="quick-look" camera-controls>` mit USDZ-Blob-URL. AR-Button automatisch aktiv — öffnet AR Quick Look direkt.
+- **Desktop/Android QR-Code-Brücke** — Auf nicht-iOS: Conditional-CDN-Lazy-Load von `qrcode-svg@1` (~5 KB, MIT). QR-Code generiert `window.location.href` vollständig client-side (Privacy-First, kein Server-Roundtrip). Hint-Text leitet Konferenz-Besucher zum iPhone.
+- **USDZ Blob-URL Lifecycle** — Blob-URLs werden beim ↩-Reset freigegeben (kein Memory-Leak). Neuer Drop revoked vorherige URL automatisch.
+
+### Architecture
+- **ADR-21** (3D-Preview iOS-only via Feature-Detection, 2026-05-04): `<model-viewer>` zeigt USDZ nur auf iOS Safari. GLB-Konvertierung im Browser wäre möglich (three-usdz-loader), braucht aber SharedArrayBuffer + COOP/COEP-Header (auf GitHub Pages problematisch). iOS-only + QR-Bridge ist konferenz-tauglich und täuscht nicht.
+- **ADR-22** (model-viewer als Conditional-CDN-Lazy-Load, 2026-05-04): ~150 KB only-on-iOS via `<script type="module">`. Kein Always-Load — Desktop-User zahlen 0 KB extra.
+- **ADR-23** (QR-Code via qrcode-svg, Conditional auf nicht-iOS, 2026-05-04): ~5 KB SVG-Output, client-side, kein externer Roundtrip. Vier externe Deps insgesamt (JSZip, jsPDF, model-viewer, qrcode-svg), nie alle gleichzeitig aktiv.
+- **ADR-24** (Geometry-Vollscope 10 Kennzahlen, 2026-05-04): `extractGeometryStats(memberHashes)` summiert über alle USDA-Member. Bei USDC-Heuristik: `?` statt Crash. `proc`-Label für prozedurale Prims (Sphere/Cube). Pattern für v0.26 (Composition Explorer) etabliert.
+
+### Notes
+- Headless-Pool-Test 7/7 PASS (Geometry-Stats sind Browser-only, Headless-Validator nicht betroffen).
+- iOS-Live-Test (Phase 5.7) ist optional — kein iPhone griffbereit. Code baut Best-Effort-Logik, Live-Test folgt separat.
+- Pattern für v0.28 (Konferenz-QR-Pack) etabliert: QR-Generator und Conditional-CDN-Load ab jetzt im Inspector-Vokabular.
+
+---
+
 ## [0.24.1] — 2026-05-03
 
 ### Added

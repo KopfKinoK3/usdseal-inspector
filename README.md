@@ -19,6 +19,8 @@ You don't need USDseal to use this tool. Drop **any** USDZ file in and the Inspe
 | **USD metadata** | `defaultPrim`, `upAxis`, `metersPerUnit`, custom layer data |
 | **Asset inventory** | Filenames, sizes, SHA-256 — see exactly what's inside the ZIP |
 | **Texture analysis** | PNG / JPEG / WebP — dimensions, format, live thumbnails. Click any thumbnail for full-size modal with download. PBR channel badges (Diffuse / Normal / Roughness / Metallic / Emissive / Occlusion / Opacity / Displacement / Subsurface / Clearcoat). Status-aware: `used` (channel badge), `unused` (yellow-gray, orphaned in ZIP), `unknown` (red-gray, alias gap) *(v0.24 / v0.24.1)* |
+| **Geometry stats** | 10 asset metrics: Geom-Count (Mesh + Sphere + Cube + procedural types), Poly-Count (tri-fan), Vertex-Count, Material-Count, Prim-Count, Joint/Bone-Count, UV-Sets, Subdivision-Level, Time-Range, FPS. USDA: full parsing across all sublayers. USDC: `?` (binary, not extractable). Procedural prims (Sphere/Cube): `proc`. *(v0.25)* |
+| **3D Preview & AR bridge** | iOS Safari: `<model-viewer>` with AR Quick Look button (lazy CDN load, ~150 KB). Desktop/Android: QR-code (client-side, no server roundtrip) links to the Inspector page for iPhone scanning. *(v0.25)* |
 | **Parallel hashing** | Web Workers + loading indicator for large USDZ (50+ MB) *(v0.22.1)* |
 | **DE / EN** | Full bilingual UI — Browser locale by default, persisted in localStorage *(v0.22.1)* |
 
@@ -87,12 +89,12 @@ Download `index.html` and open it locally. No web server needed.
 - **v0.23** *(2026-05-03)* — PDF Audit Report: client-side A4 PDF export via jsPDF — Cover, Trust-Status, Asset Inventory, AR Quick Look Findings, Provenance + Lineage, Disclaimer
 - **v0.24** *(2026-05-03)* — UX polish: full-size texture modal (`<dialog>`) + PBR channel detection (10 channels + unknown fallback via `inputs:*.connect` USDA parsing)
 - **v0.24.1** *(2026-05-03)* — Multi-file drop (stacked mini-dashboards, session-based ↻-cards) + texture status refinement (used / unused / orphaned / unknown) + test-asset sync (new manifest_ids, Normal channel verified)
+- **v0.25** *(2026-05-04)* — Geometry stats (10 metrics: Geoms, Polys, Vertices, Materials, Prims, Joints, UV-Sets, Subdivision, Time-Range, FPS) + iOS 3D-Preview via `<model-viewer>` (conditional CDN lazy-load, AR Quick Look button) + Desktop QR-code bridge (client-side qrcode-svg, no server roundtrip)
 
 **Plan**
-- **v0.25** — Geometry stats (polycount, bounding box, mesh / material / joint count) + 3D preview via `<model-viewer>`
 - **v0.26** — Composition explorer: layer stack, references, payloads and variants as a tree
-- **v0.27** — Diff view on hash mismatch: byte delta, texture resolution delta — **last pure single-file release**
-- **v0.28** — Web Component (`<usdseal-inspector>`) for embedding on third-party sites + QR-code conference pack. Distribution becomes hybrid: `index.html` (standalone, single-file) plus `usdseal-inspector-embed.js` (embed module). Both files served from GitHub Pages, no build tools. Single-file standalone path remains supported.
+- **v0.27** — Diff view on hash mismatch: byte delta, texture resolution delta
+- **v0.28** — Web Component (`<usdseal-inspector>`) embed pattern documented in README (consumer-side inline boilerplate, ~10 lines, wraps an iframe to GitHub Pages) + QR-code conference pack. Inspector code stays single-file for good — web-component pattern lives at the consumer site, not as a second distribution file in this repo.
 
 **Vision**
 
