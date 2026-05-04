@@ -1160,14 +1160,14 @@
 <div class="topbar">
   <div class="logo">USD<span>seal</span> <span class="logo-accent" style="font-weight:400;">Inspector</span></div>
   <div class="version-badge">v0.25.2</div>
-  <button id="cache-clear-btn" class="btn-cache-clear" type="button" onclick="clearCache()" title="Lokal gespeicherte Manifest-Spuren löschen">Cache (<span id="cache-count">0</span>)</button>
+  <button id="cache-clear-btn" class="btn-cache-clear" type="button" onclick="clearCache()" title="Lokal gespeicherte Manifest-Spuren löschen" style="display:none;">Cache (<span id="cache-count">0</span>)</button>
   <button id="btn-export-pdf" class="btn-export-pdf" type="button" onclick="generatePDF()" style="display:none;"></button>
   <div class="topbar-right">
     <span class="lang-toggle" id="lang-toggle" role="group" aria-label="Sprache / Language">
       <button data-lang="de" id="lang-btn-de" type="button">DE</button>
       <button data-lang="en" id="lang-btn-en" type="button">EN</button>
     </span>
-    by <a href="https://visales.de" target="_blank">viSales GmbH</a>
+    <span>by <a href="https://visales.de" target="_blank">viSales GmbH</a></span>
   </div>
 </div>
 
@@ -1393,8 +1393,11 @@ function clearCache() {
 }
 
 function updateCacheCounter() {
+  const count = getCachedManifests().length;
   const el = document.getElementById('cache-count');
-  if (el) el.textContent = getCachedManifests().length;
+  const btn = document.getElementById('cache-clear-btn');
+  if (el) el.textContent = count;
+  if (btn) btn.style.display = count > 0 ? '' : 'none';
 }
 
 /* ─── AR Quick Look Validator-Regel-Set — v0.22 / v0.22.1 ──────
