@@ -1,9 +1,33 @@
 # Roadmap v0.25.4 — Severity-Recal + AVIF-Detection
 
-**Status:** Vorbereitungs-Dokument · 2026-05-05 (refaktoriert nach Real-World-Test-Sweep)
+**Status:** ✅ **COMPLETED 2026-05-05** · Commit `885cf4d`, Tag `v0.25.4` online
 **Story-Slot:** *"Validator kalibriert — Apple-Realität statt Spec-Strenge + AVIF angekommen"*
-**Ziel:** AR-Quick-Look-Validator-Severity gegen reale Apple-Toleranz kalibrieren + AVIF-Texture-Detection einbauen.
-**Aufwand:** 1–1.5 Tag konzentrierter Build.
+**Ziel:** AR-Quick-Look-Validator-Severity gegen reale Apple-Toleranz kalibrieren + AVIF-Texture-Detection einbauen. ✓ erreicht.
+**Aufwand:** 1–1.5 Tag konzentrierter Build. ✓ eingehalten.
+
+## Release-Befund 2026-05-05
+
+| Phase | Status | Ergebnis |
+|---|---|---|
+| 5.0 Diagnose-Lesen | ✅ | `tests/real-world-2026-05-05.md` + ROADMAP gelesen |
+| 5.1 Severity-Felder | ✅ | DEFAULT_PRIM_MISSING + NESTED_USDZ: error → warning, Kommentar referenziert Sweep |
+| 5.2 3-Stufen-Banner | ✅ | i18n DE+EN: "Läuft mit Vorbehalt" / "Runs with caveats" (orange) |
+| 5.3 AVIF-Detection + Preview | ✅ | `readAvifSignature()` + Routing in `analyzeTexture()` + Native-Preview-Versuch |
+| 5.4 Test-Pool-Erwartungen | ✅ | Headless-EXPECTED um 5 Real-World-Files erweitert |
+| 5.5 Browser-Verifikation | ✅ | Chrome JS-Ebene (preview_eval) + Safari Live-Test: Frankfurt-Banner "Läuft mit Vorbehalt" 🟠, **AVIF Teppich.avif Native-Preview gerendert** (Screenshot-Beleg), DIEGOsat_master Trust 🟢 |
+| 5.6 Headless-Pool | ✅ | 12/12 PASS (DIEGOsat_TK_280426_01 fehlt noch im Pool für 13/13 — nachzureichen) |
+| 5.7 README + CHANGELOG | ✅ | v0.25.4-Eintrag + AR-QL-Sektion + Texture-Zeile + Roadmap-Zeile |
+| 5.8 ADR-28 + ADR-29 | ✅ | In `CLAUDE-Inspector-private.md` dokumentiert |
+| 5.9 Snapshot + Tag | ✅ | `v0.25.4-snapshot.html` + Commit `885cf4d` + Tag `v0.25.4` |
+
+**Highlight-Beleg:** Frankfurt-File (39 MB, 15× AVIF) wechselte von "AR Quick Look bricht" 🔴 (2 Fehler) zu **"Läuft mit Vorbehalt"** 🟠 (0 Fehler / 4 Warnungen / 3 Hinweise). Subtitle: *"Warnungen erkannt — Asset läuft, Apple-Verhalten kann abweichen."* AVIF `Teppich.avif` (640×640, 102.4 KB) öffnet im Texture-Modal mit voller Native-Preview in Safari.
+
+**Offene Punkte (für nächsten Sprint v0.25.4.1 Polish):**
+- PDF-Header zeigt weiter `v0.25` statt `v0.25.4` — bestätigt
+- Safari-PDF-Button öffnet HTML-Tab statt Direct-Download — bestätigt
+- Cache-Counter-UX-Verfeinerung — offen
+
+
 
 > Patch-Sprint nach v0.25.3. Master-Übersicht in `../ROADMAP.md`. Diagnose-Quelle: `tests/real-world-2026-05-05.md`.
 
