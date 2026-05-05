@@ -185,7 +185,7 @@ def build_context(usdz_path: Path) -> dict:
         # Texturen — Dimensionen aus Binary-Header
         for m in members:
             ext = m['name'].rsplit('.', 1)[-1].lower() if '.' in m['name'] else ''
-            if ext not in ('png', 'jpg', 'jpeg', 'webp', 'exr', 'hdr', 'ktx', 'ktx2', 'tif', 'tiff'):
+            if ext not in ('png', 'jpg', 'jpeg', 'webp', 'exr', 'hdr', 'ktx', 'ktx2', 'tif', 'tiff', 'avif'):
                 continue
             tex = {'name': m['name'], 'size': m['size'], 'width': None, 'height': None}
             d = m['_data']
@@ -234,7 +234,8 @@ AR_QL_RULES = [
     # ── Structure
     {
         'id': 'STRUCTURE_DEFAULT_PRIM_MISSING',
-        'severity': 'error',
+        # Severity-Recal 2026-05-05 — Real-World-Sweep 6/6 laufende Files. Apple fällt auf first prim zurück.
+        'severity': 'warn',
         'category': 'cat_structure',
         'check': lambda ctx: not (ctx.get('usdMeta') or {}).get('defaultPrim'),
     },
@@ -251,7 +252,8 @@ AR_QL_RULES = [
     },
     {
         'id': 'STRUCTURE_NESTED_USDZ',
-        'severity': 'error',
+        # Severity-Recal 2026-05-05 — Frankfurt läuft trotz Nesting. Apple toleriert.
+        'severity': 'warn',
         'category': 'cat_structure',
         'check': lambda ctx: any(
             re.search(r'\.usdz$', m['name'], re.IGNORECASE)
@@ -499,7 +501,9 @@ CAT_ORDER = {
     'cat_external': 3, 'cat_manifest': 4, 'cat_animation': 5, 'cat_performance': 6
 }
 
-# Soll-Erwartungen aus INSPECTOR-REVIEW-BRIEFING.md §3
+# Soll-Erwartungen — 7 Original-Pool-Files + 5 Real-World-Files (Severity-Recal v0.25.4)
+# Real-World-Sweep 2026-05-05: alle 5 unsignierten Files haben DEFAULT_PRIM_MISSING (jetzt warn)
+# → ampel orange (nicht mehr red). Quelle: tests/real-world-2026-05-05.md
 EXPECTED = {
     'master_three_levels.usdz':  {'ampel': 'green',  'state': ['SIGNED', 'DRAFT']},
     'tochter_marketing.usdz':    {'ampel': ['green', 'orange'], 'state': ['SIGNED', 'DRAFT']},
@@ -508,6 +512,13 @@ EXPECTED = {
     'bare_no_manifest.usdz':     {'ampel': ['green', 'orange'], 'state': 'NO_MANIFEST'},
     'wrong_first_file.usdz':     {'ampel': 'red',    'state': 'any'},
     'z_up_axis.usdz':            {'ampel': 'orange', 'state': 'any'},
+    # Real-World-Sweep 2026-05-05 (6 viSales-Kunden-/Demo-Files, unsigniert)
+    'Frankfurt_Varianten_TK_271125_01.usdz': {'ampel': 'orange', 'state': 'NO_MANIFEST'},
+    'Vitra_ID_Demo_TK_201125_01.usdz':       {'ampel': 'orange', 'state': 'NO_MANIFEST'},
+    'RENZ_Showtime_Demo.usdz':               {'ampel': 'orange', 'state': 'NO_MANIFEST'},
+    'AR-Wohnzimmer-_12_01_2022.usdz':        {'ampel': 'orange', 'state': 'NO_MANIFEST'},
+    'SalmonPastaWithInfo.usdz':              {'ampel': 'orange', 'state': 'NO_MANIFEST'},
+    # DIEGOsat_TK_280426_01.usdz fehlt noch im Pool — wird nachgereicht
 }
 
 

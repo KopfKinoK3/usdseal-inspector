@@ -14,11 +14,11 @@ You don't need USDseal to use this tool. Drop **any** USDZ file in and the Inspe
 
 | Feature | Description |
 |---|---|
-| **AR Quick Look traffic-light** | Green / orange / red diagnosis with 20 rules in 7 categories (structure, scale, textures, external references, manifest, animation, performance). Plain-language fix hints per finding (DE / EN). *(v0.22)* |
+| **AR Quick Look traffic-light** | Green / orange / red diagnosis with 20 rules in 7 categories. 3-tier severity — 🔴 breaks AR Quick Look / 🟠 runs with caveats / 🔵 cosmetic hint. Severity calibrated against real-world files (v0.25.4). Plain-language fix hints per finding (DE / EN). *(v0.22 / v0.25.4)* |
 | **State detection** | SIGNED / DRAFT / INVALID / NO_MANIFEST as a colored banner |
 | **USD metadata** | `defaultPrim`, `upAxis`, `metersPerUnit`, custom layer data |
 | **Asset inventory** | Filenames, sizes, SHA-256 — see exactly what's inside the ZIP |
-| **Texture analysis** | PNG / JPEG / WebP — dimensions, format, live thumbnails. Click any thumbnail for full-size modal with download. PBR channel badges (Diffuse / Normal / Roughness / Metallic / Emissive / Occlusion / Opacity / Displacement / Subsurface / Clearcoat). Status-aware: `used` (channel badge), `unused` (yellow-gray, orphaned in ZIP), `unknown` (red-gray, alias gap) *(v0.24 / v0.24.1)* |
+| **Texture analysis** | PNG / JPEG / WebP / **AVIF** (magic-bytes detection + native preview) — dimensions, format, live thumbnails. Click any thumbnail for full-size modal with download. PBR channel badges (Diffuse / Normal / Roughness / Metallic / Emissive / Occlusion / Opacity / Displacement / Subsurface / Clearcoat). Status-aware: `used` (channel badge), `unused` (yellow-gray, orphaned in ZIP), `unknown` (red-gray, alias gap) *(v0.24 / v0.24.1 / v0.25.4)* |
 | **Geometry stats** | 10 asset metrics: Geom-Count (Mesh + Sphere + Cube + procedural types), Poly-Count (tri-fan), Vertex-Count, Material-Count, Prim-Count, Joint/Bone-Count, UV-Sets, Subdivision-Level, Time-Range, FPS. USDA: full parsing across all sublayers. USDC: `?` (binary, not extractable). Procedural prims (Sphere/Cube): `proc`. *(v0.25)* |
 | **3D Preview & iOS AR test** | iOS Safari: `<model-viewer>` with AR Quick Look button (lazy CDN load, ~150 KB). Desktop/Android: step-by-step guide to get the USDZ onto iPhone via AirDrop, iCloud Drive, or Mail — tap the file and AR Quick Look launches automatically. *(v0.25 / v0.25.2)* |
 | **Parallel hashing** | Web Workers + loading indicator for large USDZ (50+ MB) *(v0.22.1)* |
@@ -91,6 +91,8 @@ Download `index.html` and open it locally. No web server needed.
 - **v0.24.1** *(2026-05-03)* — Multi-file drop (stacked mini-dashboards, session-based ↻-cards) + texture status refinement (used / unused / orphaned / unknown) + test-asset sync (new manifest_ids, Normal channel verified)
 - **v0.25** *(2026-05-04)* — Geometry stats (10 metrics: Geoms, Polys, Vertices, Materials, Prims, Joints, UV-Sets, Subdivision, Time-Range, FPS) + iOS 3D-Preview via `<model-viewer>` (conditional CDN lazy-load, AR Quick Look button) + Desktop QR-code bridge (client-side qrcode-svg, no server roundtrip)
 - **v0.25.2** *(2026-05-04)* — QR-code bridge removed (ADR-26 / ADR-PC5): Drag&Drop USDZs have no public URL reachable by iPhone — QR approach is architecturally incompatible with Privacy-First / Single-File / no-backend anchors. Replaced by iOS AR test guide (AirDrop / iCloud Drive / Mail). ~58 lines removed, no new dependencies.
+- **v0.25.3** *(2026-05-05)* — EN-toggle fixed cross-browser (ADR-27): Drop-zone, footer and cache-button were hard-coded DE HTML — not connected to `t()`. 5 new i18n keys + `id` attributes + page-load `t()` calls. 15 lines.
+- **v0.25.4** *(2026-05-06)* — Severity-Recalibration (ADR-28): `STRUCTURE_DEFAULT_PRIM_MISSING` and `STRUCTURE_NESTED_USDZ` downgraded from `error` to `warn` — validated against 6 real-world customer USDZs, all running fine on iPhone. Orange banner "Runs with caveats" (was "Works with caveats"). AVIF texture detection (ADR-29): magic-bytes reader + native browser preview with fallback label. Headless pool 12/12 PASS.
 
 **Plan**
 - **v0.26** — Composition explorer: layer stack, references, payloads and variants as a tree

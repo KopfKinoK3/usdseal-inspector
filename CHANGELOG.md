@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.25.4] — 2026-05-06
+
+### Changed
+- **Severity-Recalibration: 2 Regeln 🔴→🟠** (ADR-28): Real-World-Sweep 2026-05-05 mit 6 viSales-Kunden-/Demo-USDZs zeigte 100% Trefferquote bei `STRUCTURE_DEFAULT_PRIM_MISSING` (6/6 Files) und `STRUCTURE_NESTED_USDZ` (Frankfurt) — alle Files laufen auf iPhone in AR Quick Look. Inspector zeigte fälschlich "AR Quick Look bricht". Beide Regeln auf `warn` heruntergestuft. Auch das signierte DIEGOsat-Demo-File war betroffen.
+- **3-Stufen-Banner: "Läuft mit Vorbehalt"** (ADR-28): Orange-Banner-Text von "Funktioniert mit Caveats" auf **"Läuft mit Vorbehalt"** (DE) / **"Runs with caveats"** (EN) aktualisiert. Banner-Logik war bereits 3-stufig; i18n-Text jetzt akkurat.
+
+### Added
+- **AVIF-Texture-Detection + Native-Preview** (ADR-29): `readAvifSignature()` liest ISOBMFF-ftyp-Box (Bytes 4–11), erkennt `avif`- und `avis`-Brand. `analyzeTexture()` routet AVIF jetzt per Extension-Match ODER Magic-Bytes-Match. Native-Browser-Preview via Blob-URL + `<img>` (Chrome ✓, Safari 16.4+ ✓); bei `onerror` Fallback auf Label "AVIF (kein Browser-Preview)". Extension-Filter für Texture-Entries um `.avif` erweitert.
+
+### Architecture
+- **ADR-28** (Severity-Recal, 2026-05-06): Validator-Severity gegen Apple-Realität kalibriert. `STRUCTURE_DEFAULT_PRIM_MISSING` und `STRUCTURE_NESTED_USDZ` von `error` auf `warn`. Empirische Basis: 6 echte Kunden-Files, alle laufend auf iPhone. Inspector-USP gestärkt: Severity-Aussagen sind jetzt praxisvalidiert, nicht Spec-theoretisch.
+- **ADR-29** (AVIF-Detection, 2026-05-06): Magic-Bytes-Reader für AVIF-Signature. Native-Preview-Versuch mit Fallback. HEIC/KTX2/TIFF/ASTC verschoben in Backlog (kein Use-Case in Real-World-Sweep).
+
+### Notes
+- Headless-Pool-Test **12/12 PASS** (7 Original + 5 Real-World-Files mit aktualisierten Severity-Erwartungen).
+- `DIEGOsat_TK_280426_01.usdz` fehlt noch im Pool — wird separat nachgereicht.
+- Polish-Bugs (PDF-Header-Version, Safari-PDF-Download, Cache-Counter-UX) kommen separat in v0.25.4.1.
+
+---
+
 ## [0.25.3] — 2026-05-05
 
 ### Fixed
