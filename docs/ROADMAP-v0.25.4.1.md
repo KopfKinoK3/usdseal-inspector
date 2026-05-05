@@ -1,9 +1,23 @@
 # Roadmap v0.25.4.1 — UX-Polish-Patch
 
-**Status:** Vorbereitungs-Dokument · 2026-05-05
+**Status:** ✅ **COMPLETED 2026-05-05** · Commit `03799f0`, Tag `v0.25.4.1` online
 **Story-Slot:** *"Drei Mini-Bugs aus dem Real-World-Sweep aufräumen"*
-**Ziel:** Drei UX-Befunde aus dem Sweep 2026-05-05 fixen — alles klein, alles isoliert.
-**Aufwand:** 0.3–0.5 Tag.
+**Ziel:** Drei UX-Befunde fixen. ✓ erreicht.
+**Aufwand:** 0.3–0.5 Tag. ✓ eingehalten.
+
+## Release-Befund 2026-05-05
+
+| Bug | Status | Lösung |
+|---|---|---|
+| 1 — PDF-Header `v0.25` hardcoded | ✅ | `INSPECTOR_VERSION` dynamisch aus Versions-Badge gezogen |
+| 2 — Safari-PDF öffnet HTML-Tab | ✅ | **Variante A** (Anchor-Click-Pattern) hat Cross-Browser funktioniert — Variante B als ungenutzter Fallback im Briefing |
+| 3 — Cache-Tooltip irreführend | ✅ | i18n DE+EN präzisiert: "Manifest-IDs aus signierten USDZs" |
+| Headless-Pool | ✅ | 13/13 PASS (DIEGOsat_TK_280426_01-Erwartung nachgetragen) |
+| ADR-30 | ✅ | In CLAUDE-Inspector-private.md dokumentiert |
+
+**Live-Verifikation:** Duke hat in Safari + Chrome alle 4 Tests bestätigt — Direct-Download funktioniert in beiden Browsern, PDF-Header zeigt `v0.25.4.1`, Cache-Tooltip präziser.
+
+
 
 > Mini-Patch nach v0.25.4. Master-Übersicht in `../ROADMAP.md`.
 
