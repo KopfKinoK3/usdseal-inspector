@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.25.3] — 2026-05-05
+
+### Fixed
+- **EN-Toggle browser-übergreifend repariert** (ADR-27): Die Drop-Zone (Titel, Untertitel, Button), der Footer und der Cache-Button-Tooltip waren statisch als DE-HTML hart kodiert — kein `t()`-Aufruf, kein DOM-Update bei Page-Load. `CURRENT_LANG` und `localStorage` funktionierten korrekt, aber die sichtbaren UI-Elemente blieben DE. Diagnose-Befund: **Hypothese E** (I18N-Map unvollständig für initiale UI, statische HTML-Texte nicht per `t()` verbunden). Fix: 5 neue I18N-Keys (`drop_title`, `drop_sub`, `drop_btn`, `footer_text`, `cache_clear_title`) + `id`-Attribute auf betroffene DOM-Elemente + `t()`-Calls bei Page-Load (analog bestehendem PDF-Button-Pattern). 15 Zeilen, kein Architektur-Anker berührt.
+
+### Architecture
+- **ADR-27** (EN-Toggle-Befund, 2026-05-05): Hypothese E bestätigt (Browser-Console-Verifikation + Code-Analyse). Statische HTML-Elemente der Initial-UI nicht an das `t()`-System angebunden. Fix folgt dem bestehenden Inline-i18n-Pattern (ADR-4 v0.22, ADR-7 v0.22.1) — kein Build-Step, kein Bundle-Split.
+
+### Notes
+- Headless-Pool-Test 7/7 PASS (Toggle ist UI-Feature, kein Validator-Impact).
+- Safari-Cross-Browser-Test: Pflicht vor Push (Duke bestätigt).
+
+---
+
 ## [0.25.2] — 2026-05-04
 
 ### Removed

@@ -783,7 +783,7 @@ code {
     <div class="inline-def">
       <strong>What is USDseal?</strong>
       <p>
-        USDseal is a digital authenticity seal for USDZ files. It documents inside the file itself where the components come from, who assembled them, and whether the file has been altered since. Inspector is the browser-side companion — it reads the seal without any file leaving your machine. <a href="https://visales.de/usdseal/">→ More about USDseal</a>
+        USDseal is a digital authenticity seal for USDZ files. It documents inside the file itself where the components come from, who assembled them, and whether the file has been altered since. Inspector is the browser-side companion — it reads the seal without any file leaving your machine. <a href="#stack-usdseal">→ More about USDseal</a>
       </p>
     </div>
   </div>
@@ -1043,7 +1043,7 @@ code {
         <span class="label label-accent">PHASE 3 · USE</span>
         <h3>Verified, used, extended</h3>
         <p>
-          Before any handoff, the recipient opens the USDZ in Inspector and checks the content. <strong>The same file then runs without custom app development on iPhone, iPad, and Apple Vision Pro</strong> — and is simultaneously usable in a configurator (e.g. <a href="https://visales.de/usdconfig/" style="color: var(--accent-dark); font-weight: 700; text-decoration: none;">USDconfig</a>), as rendering, animation, or digital-twin asset. Additions flow back to the master with a new seal.
+          Before any handoff, the recipient opens the USDZ in Inspector and checks the content. <strong>The same file then runs without custom app development on iPhone, iPad, and Apple Vision Pro</strong> — and is simultaneously usable in a configurator (e.g. <a href="#stack-usdconfig" style="color: var(--accent-dark); font-weight: 700; text-decoration: none;">USDconfig</a>), as rendering, animation, or digital-twin asset. Additions flow back to the master with a new seal.
         </p>
       </article>
 
@@ -1052,6 +1052,60 @@ code {
     <p style="font-size:13px; color: var(--text-body); max-width: 640px; margin-top: 32px;">
       <a href="https://visales.de/spatial-sales-infrastructure/" style="color: var(--accent-dark); font-weight: 700; text-decoration: none;">→ More about Spatial Sales Infrastructure (DE)</a>
     </p>
+  </div>
+</section>
+
+<!-- ========== VISALES STACK ========== -->
+<section id="visales-stack">
+  <div class="wrap">
+    <div class="eyebrow">VISALES 3D STACK</div>
+    <h2>More from the viSales 3D stack.</h2>
+    <p class="lead">
+      Inspector is the verification surface. Around it sit further viSales tools that share the same pipeline picture.
+    </p>
+
+    <div style="margin-top: 28px;">
+
+      <div class="faq-item" id="stack-usdseal">
+        <button class="faq-q" aria-expanded="false">
+          <span>USDseal — provenance and lineage layer for USDZ</span>
+          <svg class="faq-q-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <p style="margin-bottom: 12px;">CLI with <code>init</code>, <code>sign</code>, <code>verify</code>, <code>inspect</code>, <code>export</code>, <code>merge</code>. Cryptographically stamps asset sources and license info into the USDZ file. Master / derivative workflow for rights-filtered sales versions. Open source, Apache-2.0, C2PA-compatible. Inspector is its browser-side companion.</p>
+            <p style="margin: 0; font-size: 12px; color: var(--text-description);">Questions? Reach out on <a href="https://www.linkedin.com/in/gerhardschroeder/" target="_blank" rel="noopener" style="color: var(--primary-dark); font-weight: 700; text-decoration: none;">LinkedIn → Gerhard Schröder</a>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" id="stack-usdconfig">
+        <button class="faq-q" aria-expanded="false">
+          <span>USDconfig — product configurator on USDZ basis</span>
+          <svg class="faq-q-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <p style="margin-bottom: 12px;">Web-based configuration plus AR preview from a single 3D master. All variants from one dataset, no asset sprawl. Runs directly on iPhone, iPad, Apple Vision Pro, and in the browser. For sales presentations, showroom AR, webshop integration.</p>
+            <p style="margin: 0; font-size: 12px; color: var(--text-description);">Questions? Reach out on <a href="https://www.linkedin.com/in/gerhardschroeder/" target="_blank" rel="noopener" style="color: var(--primary-dark); font-weight: 700; text-decoration: none;">LinkedIn → Gerhard Schröder</a>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" id="stack-usdbridge">
+        <button class="faq-q" aria-expanded="false">
+          <span>USDbridge — bridge between NVIDIA Omniverse and the Apple ecosystem</span>
+          <svg class="faq-q-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <div class="faq-a">
+          <div class="faq-a-inner">
+            <p style="margin-bottom: 12px;">Adapts USD specs from NVIDIA Omniverse so the file runs in AR Quick Look (iPhone, iPad) and on Apple Vision Pro — pure format and spec adjustment. No polygon reduction, no material rebuilding. The engineering asset reaches sales endpoints unchanged.</p>
+            <p style="margin: 0; font-size: 12px; color: var(--text-description);">Questions? Reach out on <a href="https://www.linkedin.com/in/gerhardschroeder/" target="_blank" rel="noopener" style="color: var(--primary-dark); font-weight: 700; text-decoration: none;">LinkedIn → Gerhard Schröder</a>.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </section>
 
@@ -1156,16 +1210,16 @@ code {
         <h4>More from viSales</h4>
         <ul>
           <li>
-            <a href="https://visales.de/usdseal/">USDseal</a>
-            <span>Provenance and lineage layer for USDZ. Inspector is its verification surface. (DE)</span>
+            <a href="#stack-usdseal">USDseal</a>
+            <span>Provenance and lineage layer for USDZ. Inspector is its verification surface.</span>
           </li>
           <li>
-            <a href="https://visales.de/usdconfig/">USDconfig</a>
-            <span>Product configurators on USDZ basis — configure on the web, preview in AR, same 3D data. (DE)</span>
+            <a href="#stack-usdconfig">USDconfig</a>
+            <span>Product configurators on USDZ basis — configure on the web, preview in AR, same 3D data.</span>
           </li>
           <li>
-            <a href="https://visales.de/usdbridge/">USDbridge</a>
-            <span>CAD-to-USD bridge between Omniverse and the Apple ecosystem. Engineering data becomes sales-ready. (DE)</span>
+            <a href="#stack-usdbridge">USDbridge</a>
+            <span>Bridge between NVIDIA Omniverse and the Apple ecosystem — spec adjustment for AR Quick Look and Apple Vision Pro.</span>
           </li>
         </ul>
       </div>
