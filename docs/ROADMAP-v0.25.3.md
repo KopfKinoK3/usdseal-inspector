@@ -1,12 +1,26 @@
 # Roadmap v0.25.3 — EN-Toggle-Hotfix
 
-**Status:** Vorbereitungs-Dokument · 2026-05-04 (umnummeriert von v0.25.1 nach v0.25.2-Release)
+**Status:** ✅ **COMPLETED 2026-05-04** · Commit `fe5fa87`, Tag `v0.25.3` online
 **Story-Slot:** *"Polyglot wirklich"* — bekannter Bug-Fix
-**Ziel:** Sprach-Toggle DE↔EN funktioniert browser-übergreifend (heute: Toggle klickbar, aber UI bleibt nach Reload auf DE).
-**Aufwand:** 0.25–0.5 Tag konzentrierter Build (Hotfix).
+**Ziel:** Sprach-Toggle DE↔EN funktioniert browser-übergreifend. ✓ erreicht.
+**Aufwand:** 0.25–0.5 Tag konzentrierter Build (Hotfix). ✓ eingehalten.
 
 > Patch-Sprint. Master-Übersicht in `../ROADMAP.md`.
 > **Sequenz-Hinweis:** Ursprünglich als v0.25.1 geplant. Nach v0.25.2-Release umnummeriert auf v0.25.3, damit die Reihenfolge optisch konsistent bleibt (kein "v0.25.1 nach v0.25.2").
+
+## Release-Befund 2026-05-04
+
+| Phase | Status | Ergebnis |
+|---|---|---|
+| 5.0 Diagnose | ✅ | **Hypothese E** mit Sub-Variante "statische HTML-Elemente nicht per `t()` angeschlossen" — I18N-Map war vollständig, aber Buttons/Headlines/Banner-Texte lasen die Werte nie ab |
+| 5.1 Fix | ✅ | 5 I18N-Keys + 5 DOM-IDs + 5 `t()`-Calls, ~15 Zeilen Code |
+| 5.2 Browser-Verifikation | ✅ | Chrome (Code-Chat) + Safari (Duke live-Test) — DE→EN→DE Round-Trip sauber, kein JS-Fehler |
+| 5.3 Headless-Pool | ✅ | 7/7 PASS |
+| 5.4 CHANGELOG | ✅ | v0.25.3-Eintrag mit Hypothese-E-Befund |
+| 5.5 ADR-27 | ✅ | In `CLAUDE-Inspector-private.md` dokumentiert (nicht ADR-26 wie im Decision-Log-Template — ADR-26 war schon durch v0.25.2-QR-Rollback vergeben) |
+| 5.6 Snapshot + Tag | ✅ | `v0.25.3-snapshot.html` + Tag `v0.25.3` (Commit `fe5fa87`) |
+
+**Lerneffekt:** Hypothese E aus dem Briefing-Katalog hatte den Sub-Pfad "statische HTML-Elemente nicht per t() angeschlossen" nicht explizit. Echte Welt war zwischen E (Map-Lücken) und einer neuen Variante: I18N-Map vollständig, aber Konsumenten-Pfad nicht verdrahtet. Phase 5.0 hat den Befund sauber rausgeholt — ADR-PC4 Verification-before-Hypothesis hält ein viertes Mal.
 
 ---
 
@@ -122,18 +136,20 @@ Keine — Hotfix-Sprint, alle Vorbedingungen aus dem User-Report erfüllt.
 
 ## 8. Decision-Log-Template
 
-```markdown
-### ADR-26 EN-Toggle-Befund — 2026-05-XX
+**Hinweis Nummerierung:** Decision-Log-Template hatte ursprünglich ADR-26 als Platzhalter. ADR-26 ist aber durch v0.25.2 (QR-Rollback) bereits vergeben. EN-Toggle-Fix ist daher **ADR-27**.
 
-**Kontext:** EN-Toggle klickte sichtbar, aber UI blieb auf DE nach Reload. Browser-übergreifend.
+```markdown
+### ADR-27 EN-Toggle-Befund — 2026-05-04
+
+**Kontext:** EN-Toggle klickte sichtbar, aber UI blieb auf DE nach Reload. Browser-übergreifend (Safari + Chrome).
 
 **Diagnose-Befund (aus Phase 5.0):**
-- Hypothese ___ bestätigt durch Browser-Console-Test
-- Konkret: ___ (z. B. localStorage.setItem schlug fehl, oder Reader-Fall-Through)
+- Hypothese E bestätigt mit Sub-Variante: I18N-Map war vollständig (DE+EN für alle Keys vorhanden), aber statische HTML-Elemente waren nicht per `t()`-Funktion an die Map angeschlossen — d. h. Buttons/Headlines/Banner-Texte lasen die Werte nie ab.
+- Konkret: 5 statische Elemente in `index.html` ohne `data-i18n`-Attribut bzw. ohne `t()`-Call beim Sprachwechsel.
 
-**Entscheidung:** ___ (z. B. location.replace statt reload, I18N-Map vervollständigen)
+**Entscheidung:** 5 I18N-Keys ergänzen + 5 DOM-IDs vergeben + 5 `t()`-Calls in der `applyLanguage()`-Funktion nachziehen.
 
-**Konsequenz:** EN-Toggle funktioniert browser-übergreifend. Kein Architektur-Anker berührt.
+**Konsequenz:** EN-Toggle funktioniert browser-übergreifend. Englisch-sprechende AOUSD-Forum-Besucher sehen ab v0.25.3 einen funktionierenden Inspector. Kein Architektur-Anker berührt.
 ```
 
 ---
