@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.25.4.1] — 2026-05-06
+
+### Fixed
+- **PDF-Header dynamisch** (ADR-30): `INSPECTOR_VERSION` von `'0.25'` auf `'0.25.4.1'` — jetzt immer synchron mit Version-Badge. Alle jsPDF-Aufrufe (Header, Footer, Provenance-Text) nutzen dieselbe Konstante; kein weiteres Hardcoding.
+- **Cross-Browser-PDF-Download** (ADR-30): `doc.save()` / `dataurlnewwindow`-Safari-Weiche durch Anchor-Click-Pattern ersetzt (`doc.output('blob')` → `URL.createObjectURL` → `a.click()` synchron im Click-Handler → `revokeObjectURL`). Safari öffnet keinen neuen Tab mehr, direkter Download in Chrome + Safari.
+- **Cache-Tooltip präzisiert** (ADR-30): i18n-Key `cache_clear_title` DE: "Lokal gespeicherte Manifest-IDs aus signierten USDZs löschen" / EN: "Locally stored manifest IDs from signed USDZs (clear)". Button-Text "Cache (N)" unverändert.
+
+### Architecture
+- **ADR-30** (PDF-Output-Polish, 2026-05-06): Anchor-Click muss synchron im User-Click-Handler laufen — Safari blockt bei async (User-Activation fehlt). Safari-UA-Weiche aus v0.25 entfernt; Variante A (Anchor-Click) Cross-Browser sauber.
+
+### Notes
+- Headless-Pool-Test **13/13 PASS** (inkl. `DIEGOsat_TK_280426_01.usdz` nachgereicht + Erwartung definiert).
+
+---
+
 ## [0.25.4] — 2026-05-06
 
 ### Changed

@@ -518,7 +518,8 @@ EXPECTED = {
     'RENZ_Showtime_Demo.usdz':               {'ampel': 'orange', 'state': 'NO_MANIFEST'},
     'AR-Wohnzimmer-_12_01_2022.usdz':        {'ampel': 'orange', 'state': 'NO_MANIFEST'},
     'SalmonPastaWithInfo.usdz':              {'ampel': 'orange', 'state': 'NO_MANIFEST'},
-    # DIEGOsat_TK_280426_01.usdz fehlt noch im Pool — wird nachgereicht
+    # Duke nachgereicht 2026-05-06 (v0.25.4.1-Sweep)
+    'DIEGOsat_TK_280426_01.usdz':           {'ampel': 'orange', 'state': 'SIGNED'},
 }
 
 
