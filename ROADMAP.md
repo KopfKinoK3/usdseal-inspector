@@ -2,7 +2,7 @@
 
 **Repo:** [github.com/KopfKinoK3/usdseal-inspector](https://github.com/KopfKinoK3/usdseal-inspector)
 **Live:** [kopfkinok3.github.io/usdseal-inspector](https://kopfkinok3.github.io/usdseal-inspector/)
-**Aktueller Stand:** v0.25.4.1 (Polish-Patch — PDF-Header dynamisch + Cross-Browser-PDF-Download + Cache-Tooltip, released 2026-05-05, Commit `03799f0`). Nächster Sprint: v0.26 Komposition + PDF-Template-Update.
+**Aktueller Stand:** v0.25.5 (OpenUSD-Texture-Spec komplett, released 2026-05-06). **Nächster Sprint: v0.26** Komposition entwirrt + PDF aufgeholt.
 **Maintainer:** viSales GmbH (Mitglied Alliance for OpenUSD)
 **Lizenz:** Apache 2.0
 **Stand dieses Dokuments:** 2026-05-04
@@ -95,6 +95,7 @@ Jedes Release hat einen **eigenen Talk-Slide**. Drei strategische Story-Punkte v
 | **v0.25.3** | *Polyglot wirklich* | EN-Toggle Browser-übergreifend repariert (Bug 1 aus v0.25-Real-World-Test). Phase 5.0 Diagnose ergab **Hypothese E** mit Sub-Variante: statische HTML-Elemente waren nicht per `t()` angeschlossen — I18N-Map war vollständig, aber Buttons/Headlines/Banner-Texte lasen die Werte nie. Fix: 5 I18N-Keys + 5 DOM-IDs + 5 `t()`-Calls, ~15 Zeilen. ADR-27 dokumentiert. **Umnummeriert** von ursprünglich v0.25.1. | ✅ released 2026-05-04, Tag online (Commit `fe5fa87`) |
 | **v0.25.4** | *Validator kalibriert + AVIF angekommen* | Severity-Recalibration (2 Regeln 🔴→🟠: STRUCTURE_DEFAULT_PRIM_MISSING + STRUCTURE_NESTED_USDZ) + 3-Stufen-Banner ("Läuft mit Vorbehalt") + AVIF-Detection mit Native-Preview. Frankfurt-File mit 15× AVIF live verifiziert (Teppich.avif rendert nativ in Safari). Headless-Pool 12/12 (DIEGOsat_TK_280426_01 noch nachzulegen für 13/13). ADR-28 + ADR-29. Diagnose-Quelle: `tests/real-world-2026-05-05.md`. | ✅ released 2026-05-05, Tag online (Commit `885cf4d`) |
 | **v0.25.4.1** | *Drei Mini-Bugs aus dem Sweep* | UX-Polish-Patch: PDF-Header dynamisch aus Versions-Badge ✓, Cross-Browser-PDF-Download via Anchor-Click-Pattern Variante A ✓ (Variante B als Fallback nicht nötig), Cache-Counter-Tooltip präzisiert ✓. Headless-Pool 13/13 mit DIEGOsat_TK_280426_01 nachgereicht. ADR-30. | ✅ released 2026-05-05, Tag online (Commit `03799f0`) |
+| **v0.25.5** | *OpenUSD-Texture-Spec komplett abgedeckt* | HEIC/KTX2/TIFF/ASTC Magic-Bytes-Reader nach AVIF-Pattern (v0.25.4). HEIC mit Native-Preview-Versuch in Safari, Rest Format-Label only (kein Polyfill — Single-File-Anker). Test-Strategie: synthetische Magic-Bytes-Streams (kein Real-File-Use-Case in Kunden-Pool). AOUSD-Talk-Slide-Material: erster Web-USDZ-Inspector mit kompletter Spec-Coverage. ADR-31. | ✅ released 2026-05-06, 18/18 Tests PASS |
 | **v0.26** | *Komposition entwirrt + PDF aufgeholt* | Layer-Stack, References, Payloads, Variants als Baum + **PDF-Template-Erweiterung** um Channel-Erkennung (v0.24), Geometry-Stats (v0.25), AVIF (v0.25.4) und kalibriertes Severity-Mapping (v0.25.4) — der v0.23-PDF-Builder hinkt aktuell hinterher und zeigt nur den damaligen Stand. Plus: ADR-Diskussion zur USDC-Material-Heuristik (Befund aus 26 MB Real-World-TK-Asset). **Backlog-Aufnahme:** HEIC/KTX2/TIFF/ASTC Spec-Vollständigkeit (kein Use-Case in 6 Real-World-Files, aber Spec-konform). | geplant, 3–4 Tage |
 | **v0.27** | *Beweise, was sich geändert hat* | Diff-View bei Hash-Mismatch (Bytes / Texturen-Auflösung) | geplant, 1–2 Tage |
 | **v0.28** | *Trag den Inspector überall hin* | README-Embed-Sektion mit Konsumer-Inline-Boilerplate (`<usdseal-inspector>`-Custom-Element via iframe-Wrapper, ~10 Zeilen Copy-Paste). Plus QR-Code-Konferenz-Pack als separates kleines HTML. **Inspector-Code unverändert** — Single-File-Anker bleibt für immer. Web-Component-Pattern wird **dokumentiert**, nicht **distributed**. | geplant, 1–2 Tage |
@@ -215,6 +216,7 @@ Aktuell vorhanden:
 - `docs/ROADMAP-v0.25.3.md` — EN-Toggle Hotfix (✅ released 2026-05-04, Commit `fe5fa87`, ADR-27, Hypothese E)
 - `docs/ROADMAP-v0.25.4.md` — Severity-Recal + AVIF-Detection (✅ released 2026-05-05, Commit `885cf4d`, ADR-28 + ADR-29)
 - `docs/ROADMAP-v0.25.4.1.md` — Polish-Patch (✅ released 2026-05-05, Commit `03799f0`, ADR-30)
+- `docs/ROADMAP-v0.25.5.md` — Texture-Spec-Vollständigkeit HEIC/KTX2/TIFF/ASTC (📋 nächster Sprint, ADR-31)
 - `tests/real-world-2026-05-05.md` — Real-World-Test-Sweep mit 6 Kunden-Files als Diagnose-Quelle für v0.25.4
 - ~~`docs/ROADMAP-v0.25.5.md`~~ — *gestrichen, Severity-Recal-Inhalt wandert in v0.25.4 (refaktoriert)*
 

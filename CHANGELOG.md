@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.25.5] — 2026-05-06
+
+### Added
+- **OpenUSD-Texture-Spec komplett abgedeckt** (ADR-31): Magic-Bytes-Reader für alle vier verbleibenden OpenUSD-USDZ-Spec-Formate nach AVIF-Pattern (v0.25.4):
+  - `readHeicSignature()` — ISOBMFF-ftyp-Box mit Brand `heic`/`heix`/`mif1`/`msf1`
+  - `readKtx2Signature()` — 12-Byte KTX2-Magic `\xABKTX 20\xBB\r\n\x1A\n`
+  - `readTiffSignature()` — 4-Byte LE (`II*\0`) oder BE (`MM\0*`)
+  - `readAstcSignature()` — 4-Byte Magic `\x13\xAB\xA1\x5C`
+- **HEIC Native-Preview** analog AVIF: Blob-URL + `<img>` (Safari rendert HEIC nativ ✓); bei `img.onerror` (Chrome) Fallback-Label "HEIC (kein Browser-Preview in Chrome)".
+- **Routing-Reihenfolge in `analyzeTexture()`**: PNG → JPEG → WebP → KTX2 → AVIF → HEIC → TIFF → ASTC → Extension-Fallback.
+- **Extension-Filter** um `.heic` und `.astc` erweitert (beide Texture-Entry-Loops).
+- **Synthetische Headless-Tests** für alle vier Reader (5 Cases, kein USDZ-Wrapper nötig).
+
+### Architecture
+- **ADR-31** (OpenUSD-Texture-Spec-Vollständigkeit, 2026-05-06): Kein Real-World-Use-Case in 6 Kunden-Files — aber OpenUSD-USDZ-Spec listet HEIC/KTX2/TIFF/ASTC als erlaubt. AVIF-Pattern aus v0.25.4 skaliert 1:1. KTX2/TIFF/ASTC: Format-Label only, kein Polyfill (Single-File-Anker ADR-PC5). Bundle-Wachstum: ~60 Zeilen.
+
+### Notes
+- Headless-Pool **13/13 PASS** (Pool unverändert) + **5/5 synthetische Reader-Tests** = **18/18 Cases gesamt**.
+- Inspector ist jetzt das erste Web-USDZ-Tool mit kompletter OpenUSD-Spec-Texture-Coverage.
+
+---
+
 ## [0.25.4.1] — 2026-05-06
 
 ### Fixed

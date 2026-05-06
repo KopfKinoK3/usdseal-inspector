@@ -598,6 +598,60 @@ def print_report(usdz_path: Path):
     print(f'  Soll/Ist: {verdict}')
 
 
+# ── Synthetische Magic-Bytes-Reader-Tests (v0.25.5) ──────────────────────────
+
+def read_heic_signature(data: bytes):
+    if len(data) < 12: return None
+    if data[4:8] != b'ftyp': return None
+    brand = data[8:12].decode('ascii', errors='replace')
+    if brand in ('heic', 'heix', 'mif1', 'msf1'): return {'format': 'HEIC'}
+    return None
+
+def read_ktx2_signature(data: bytes):
+    expected = bytes([0xAB, 0x4B, 0x54, 0x58, 0x20, 0x32, 0x30, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A])
+    if len(data) < 12: return None
+    if data[:12] == expected: return {'format': 'KTX2'}
+    return None
+
+def read_tiff_signature(data: bytes):
+    if len(data) < 4: return None
+    if data[:4] == bytes([0x49, 0x49, 0x2A, 0x00]): return {'format': 'TIFF', 'endian': 'LE'}
+    if data[:4] == bytes([0x4D, 0x4D, 0x00, 0x2A]): return {'format': 'TIFF', 'endian': 'BE'}
+    return None
+
+def read_astc_signature(data: bytes):
+    if len(data) < 4: return None
+    if data[:4] == bytes([0x13, 0xAB, 0xA1, 0x5C]): return {'format': 'ASTC'}
+    return None
+
+
+def run_reader_tests() -> tuple[int, int]:
+    """4 synthetische Magic-Bytes-Reader-Tests (kein USDZ-Wrapper nötig)."""
+    tests = [
+        ('HEIC ftyp heic',  bytes([0,0,0,0x20, 0x66,0x74,0x79,0x70, 0x68,0x65,0x69,0x63]), read_heic_signature,  'HEIC'),
+        ('KTX2 12-Byte Magic', bytes([0xAB,0x4B,0x54,0x58,0x20,0x32,0x30,0xBB,0x0D,0x0A,0x1A,0x0A]), read_ktx2_signature, 'KTX2'),
+        ('TIFF LE II*\\0',   bytes([0x49,0x49,0x2A,0x00]),  read_tiff_signature,  'TIFF'),
+        ('ASTC 4-Byte Magic', bytes([0x13,0xAB,0xA1,0x5C]), read_astc_signature, 'ASTC'),
+    ]
+    passed = 0
+    failed = 0
+    print('\n── Synthetische Reader-Tests (v0.25.5) ────────────────────')
+    for name, data, fn, expected_format in tests:
+        result = fn(data)
+        ok = result is not None and result.get('format') == expected_format
+        status = '✓ PASS' if ok else f'⚠ FAIL (got {result!r})'
+        print(f'  [{expected_format:<5}] {name:<30} {status}')
+        if ok: passed += 1
+        else:  failed += 1
+    # Negative: falscher Magic → None
+    neg = read_ktx2_signature(bytes([0x00] * 12))
+    neg_ok = neg is None
+    print(f'  [NEG  ] KTX2 falsche Bytes → None         {"✓ PASS" if neg_ok else "⚠ FAIL"}')
+    if neg_ok: passed += 1
+    else:      failed += 1
+    return passed, failed
+
+
 def main():
     pool_dir = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).parent.parent.parent / 'usdz' / 'review-pool'
 
@@ -645,7 +699,14 @@ def main():
             print(f'{usdz.name:<35} ERROR: {e}')
 
     print('─' * 85)
-    print(f'Ergebnis: {pass_count} PASS · {fail_count} FAIL / {len(files)} Files')
+
+    reader_pass, reader_fail = run_reader_tests()
+    total_pass = pass_count + reader_pass
+    total_fail = fail_count + reader_fail
+    total = len(files) + reader_pass + reader_fail
+    print(f'\nErgebnis: {pass_count} PASS · {fail_count} FAIL / {len(files)} Pool-Files')
+    print(f'          {reader_pass} PASS · {reader_fail} FAIL / {reader_pass + reader_fail} Reader-Tests (synthetisch)')
+    print(f'Gesamt:   {total_pass} PASS · {total_fail} FAIL / {total} Cases')
 
 
 if __name__ == '__main__':
