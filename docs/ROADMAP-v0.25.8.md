@@ -1,9 +1,28 @@
 # Roadmap v0.25.8 — AR-QL-Regel-Korrekturen aus Recherche-Audit
 
-**Status:** Vorbereitungs-Dokument · 2026-05-06
+**Status:** ✅ **COMPLETED 2026-05-06** · Commit `2ce334a`, Tag `v0.25.8` online
 **Story-Slot:** *"Validator-Regeln gegen Apple/OpenUSD verifiziert und korrigiert"*
-**Ziel:** Drei Befunde aus dem AR-QL-Sources-Recherche-Audit umsetzen — Regel-Texte, Schwellen und Disclaimer korrigieren.
-**Aufwand:** 0.3–0.5 Tag.
+**Ziel:** Drei Befunde aus dem AR-QL-Sources-Recherche-Audit umsetzen. ✓ erreicht.
+**Aufwand:** 0.3–0.5 Tag. ✓ eingehalten.
+
+## Release-Befund 2026-05-06
+
+| Phase | Status | Ergebnis |
+|---|---|---|
+| 5.0 Diagnose | ✅ | AVIF/HEIC keine False-Positives. **ASTC-Lücke gefunden** — fehlte in bad-list. |
+| 5.1 TEXTURE_FORMAT_UNSUPPORTED | ✅ | error → warn, WebP raus, AVIF/HEIC in allowed-list, ASTC nachgetragen, Trigger auf `ctx.textures.extension` |
+| 5.2 STRUCTURE_FILE_SIZE_LIMIT | ✅ | "viSales-Empfehlung" statt "Apple empfiehlt" |
+| 5.3 TEXTURE_TOO_LARGE | ✅ | Split: TEXTURE_TOO_LARGE_WARN (>2048) + TEXTURE_TOO_LARGE_ERROR (>4096) |
+| 5.4 AR-QL-RULES.md | ✅ | Disclaimer + Quellen-Verlinkung auf `AR-QL-RULES-SOURCES.md` |
+| 5.5 Verifikation Browser | ✅ | Alle Schwellen-Checks korrekt verifiziert |
+| 5.6 Headless-Pool | ✅ | 18/18 PASS |
+| 5.7 README + CHANGELOG | ✅ | v0.25.8-Eintrag |
+| 5.8 ADR-34 | ✅ | In `CLAUDE-Inspector-private.md` |
+| 5.9 Snapshot + Tag | ✅ | Commit `2ce334a` + Tag `v0.25.8` |
+
+**ASTC-Konsistenz-Catch:** Phase 5.0 (Diagnose, ADR-PC4-Disziplin) hat einen **echten Bug gefangen** — ASTC fehlte in der bad-list (während AVIF/HEIC korrekt in allowed-list waren). Das ist genau warum Phase 5.0 nicht-skippbar ist: Konsistenz-Check zwischen v0.25.4 (AVIF), v0.25.5 (HEIC/KTX2/TIFF/ASTC) und der jetzt korrigierten `TEXTURE_FORMAT_UNSUPPORTED`-Trigger-Logik.
+
+
 
 > Patch-Sprint nach v0.25.7. Master-Übersicht in `../ROADMAP.md`. Diagnose-Quelle: `docs/AR-QL-RULES-SOURCES.md`.
 

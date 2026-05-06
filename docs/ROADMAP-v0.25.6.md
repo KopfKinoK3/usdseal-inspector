@@ -1,9 +1,29 @@
 # Roadmap v0.25.6 — User-First-Report-Reihenfolge
 
-**Status:** Vorbereitungs-Dokument · 2026-05-06
+**Status:** ✅ **COMPLETED 2026-05-06** · Commit `962ce00`, Tag `v0.25.6` online
 **Story-Slot:** *"Vom USDseal-zentrischen zum generischen USDZ-Audit-Report"*
-**Ziel:** PDF-Report-Sektion-Reihenfolge umkehren — AR-Quick-Look-Diagnose nach oben, USDseal-Trust/Provenance nach unten. Inhalt unverändert, nur Reihenfolge.
-**Aufwand:** 0.3–0.5 Tag.
+**Ziel:** PDF-Report-Sektion-Reihenfolge umkehren. ✓ erreicht.
+**Aufwand:** 0.3–0.5 Tag. ✓ eingehalten.
+
+## Release-Befund 2026-05-06
+
+| Phase | Status | Ergebnis |
+|---|---|---|
+| 5.0 Diagnose | ✅ | generatePDF()-Struktur klar |
+| 5.1 Sektion-Reorder | ✅ | AR-Diagnose oben, USDseal-Block unten |
+| 5.1.5 Footer-Link-Fix | ✅ | visales.de/usdseal → Landingpage-Anchor |
+| 5.2 USDseal-Block-Header | ✅ | "USDSEAL · TRUST & PROVENANCE" mit oranger Akzentleiste |
+| 5.3 Kompakter NO_MANIFEST | ✅ | Minimal-Hint + Inventory, kein Counter-Bereich |
+| 5.4 Browser-Verifikation | ✅ | NO_MANIFEST + SIGNED beide ohne Fehler |
+| 5.5 Cross-Type-Test | ✅ | beide Report-Typen sauber |
+| 5.6 Headless-Pool | ✅ | 18/18 PASS |
+| 5.7 README + CHANGELOG | ✅ | v0.25.6-Eintrag |
+| 5.8 ADR-32 | ✅ | In `CLAUDE-Inspector-private.md` |
+| 5.9 Snapshot + Tag | ✅ | `v0.25.6-snapshot.html` + Commit `962ce00` + Tag |
+
+**Bonus:** AR-State-Banner im PDF — Ampel-Daten waren vorhanden, wurden aber nie als Banner gerendert. Jetzt zeigt der PDF-AR-Block direkt **"AR Quick Look: bricht / Läuft mit Vorbehalt / sauber"** prominent oben. Macht den User-First-Effekt komplett.
+
+
 
 > Patch-Sprint nach v0.25.5. Master-Übersicht in `../ROADMAP.md`.
 

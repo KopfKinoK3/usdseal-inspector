@@ -1,9 +1,27 @@
 # Roadmap v0.25.7 — USDC-Material-Limitation ehrlich kommunizieren
 
-**Status:** Vorbereitungs-Dokument · 2026-05-06
+**Status:** ✅ **COMPLETED 2026-05-06** · Commit `627f86b`, Tag `v0.25.7` online
 **Story-Slot:** *"Was wir nicht wissen können — und wie wir's sagen"*
-**Ziel:** UNUSED-Befund aus Frankfurt-Live-Test (alle Texturen als unused markiert obwohl genutzt) mit ehrlicher UI-Kommunikation lösen — Status "unknown" statt "unused" wenn USDC-Binary-Material-Refs nicht parsed werden können.
-**Aufwand:** 0.3–0.5 Tag.
+**Ziel:** UNUSED-Befund aus Frankfurt-Live-Test mit ehrlicher UI-Kommunikation lösen. ✓ erreicht.
+**Aufwand:** 0.3–0.5 Tag. ✓ eingehalten.
+
+## Release-Befund 2026-05-06
+
+| Phase | Status | Ergebnis |
+|---|---|---|
+| 5.1 Detection-Heuristik | ✅ | `buildChannelMap` erkennt `usdcBinaryMaterials`-Trigger |
+| 5.2 UI-Status-Badge | ✅ | UNKNOWN statt UNUSED bei USDC-Binary |
+| 5.3 Hinweis-Box | ✅ | DE+EN i18n im Texture-Inventar |
+| 5.4 PDF-Report | ✅ | Gleicher Hint als Box in der Asset-Inventory-Sektion |
+| 5.5 Verifikation Browser | ✅ | Frankfurt: 55 Texturen UNKNOWN + Hinweis-Box ✓ ; DIEGOsat (signiert + USDC-binary): UNKNOWN-Texturen + Trust-Banner grün — schöner Beleg dass beide Layer parallel funktionieren |
+| 5.6 Headless-Pool | ✅ | 18/18 PASS |
+| 5.7 README + CHANGELOG | ✅ | v0.25.7-Eintrag |
+| 5.8 ADR-33 | ✅ | In `CLAUDE-Inspector-private.md` |
+| 5.9 Snapshot + Tag | ✅ | `v0.25.7-snapshot.html` + Commit `627f86b` + Tag |
+
+**Bonus-Bugfix:** `t` als Loop-Var in `forEach`/`map` überschattete die i18n-`t()`-Funktion. Code-Chat hat das beim USDC-Refactor gefangen und auf `tex` umbenannt. Klassischer JavaScript-Shadow-Bug — wurde nur durch das Refactor sichtbar. ADR-PC4 (Verification before Hypothesis) hält.
+
+
 
 > Patch-Sprint nach v0.25.6. Master-Übersicht in `../ROADMAP.md`. Diagnose-Quelle: `tests/real-world-2026-05-05.md`.
 
