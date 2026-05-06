@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.25.7] — 2026-05-06
+
+### Changed
+- **USDC-Material-Limitation transparent kommuniziert** (ADR-33): Frankfurt-USDZ (22 USDC-Sub-Files) zeigte alle Texturen fälschlicherweise als UNUSED — obwohl AR Quick Look alle rendert. Inspector kann USDC-Binary-Material-Bindings strukturell nicht parsen.
+  - `buildChannelMap` erkennt jetzt USDC-Binary-Files + prüft ob USDA-Connect-Edges existieren → `usdcBinaryMaterials: bool` im Return-Value
+  - Texture-Status: bei USDC-Binary-Materials werden alle unbindigen Texturen als **"unknown"** (statt "unused") markiert — in Einzel- und Multi-File-View
+  - Neu: **Hinweis-Box** oben im Texture-Inventar wenn Heuristik greift (DE+EN i18n)
+  - PDF-Audit-Report: gleicher Hint als Box in der Asset-Inventory-Sektion
+  - Badge-Tooltip i18n: `usdc_mat_badge_tooltip` DE+EN
+
+### Architecture
+- **ADR-33** (USDC-Material-Limitation transparent, 2026-05-06): "unused" war bei USDC-Binary-Files faktisch falsch — wir wissen es nicht, wir kommunizieren "unknown". KEIN USDC-Polyfill (ADR-PC5). Single-File-Anker + Privacy-First bestätigt.
+
+### Notes
+- Headless-Pool: Frankfurt-Erwartung aktualisieren auf `textureStatus: 'unknown'`
+- i18n: 2 neue Keys (`usdc_mat_hint`, `usdc_mat_badge_tooltip`)
+
+---
+
 ## [0.25.6] — 2026-05-06
 
 ### Changed
