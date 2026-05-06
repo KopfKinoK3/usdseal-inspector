@@ -14,7 +14,7 @@ You don't need USDseal to use this tool. Drop **any** USDZ file in and the Inspe
 
 | Feature | Description |
 |---|---|
-| **AR Quick Look traffic-light** | Green / orange / red diagnosis with 20 rules in 7 categories. 3-tier severity — 🔴 breaks AR Quick Look / 🟠 runs with caveats / 🔵 cosmetic hint. Severity calibrated against real-world files (v0.25.4). Plain-language fix hints per finding (DE / EN). *(v0.22 / v0.25.4)* |
+| **AR Quick Look traffic-light** | Green / orange / red diagnosis with 21 rules in 7 categories. 3-tier severity — 🔴 breaks AR Quick Look / 🟠 runs with caveats / 🔵 cosmetic hint. Severity calibrated against real-world files (v0.25.4). All rules verified against Apple docs and OpenUSD spec — see [docs/AR-QL-RULES-SOURCES.md](docs/AR-QL-RULES-SOURCES.md). Plain-language fix hints per finding (DE / EN). *(v0.22 / v0.25.8)* |
 | **State detection** | SIGNED / DRAFT / INVALID / NO_MANIFEST as a colored banner |
 | **USD metadata** | `defaultPrim`, `upAxis`, `metersPerUnit`, custom layer data |
 | **Asset inventory** | Filenames, sizes, SHA-256 — see exactly what's inside the ZIP |
@@ -95,6 +95,8 @@ Download `index.html` and open it locally. No web server needed.
 - **v0.25.4** *(2026-05-06)* — Severity-Recalibration (ADR-28): `STRUCTURE_DEFAULT_PRIM_MISSING` and `STRUCTURE_NESTED_USDZ` downgraded from `error` to `warn` — validated against 6 real-world customer USDZs, all running fine on iPhone. Orange banner "Runs with caveats" (was "Works with caveats"). AVIF texture detection (ADR-29): magic-bytes reader + native browser preview with fallback label. Headless pool 12/12 PASS.
 - **v0.25.5** *(2026-05-06)* — OpenUSD-Texture-Spec complete (ADR-31): magic-bytes readers for HEIC, KTX2, TIFF, ASTC after AVIF pattern. HEIC native preview (Safari) with Chrome fallback label. KTX2/TIFF/ASTC format label only (no polyfill, Single-File-anchor). 18/18 headless cases PASS (13 pool + 5 synthetic reader tests).
 - **v0.25.6** *(2026-05-06)* — PDF-Report User-First (ADR-32): section order rearranged — AR Quick Look · Diagnostics prominent at top (with AR-state banner: breaks / caveats / clean), USDseal · Trust & Provenance as dedicated bottom block with orange accent header. Unsigned files get compact "No manifest" hint instead of full counter table. 18/18 PASS.
+- **v0.25.7** *(2026-05-06)* — USDC-Material-Limitation transparent (ADR-33): USDZ files with USDC binary sub-files now detected; textures without USDA channel-binding show "unknown" instead of "unused". Info-banner in Texture-Inventory + PDF. 18/18 PASS.
+- **v0.25.8** *(2026-05-06)* — AR-QL-Regeln gegen Apple/OpenUSD verifiziert + 3 Korrekturen (ADR-34): `TEXTURE_FORMAT_UNSUPPORTED` severity error→warn + WebP aus der Beschreibung entfernt (WebP ist nicht in der USDZ-Spec) + konsistent mit v0.25.4/v0.25.5-Format-Detectoren. `STRUCTURE_FILE_SIZE_LIMIT` als viSales-Empfehlung gelabelt (Apple publiziert kein hartes 25-MB-Limit). `TEXTURE_TOO_LARGE` zweistufig: warn >2048 (WWDC2023-Empfehlung) + error >4096 (älteres iPhone-Verhalten). Validator-Regeln gegen Apple-Doku belegt — [docs/AR-QL-RULES-SOURCES.md](docs/AR-QL-RULES-SOURCES.md). 18/18 PASS.
 
 **Plan**
 - **v0.26** — Composition explorer: layer stack, references, payloads and variants as a tree

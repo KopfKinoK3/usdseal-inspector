@@ -185,9 +185,9 @@ def build_context(usdz_path: Path) -> dict:
         # Texturen — Dimensionen aus Binary-Header
         for m in members:
             ext = m['name'].rsplit('.', 1)[-1].lower() if '.' in m['name'] else ''
-            if ext not in ('png', 'jpg', 'jpeg', 'webp', 'exr', 'hdr', 'ktx', 'ktx2', 'tif', 'tiff', 'avif'):
+            if ext not in ('png', 'jpg', 'jpeg', 'webp', 'exr', 'hdr', 'ktx', 'ktx2', 'tif', 'tiff', 'avif', 'heic', 'astc'):
                 continue
-            tex = {'name': m['name'], 'size': m['size'], 'width': None, 'height': None}
+            tex = {'name': m['name'], 'size': m['size'], 'extension': ext, 'width': None, 'height': None}
             d = m['_data']
             if ext == 'png':
                 dims = read_png_dimensions(d)
@@ -311,16 +311,26 @@ AR_QL_RULES = [
     # ── Textures
     {
         'id': 'TEXTURE_FORMAT_UNSUPPORTED',
-        'severity': 'error',
+        'severity': 'warn',
         'category': 'cat_textures',
         'check': lambda ctx: any(
-            re.search(r'\.(exr|hdr|tif|tiff|ktx|ktx2|tga|psd)$', m['name'], re.IGNORECASE)
-            for m in ctx.get('members', [])
+            (t.get('extension') or '') and
+            t.get('extension', '').lower() not in ('png', 'jpg', 'jpeg', 'webp', 'avif', 'heic')
+            for t in ctx.get('textures', [])
         ),
     },
     {
-        'id': 'TEXTURE_TOO_LARGE',
+        'id': 'TEXTURE_TOO_LARGE_WARN',
         'severity': 'warn',
+        'category': 'cat_textures',
+        'check': lambda ctx: any(
+            (t.get('width') or 0) > 2048 or (t.get('height') or 0) > 2048
+            for t in ctx.get('textures', [])
+        ),
+    },
+    {
+        'id': 'TEXTURE_TOO_LARGE_ERROR',
+        'severity': 'error',
         'category': 'cat_textures',
         'check': lambda ctx: any(
             (t.get('width') or 0) > 4096 or (t.get('height') or 0) > 4096
