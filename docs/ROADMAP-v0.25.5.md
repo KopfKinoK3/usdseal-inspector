@@ -1,9 +1,30 @@
 # Roadmap v0.25.5 — Texture-Spec-Vollständigkeit (HEIC/KTX2/TIFF/ASTC)
 
-**Status:** Vorbereitungs-Dokument · 2026-05-05
+**Status:** ✅ **COMPLETED 2026-05-05** · Commit `c1338fd`, Tag `v0.25.5` online
 **Story-Slot:** *"OpenUSD-Texture-Spec komplett abgedeckt"*
-**Ziel:** Die vier verbleibenden OpenUSD-USDZ-erlaubten Texture-Formate (HEIC, KTX2, TIFF, ASTC) Magic-Bytes-detektieren — Spec-Vollständigkeit für AOUSD-Talk.
-**Aufwand:** 0.5–0.7 Tag.
+**Ziel:** Die vier verbleibenden OpenUSD-USDZ-erlaubten Texture-Formate Magic-Bytes-detektieren. ✓ erreicht.
+**Aufwand:** 0.5–0.7 Tag. ✓ eingehalten.
+
+## Release-Befund 2026-05-05
+
+| Phase | Status | Ergebnis |
+|---|---|---|
+| 5.0 Diagnose | ✅ | AVIF-Pattern aus v0.25.4 als Vorlage identifiziert |
+| 5.1 Vier Reader-Funktionen | ✅ | `readHeicSignature()`, `readKtx2Signature()`, `readTiffSignature()`, `readAstcSignature()` |
+| 5.2 Routing | ✅ | PNG → JPEG → WebP → KTX2 → AVIF → HEIC → TIFF → ASTC → Extension-Fallback |
+| 5.3 HEIC Native-Preview | ✅ | Blob-URL + `<img>`, `onerror`-Fallback "kein Browser-Preview in Chrome" |
+| 5.4 Headless synthetisch | ✅ | 5 Cases: 4 Format-Detection + 1 Negativ-Test (Bonus durch Code-Chat) |
+| 5.5 Smoke-Test Safari | ✅ | Frankfurt + AVIF Teppich.avif unverändert, Banner "Läuft mit Vorbehalt" weiter ✓ |
+| 5.6 Headless-Pool | ✅ | **18/18 PASS** (13 Real-World + 5 synthetisch) |
+| 5.7 README + CHANGELOG | ✅ | "OpenUSD-Texture-Spec komplett" |
+| 5.8 ADR-31 | ✅ | In `CLAUDE-Inspector-private.md` |
+| 5.9 Snapshot + Tag | ✅ | `v0.25.5-snapshot.html` + Commit `c1338fd` + Tag `v0.25.5` |
+
+**Strategischer Sieg:** Inspector ist jetzt **erster Web-USDZ-Inspector mit kompletter OpenUSD-Spec-Texture-Coverage**. AOUSD-Talk-Slide-Material.
+
+**Nebenbefund (Task #56 USDC-Material-Limitation bestätigt):** Frankfurt-Live-Test zeigte alle Texturen als UNUSED — weil Frankfurt 22 `.usdc`-Sub-Files (USDC-Binary) hat und der Used-Detector aus v0.24.1 nur USDA-Text parsed. **Kein v0.25.5-Regression** — Erbstück aus v0.24.1, ADR-Diskussion in v0.25.6 oder v0.26 fällig.
+
+
 
 > Patch-Sprint nach v0.25.4.1. Master-Übersicht in `../ROADMAP.md`.
 

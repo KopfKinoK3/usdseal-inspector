@@ -102,7 +102,7 @@ Jedes Release hat einen **eigenen Talk-Slide**. Drei strategische Story-Punkte v
 | **v0.29** | *AI-agent-fähig* — **Konferenz-Klimax** | MCP-Server-Wrapper als **eigenes Repo** `usdseal-inspector-mcp` | geplant, 3–5 Tage |
 | **v0.3** | *Trust wird wahr* | Ed25519-WebCrypto-Verify + Batch-Analyse mit CSV-Export | geplant, 4–6 Tage |
 
-**Bisher geliefert:** v0.21 → v0.25.4.1 in 12 Releases (2026-05-01 bis 2026-05-05). **Nächster Sprint:** v0.26 Komposition entwirrt + PDF-Template-Update (3-4 Tage). **Total verbleibend:** ~22–34 Build-Tage über v0.26 → v0.3.
+**Bisher geliefert:** v0.21 → v0.25.5 in 13 Releases (2026-05-01 bis 2026-05-05). **Nächster Sprint:** v0.25.6 USDC-Material-Limitation (Task #56 — UNUSED-Befund aus Live-Test) ODER v0.26 Komposition + PDF-Template-Update. **Total verbleibend:** ~21–33 Build-Tage über v0.25.6/v0.26 → v0.3.
 
 ---
 
@@ -216,7 +216,7 @@ Aktuell vorhanden:
 - `docs/ROADMAP-v0.25.3.md` — EN-Toggle Hotfix (✅ released 2026-05-04, Commit `fe5fa87`, ADR-27, Hypothese E)
 - `docs/ROADMAP-v0.25.4.md` — Severity-Recal + AVIF-Detection (✅ released 2026-05-05, Commit `885cf4d`, ADR-28 + ADR-29)
 - `docs/ROADMAP-v0.25.4.1.md` — Polish-Patch (✅ released 2026-05-05, Commit `03799f0`, ADR-30)
-- `docs/ROADMAP-v0.25.5.md` — Texture-Spec-Vollständigkeit HEIC/KTX2/TIFF/ASTC (📋 nächster Sprint, ADR-31)
+- `docs/ROADMAP-v0.25.5.md` — Texture-Spec-Vollständigkeit HEIC/KTX2/TIFF/ASTC (✅ released 2026-05-05, Commit `c1338fd`, ADR-31)
 - `tests/real-world-2026-05-05.md` — Real-World-Test-Sweep mit 6 Kunden-Files als Diagnose-Quelle für v0.25.4
 - ~~`docs/ROADMAP-v0.25.5.md`~~ — *gestrichen, Severity-Recal-Inhalt wandert in v0.25.4 (refaktoriert)*
 
