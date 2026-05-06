@@ -2,7 +2,7 @@
 
 **Repo:** [github.com/KopfKinoK3/usdseal-inspector](https://github.com/KopfKinoK3/usdseal-inspector)
 **Live:** [kopfkinok3.github.io/usdseal-inspector](https://kopfkinok3.github.io/usdseal-inspector/)
-**Aktueller Stand:** v0.25.5 (OpenUSD-Texture-Spec komplett, released 2026-05-06). **Nächster Sprint: v0.26** Komposition entwirrt + PDF aufgeholt.
+**Aktueller Stand:** v0.25.6 (PDF-Report User-First, released 2026-05-06). **Nächster Sprint: v0.25.7** USDC-Material-Limitation ehrlich kommunizieren (Task #56) ODER v0.26 Komposition.
 **Maintainer:** viSales GmbH (Mitglied Alliance for OpenUSD)
 **Lizenz:** Apache 2.0
 **Stand dieses Dokuments:** 2026-05-04
@@ -96,13 +96,15 @@ Jedes Release hat einen **eigenen Talk-Slide**. Drei strategische Story-Punkte v
 | **v0.25.4** | *Validator kalibriert + AVIF angekommen* | Severity-Recalibration (2 Regeln 🔴→🟠: STRUCTURE_DEFAULT_PRIM_MISSING + STRUCTURE_NESTED_USDZ) + 3-Stufen-Banner ("Läuft mit Vorbehalt") + AVIF-Detection mit Native-Preview. Frankfurt-File mit 15× AVIF live verifiziert (Teppich.avif rendert nativ in Safari). Headless-Pool 12/12 (DIEGOsat_TK_280426_01 noch nachzulegen für 13/13). ADR-28 + ADR-29. Diagnose-Quelle: `tests/real-world-2026-05-05.md`. | ✅ released 2026-05-05, Tag online (Commit `885cf4d`) |
 | **v0.25.4.1** | *Drei Mini-Bugs aus dem Sweep* | UX-Polish-Patch: PDF-Header dynamisch aus Versions-Badge ✓, Cross-Browser-PDF-Download via Anchor-Click-Pattern Variante A ✓ (Variante B als Fallback nicht nötig), Cache-Counter-Tooltip präzisiert ✓. Headless-Pool 13/13 mit DIEGOsat_TK_280426_01 nachgereicht. ADR-30. | ✅ released 2026-05-05, Tag online (Commit `03799f0`) |
 | **v0.25.5** | *OpenUSD-Texture-Spec komplett abgedeckt* | HEIC/KTX2/TIFF/ASTC Magic-Bytes-Reader nach AVIF-Pattern (v0.25.4). HEIC mit Native-Preview-Versuch in Safari, Rest Format-Label only (kein Polyfill — Single-File-Anker). Test-Strategie: synthetische Magic-Bytes-Streams (kein Real-File-Use-Case in Kunden-Pool). AOUSD-Talk-Slide-Material: erster Web-USDZ-Inspector mit kompletter Spec-Coverage. ADR-31. | ✅ released 2026-05-06, 18/18 Tests PASS |
+| **v0.25.6** | *Vom USDseal-zentrischen zum generischen Audit-Report* | PDF-Sektion-Reihenfolge umgestellt: Datei-Identität → AR Quick Look · Diagnose (mit AR-State-Banner) → USDseal · Trust & Provenance (orange Akzentleiste) → Disclaimer. NO_MANIFEST: kompakter Hint statt voller Counter. ADR-32. | ✅ released 2026-05-06, 18/18 PASS |
+| **v0.25.7** | *USDC-Material-Limitation ehrlich kommunizieren* | Task #56 — UNUSED-Befund aus Frankfurt-Live-Test. Used-Detector parsed nur USDA-Text, USDC-Binary-Materials werden nicht erkannt. Lösungs-Empfehlung: Status "unknown" statt "unused" + UI-Hinweis. Kein Polyfill (ADR-PC5). ADR-33. | geplant, ~0.3-0.5 Tag, Briefing TBD |
 | **v0.26** | *Komposition entwirrt + PDF aufgeholt* | Layer-Stack, References, Payloads, Variants als Baum + **PDF-Template-Erweiterung** um Channel-Erkennung (v0.24), Geometry-Stats (v0.25), AVIF (v0.25.4) und kalibriertes Severity-Mapping (v0.25.4) — der v0.23-PDF-Builder hinkt aktuell hinterher und zeigt nur den damaligen Stand. Plus: ADR-Diskussion zur USDC-Material-Heuristik (Befund aus 26 MB Real-World-TK-Asset). **Backlog-Aufnahme:** HEIC/KTX2/TIFF/ASTC Spec-Vollständigkeit (kein Use-Case in 6 Real-World-Files, aber Spec-konform). | geplant, 3–4 Tage |
 | **v0.27** | *Beweise, was sich geändert hat* | Diff-View bei Hash-Mismatch (Bytes / Texturen-Auflösung) | geplant, 1–2 Tage |
 | **v0.28** | *Trag den Inspector überall hin* | README-Embed-Sektion mit Konsumer-Inline-Boilerplate (`<usdseal-inspector>`-Custom-Element via iframe-Wrapper, ~10 Zeilen Copy-Paste). Plus QR-Code-Konferenz-Pack als separates kleines HTML. **Inspector-Code unverändert** — Single-File-Anker bleibt für immer. Web-Component-Pattern wird **dokumentiert**, nicht **distributed**. | geplant, 1–2 Tage |
 | **v0.29** | *AI-agent-fähig* — **Konferenz-Klimax** | MCP-Server-Wrapper als **eigenes Repo** `usdseal-inspector-mcp` | geplant, 3–5 Tage |
 | **v0.3** | *Trust wird wahr* | Ed25519-WebCrypto-Verify + Batch-Analyse mit CSV-Export | geplant, 4–6 Tage |
 
-**Bisher geliefert:** v0.21 → v0.25.5 in 13 Releases (2026-05-01 bis 2026-05-05). **Nächster Sprint:** v0.25.6 USDC-Material-Limitation (Task #56 — UNUSED-Befund aus Live-Test) ODER v0.26 Komposition + PDF-Template-Update. **Total verbleibend:** ~21–33 Build-Tage über v0.25.6/v0.26 → v0.3.
+**Bisher geliefert:** v0.21 → v0.25.6 in 14 Releases (2026-05-01 bis 2026-05-06). **Nächster Sprint:** v0.25.7 USDC-Material-Limitation (Task #56 — UNUSED-Befund aus Live-Test) ODER v0.26 Komposition + PDF-Template-Update. **Total verbleibend:** ~20–32 Build-Tage über v0.25.7/v0.26 → v0.3.
 
 ---
 

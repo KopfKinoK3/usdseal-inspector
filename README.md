@@ -94,6 +94,7 @@ Download `index.html` and open it locally. No web server needed.
 - **v0.25.3** *(2026-05-05)* — EN-toggle fixed cross-browser (ADR-27): Drop-zone, footer and cache-button were hard-coded DE HTML — not connected to `t()`. 5 new i18n keys + `id` attributes + page-load `t()` calls. 15 lines.
 - **v0.25.4** *(2026-05-06)* — Severity-Recalibration (ADR-28): `STRUCTURE_DEFAULT_PRIM_MISSING` and `STRUCTURE_NESTED_USDZ` downgraded from `error` to `warn` — validated against 6 real-world customer USDZs, all running fine on iPhone. Orange banner "Runs with caveats" (was "Works with caveats"). AVIF texture detection (ADR-29): magic-bytes reader + native browser preview with fallback label. Headless pool 12/12 PASS.
 - **v0.25.5** *(2026-05-06)* — OpenUSD-Texture-Spec complete (ADR-31): magic-bytes readers for HEIC, KTX2, TIFF, ASTC after AVIF pattern. HEIC native preview (Safari) with Chrome fallback label. KTX2/TIFF/ASTC format label only (no polyfill, Single-File-anchor). 18/18 headless cases PASS (13 pool + 5 synthetic reader tests).
+- **v0.25.6** *(2026-05-06)* — PDF-Report User-First (ADR-32): section order rearranged — AR Quick Look · Diagnostics prominent at top (with AR-state banner: breaks / caveats / clean), USDseal · Trust & Provenance as dedicated bottom block with orange accent header. Unsigned files get compact "No manifest" hint instead of full counter table. 18/18 PASS.
 
 **Plan**
 - **v0.26** — Composition explorer: layer stack, references, payloads and variants as a tree

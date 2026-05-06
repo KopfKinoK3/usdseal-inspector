@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.25.6] — 2026-05-06
+
+### Changed
+- **PDF-Report: User-First-Reihenfolge** (ADR-32): Sektion-Reihenfolge in `generatePDF()` umgestellt — AR Quick Look · Diagnose jetzt prominent oben, USDseal · Trust & Provenance als dedizierter Block unten.
+  - Neu: **AR-State-Banner** im AR-Diagnose-Block ("AR Quick Look: bricht / Laeuft mit Vorbehalt / sauber") — `ampel`-Daten vorhanden, erstmals als Banner gerendert.
+  - Neu: Sektion-Header **"USDSEAL · TRUST & PROVENANCE"** mit oranger Akzentleiste.
+  - Kompakter NO_MANIFEST-Block: bei unsignierten Files Minimal-Hint + Asset-Inventory, kein voller Counter-Bereich.
+
+### Architecture
+- **ADR-32** (PDF-Report-Reihenfolge User-First, 2026-05-06): Real-World-Sweep zeigte USDseal-zentrischen Bias — "Kein Manifest" dominierte oben, AR-Diagnose war versteckt. Neue Reihenfolge: Datei-Identität → AR Quick Look · Diagnose → USDseal · Trust & Provenance → Disclaimer. Inspector-Report generisch nutzbar; USDseal als Plus-Sektion.
+
+### Notes
+- Headless-Pool **18/18 PASS** (kein Validator-Touch, nur PDF-Reorder).
+- i18n: `pdf_ar_findings_title` → "AR Quick Look · Diagnose" / "AR Quick Look · Diagnostics"; neuer Key `pdf_usdseal_section`.
+
+---
+
 ## [0.25.5] — 2026-05-06
 
 ### Added
