@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.26.0] — 2026-05-07
+
+### Added
+- **Geometry-Sektion im PDF-Audit-Report** (ADR-35): Alle 10 Geometry-Kennzahlen aus `extractGeometryStats()` (seit v0.25) jetzt auch im PDF sichtbar — zwischen AR Quick Look · Diagnose und USDseal · Trust & Provenance.
+  - Felder: Meshes, Polygone (mit Tausender-Trennzeichen), Vertices, Materials, Prims, Joints, UV-Sets, Subdivision, Time-Range, FPS
+  - Spezialfall USDC-Binary: Hinweis-Box (orange) wenn Geometrie-Daten nicht extrahierbar
+  - Spezialfall Procedural-Only: Hinweis-Box (neutral) wenn nur prozedurale Primitive (Sphere/Cube) erkannt
+  - i18n DE+EN: 5 neue Keys `pdf_geo_*`
+  - `geoStats` jetzt in `_currentReport` gespeichert
+
+### Architecture
+- **ADR-35** (Geometrie-Sektion im PDF, 2026-05-07): PDF-Audit-Report war die einzige Ansicht ohne Geometry-Daten — größte Lücke nach v0.25.6-Reorder. `extractGeometryStats()` wiederverwendet (kein neuer Parser-Code). Layout-Stil konsistent mit v0.25.6 (orange Akzentleiste via `secHeader()`). Single-File-Anker bestätigt.
+
+### Notes
+- 18/18 PASS (Headless-Pool unverändert — kein Validator-Touch)
+- i18n: 5 neue Keys (`pdf_geo_title`, `pdf_geo_meshes`, `pdf_geo_polygons`, `pdf_geo_usdc_hint`, `pdf_geo_proc_hint`)
+
+---
+
 ## [0.25.7] — 2026-05-06
 
 ### Changed
