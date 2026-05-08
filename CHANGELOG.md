@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.26.1] — 2026-05-08
+
+### Added
+- **Texturen-Sektion im PDF-Audit-Report** (ADR-36): PBR-Channels, Format-Details und Auflösung pro Textur jetzt auch im PDF — zwischen Geometrie und USDseal · Trust & Provenance.
+  - Pro Textur: Pfad (truncated), Format · Größe · Auflösung, Channel-Label(s), Status
+  - PBR-Channels: BaseColor / Normal / Roughness / Metallic / Emissive / Occlusion / Opacity / Displacement / Subsurface / Clearcoat / ORM (kombiniert) / Diffuse
+  - Format-Labels: PNG / JPEG / WebP / AVIF / HEIC / KTX2 / TIFF / ASTC (alle OpenUSD-Spec-konformen Formate seit v0.25.5)
+  - USDC-Binary-Hint-Box (orange) analog ADR-33 wenn `usdcBinaryMaterials === true`
+  - Summary-Zeile: Anzahl Texturen · tracked/unknown/unused · Gesamtgröße · Formate
+  - i18n DE+EN: 22 neue Keys (`pdf_tex_*`, `pdf_ch_*`)
+  - `textures` + `channelInfo` jetzt in `_currentReport` gespeichert (Mini-Patch analog v0.26.0)
+
+### Architecture
+- **ADR-36** (Texturen-Sektion im PDF, 2026-05-08): PDF-Audit-Report hatte PBR-Channel-Erkennung (v0.24) und Format-Details (v0.25.5) nur im UI — Audit-Lücke. `extractTextures()` + `buildChannelMap()` wiederverwendet. Layout-Stil konsistent mit v0.26.0 (orange Akzentleiste via `secHeader()`). USDC-Binary-Hint analog ADR-33. Single-File-Anker bestätigt.
+
+### Notes
+- 18/18 PASS (Headless-Pool unverändert — kein Validator-Touch)
+- i18n: 22 neue Keys
+
+---
+
 ## [0.26.0] — 2026-05-07
 
 ### Added
