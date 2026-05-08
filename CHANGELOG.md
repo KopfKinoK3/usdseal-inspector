@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.26.2] — 2026-05-08
+
+### Added
+- **Threshold-basierte Texture-Tabelle für Großfiles** (ADR-37): Bei >20 Texturen wechselt die TEXTUREN-Sektion im PDF-Audit-Report vom 3-Zeilen-Block-Layout (v0.26.1) auf eine kompakte 6-Spalten-Tabelle (Pfad · Format · Größe · Auflösung · Channel · Status). Frankfurt (55 Texturen) von ~8 auf ~4 PDF-Seiten reduziert. Kleine Files (≤20 Texturen, z.B. DIEGOsat mit 4) behalten das Block-Layout unverändert.
+  - Konstante `TEXTURE_TABLE_THRESHOLD = 20`
+  - `drawTexTableHeader()` mit Header-Wiederholung bei Page-Break
+  - Pfad-Spalte front-truncated (`...suffix`) analog Asset-Inventory
+  - USDC-Binary-Hint-Box und Summary-Zeile bleiben in beiden Layouts identisch
+  - i18n DE+EN: 6 neue Spalten-Header-Keys (`pdf_tex_col_*`)
+  - Asset-Inventory-Tabellen-Pattern (ADR-12, v0.23) wiederverwendet — kein neuer Dep
+
+### Architecture
+- **ADR-37** (Threshold-basierte Texture-Tabelle, 2026-05-08): v0.26.1 Block-Layout produzierte bei Frankfurt (55 Texturen) einen 8-seitigen PDF-Report — unhandlich für PR-Material und B2B-Audit. Threshold 20 gewählt weil ≤20 Texturen unter 1 PDF-Seite bleiben. Asset-Inventory-Tabellen-Pattern (pures `jsPDF.text()/line()`, ADR-12) wiederverwendet — kein autoTable-Plugin, Single-File-Anker bestätigt. UI-Texture-Sektion unverändert.
+
+### Notes
+- 18/18 PASS (Headless-Pool unverändert — kein Validator-Touch)
+- i18n: 6 neue Keys (`pdf_tex_col_path/format/size/resolution/channel/status`)
+- Browser-Verifikation: Frankfurt → Tabellen-Layout; DIEGOsat → Block-Layout (unverändert)
+
+---
+
 ## [0.26.1] — 2026-05-08
 
 ### Added
