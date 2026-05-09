@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.27.3] — 2026-05-09
+
+### Changed
+- **Landingpage Verify-Block (DE + EN)** (ADR-42): Hinweis *"demnächst public auf GitHub"* (DE) / *"coming soon on GitHub"* (EN) durch echten Inline-Link auf `github.com/KopfKinoK3/usdseal-verify` (Apache-2.0) ersetzt. Zusätzlicher CTA-Button *"Independent Verifier auf GitHub"* / *"View Independent Verifier"* neben *"Verify-Strategy ansehen"*.
+
+### Architecture
+- **ADR-42** (Landingpage Verifier-Link scharf gestellt, 2026-05-09): `usdseal-verify`-Repo seit 2026-05-09 nachmittags public unter `github.com/KopfKinoK3/usdseal-verify` (Apache-2.0). Pure HTML-Edits, bestehende `btn btn-ghost`-Klasse wiederverwendet, kein neuer Dep, kein Build-Step.
+
+### Notes
+- `INSPECTOR_VERSION` unverändert (Landingpage-only-Change, kein Inspector-Code-Touch)
+- Cross-Browser-Verifikation: DE + EN, Inline-Link + 3. CTA-Button korrekt im DOM
+
+---
+
 ## [0.27.2] — 2026-05-09
 
 ### Fixed
