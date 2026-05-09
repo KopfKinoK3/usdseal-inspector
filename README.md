@@ -100,10 +100,10 @@ Download `index.html` and open it locally. No web server needed.
 - **v0.26.0** *(2026-05-07)* — Geometry-Sektion im PDF-Audit-Report (ADR-35): alle 10 Geometry-Kennzahlen (Meshes, Polygone, Vertices, Materials, Prims, Joints, UV-Sets, Subdivision, Time-Range, FPS) jetzt auch im PDF zwischen AR Quick Look und USDseal-Block. USDC-Binary + Procedural-Only Hinweis-Boxen. 18/18 PASS.
 - **v0.26.1** *(2026-05-08)* — Texturen-Sektion im PDF-Audit-Report (ADR-36): PBR-Channels (BaseColor/Normal/Roughness/Metallic/Emissive/Occlusion/Opacity/Displacement/Subsurface/Clearcoat/ORM), Format-Details (PNG/JPEG/WebP/AVIF/HEIC/KTX2/TIFF/ASTC) und Auflösung pro Textur jetzt auch im PDF zwischen Geometrie und USDseal-Block. USDC-Binary-Hint-Box analog ADR-33. i18n DE+EN (22 neue Keys). 18/18 PASS.
 - **v0.26.2** *(2026-05-08)* — Threshold-basierte Texture-Tabelle (ADR-37): Bei >20 Texturen kompakte 6-Spalten-Tabelle statt 3-Zeilen-Block im PDF. Frankfurt (55 Texturen) von ~8 auf ~4 Seiten. Kleine Files (≤20 Texturen) behalten Block-Layout. USDC-Binary-Hint + Summary-Zeile in beiden Layouts identisch. 18/18 PASS.
+- **v0.27** *(2026-05-09)* — Verify-UI Self-Tests + Diff-View (ADR-39): VERIFY · 3-LAYER-TRUST Sub-Sektion im USDseal-Block — Layer 1 Komponenten-Hash-Tabelle mit Diff-Highlighting bei Mismatch, Layer 2 Pre-Seal-Hash (ehrlich als Phase-2), Layer 3 Signatur-Vorhandensein. Avalanche-Live-Demo (Bit-Flip + WebCrypto SHA-256 + Hamming-Distanz). 5 "Don't trust, verify:"-Links. PDF-VERIFY-Sektion kompakt. Letzter Single-File-Sprint vor v0.28.
 
 **Plan**
 - **v0.26** — Composition explorer: layer stack, references, payloads and variants as a tree
-- **v0.27** — Diff view on hash mismatch: byte delta, texture resolution delta
 - **v0.28** — Web Component (`<usdseal-inspector>`) embed pattern documented in README (consumer-side inline boilerplate, ~10 lines, wraps an iframe to GitHub Pages) + QR-code conference pack. Inspector code stays single-file for good — web-component pattern lives at the consumer site, not as a second distribution file in this repo.
 
 **Vision**

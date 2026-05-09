@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.27] — 2026-05-09
+
+### Added
+- **VERIFY · 3-LAYER-TRUST Sub-Sektion** im USDseal-Trust-Block — macht die 3-Layer-Bytestream-Architektur (ADR-PC6) sichtbar statt deklarativ.
+  - **Layer 1 — Komponenten-Hash-Tabelle**: alle ZIP-Members mit Erwartet/Aktuell/Status. Threshold-Pattern wie v0.26.2 (>20 Komponenten = Toggle-Button, sonst direkte Anzeige). Bei Mismatch: Tabelle automatisch ausgeklappt, Mismatch-Zeilen rot highlighted, Mismatch-Hint-Text.
+  - **Layer 2 — Pre-Seal-Hash**: `pre_seal_sha256` wird angezeigt falls im Manifest vorhanden. Da aktuelles DIEGOsat/error_explicit-Manifest das Feld nicht enthält: ehrlich als "nicht im Manifest — geplant für Spec v0.3" markiert (ADR-PC4: Diagnose vor Hypothese).
+  - **Layer 3 — Manifest-Signatur**: `signature.format` / `signature.algorithm` angezeigt wenn vorhanden; Signatur-Verify ehrlich als "ab v0.3 (Ed25519/WebCrypto API)" markiert.
+- **Avalanche-Live-Demo**: Bit-Flip (letztes Bit) + WebCrypto SubtleCrypto.digest('SHA-256') + Hamming-Distanz-Berechnung (Bit-Level). Live im Browser, kein neuer Dep. Erklärungstext: *"1 Bit geändert → komplett anderer Hash."* — Konferenz-/AOUSD-Demo-Material.
+- **Diff-View bei Hash-Mismatch**: Layer-1-Tabelle zeigt Mismatch-Zeilen oben (bestehende Sort-Logik), rote Highlighting via CSS `.row-mismatch`, durchgestrichener Expected-Hash vs. roter Actual-Hash. Test-Beleg: `error_explicit.usdz`.
+- **5 Verlinkungen** ("Don't trust, verify:"): Inspector Verify-Strategie als aktiver Link auf GitHub; Spec v1.0, Independent Verifier, Threat Model, Determinism Audit als "demnächst öffentlich" (CLI-Repo privat per v0.27).
+- **PDF-VERIFY-Sektion**: kompakt im USDseal-Block vor Asset-Inventory. 3-Layer-Statuszeilen, Mismatch-Komponenten als Inline-Tabelle, ausgeschriebene Verlinkungen-URLs. Avalanche-Demo nicht im PDF (live-only).
+- **i18n DE+EN**: 26 neue Keys (`verify_*`, `layer*`, `avalanche_*`, `hamming_*`, `link_*`, `tbl_*`, `pdf_verify_*`).
+- `window._currentRawBuf` gespeichert in `processFile()` für Avalanche-Demo-Byte-Zugriff.
+
+### Architecture
+- **ADR-39** (Verify-UI Self-Tests + Diff-View + Avalanche-Demo, 2026-05-09): v0.26.x hat PDF-Audit-Report material-vollständig gemacht. USDSEAL-VERIFY-STRATEGY.md (2026-05-07) und CLI-Spec v1.0 (Bytestream-Hashing, ADR-PC6) lagen vor. Inspector zeigte Trust bislang als opakes "Signiert & versiegelt"-Banner — die 3-Layer-Architektur war im UI unsichtbar. Sub-Sektion "VERIFY · 3-LAYER-TRUST" innerhalb USDseal-Trust-Block. Layer 2 ehrlich als Phase-2-Feature markiert weil `pre_seal_sha256` in aktuellen Manifesten nicht vorhanden (ADR-PC4). WebCrypto SubtleCrypto nativ im Browser — kein neuer Dep. Single-File-Anker bestätigt.
+
+### Notes
+- `INSPECTOR_VERSION = '0.27'` (ADR-38-Konstante hält)
+- 18/18 PASS erwartet (kein Validator-Touch)
+- Browser-Verifikation: DIEGOsat (signiert, Layer 3 vorhanden), Frankfurt (unsigniert, no-manifest path), error_explicit (Mismatch, Diff-View + Auto-Expand)
+- Letzter Single-File-Sprint vor v0.28 (Konsumer-Patterns)
+
+---
+
 ## [0.26.2] — 2026-05-08
 
 ### Added
