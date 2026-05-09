@@ -21,6 +21,9 @@ All notable changes to this project will be documented in this file.
 - i18n: 6 neue Keys (`pdf_tex_col_path/format/size/resolution/channel/status`)
 - Browser-Verifikation: Frankfurt → Tabellen-Layout; DIEGOsat → Block-Layout (unverändert)
 
+### Patch (Tag force-replaced, 2026-05-09)
+- **UI version badge bound to INSPECTOR_VERSION** (ADR-38): HTML-Badge war seit v0.25.8 hardcoded — wurde in v0.26.0/v0.26.1/v0.26.2 nie hochgezogen. `id="version-badge"` + `DOMContentLoaded`-Listener setzt `badge.textContent = 'v' + INSPECTOR_VERSION`. Single source of truth. Tag `v0.26.2` force-replaced.
+
 ---
 
 ## [0.26.1] — 2026-05-08
