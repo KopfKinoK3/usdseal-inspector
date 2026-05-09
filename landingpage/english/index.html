@@ -913,6 +913,42 @@ code {
   </div>
 </section>
 
+<!-- ========== VERIFY IT YOURSELF ========== -->
+<section id="verify">
+  <div class="wrap">
+    <div class="eyebrow eyebrow-primary">VERIFICATION</div>
+    <h2>Verify it yourself</h2>
+    <p style="font-size: 13px; font-weight: 700; color: var(--primary-dark); margin-bottom: 16px; letter-spacing: 0.02em;">Don't trust, verify.</p>
+    <p class="lead">
+      USDseal signatures are reproducible. Every signed USDZ carries SHA-256 hashes per ZIP component — you can recompute them independently in 5 lines of Python. Inspector shows the same hashes live in the browser, the Independent Verifier handles the full manifest roundtrip.
+    </p>
+
+    <div class="sub-section sub-section-primary" style="margin-top: 28px; margin-bottom: 24px; font-size: 14px;">
+      <strong style="display: block; margin-bottom: 12px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary-dark);">3-Layer Trust Architecture</strong>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div><strong>Layer 1 — Component Hash</strong><br>SHA-256 per ZIP member. If a single byte changes, the hash changes. Inspector shows every component.</div>
+        <div><strong>Layer 2 — Pre-Seal Hash</strong><br>Hash of the entire USDZ before manifest injection. Specified in Spec v1.0, implementation in progress in the sealing code.</div>
+        <div><strong>Layer 3 — Manifest Signature</strong><br>COSE_Sign1 / Ed25519. Independent Verifier script implemented, Inspector live-verify coming in v0.3.</div>
+      </div>
+    </div>
+
+    <p style="font-size: 13px; font-weight: 700; color: var(--text-heading); margin-bottom: 8px;">Verify yourself — 5 lines of Python:</p>
+    <pre style="background: var(--bg-neutral); border: 1px solid var(--border-inner); border-radius: 6px; padding: 14px 16px; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 13px; line-height: 1.6; color: var(--text-heading); overflow-x: auto; margin-bottom: 24px;"><code>import zipfile, hashlib
+z = zipfile.ZipFile('signed.usdz')
+for member in z.namelist():
+    h = hashlib.sha256(z.read(member)).hexdigest()
+    print(member, h)</code></pre>
+
+    <p style="font-size: 14px; color: var(--text-body); margin-bottom: 8px;">→ Inspector shows the same hashes live in the browser.</p>
+    <p style="font-size: 14px; color: var(--text-body); margin-bottom: 28px;">→ Independent Verifier (Python, ~120 lines) handles the full manifest roundtrip — <em>coming soon on GitHub</em>.</p>
+
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+      <a class="btn btn-primary" href="#" id="open-inspector-verify" target="_blank" rel="noopener">Open Inspector</a>
+      <a class="btn btn-ghost" href="https://github.com/KopfKinoK3/usdseal-inspector/blob/main/docs/USDSEAL-VERIFY-STRATEGY.md" id="verify-strategy-link" target="_blank" rel="noopener">View Verify Strategy</a>
+    </div>
+  </div>
+</section>
+
 <!-- ========== EVERYDAY USE ========== -->
 <section id="usage">
   <div class="wrap">
@@ -1273,7 +1309,7 @@ code {
 
   // Inspector buttons — all URLs centrally set, open in new tab
   var INSPECTOR_URL = 'https://kopfkinok3.github.io/usdseal-inspector/';
-  ['open-inspector-top', 'open-inspector-hero', 'open-inspector-demo', 'open-inspector-footer'].forEach(function(id) {
+  ['open-inspector-top', 'open-inspector-hero', 'open-inspector-demo', 'open-inspector-footer', 'open-inspector-verify'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.setAttribute('href', INSPECTOR_URL);
   });

@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.27.1] — 2026-05-09
+
+### Added
+- **Landingpage Verify-Sektion (DE + EN)** (ADR-40): Neue Sektion `#verify` zwischen `#ar-quick-look` und `#anwendung` in beiden Sprach-Versionen der Landingpage. Inhalt: Pitch-Absatz "Don't trust, verify", 3-Layer-Architektur-Block (Layer 1–3 mit ehrlichen Phase-2-Hinweisen), Python-Code-Snippet (5 Zeilen, sprach-neutral), CTAs auf Inspector-Live-URL und Verify-Strategy.md. Independent-Verifier-Repo-Status geklärt (GitHub 404 → privat): ehrlicher "demnächst public"-Hinweis statt Tot-Link (ADR-PC4-konform).
+
+### Architecture
+- **ADR-40** (Landingpage Verify-Sektion, 2026-05-09): Pure HTML-Änderung, bestehende CSS-Klassen wiederverwendet (`wrap`, `eyebrow-primary`, `sub-section sub-section-primary`, `btn btn-primary`, `btn btn-ghost`). Minimal-inline-CSS für `<pre><code>`-Block (monospace, `bg-neutral`, `border-inner`). Kein neuer Dep, kein Build-Step. Single-File-Anker für Inspector-App unberührt — `INSPECTOR_VERSION` bleibt `'0.27'`.
+
+### Notes
+- `INSPECTOR_VERSION = '0.27'` (unverändert — nur Landingpage berührt)
+- `usdseal-verify`-Repo: 404 / privat → "demnächst public auf GitHub"-Hinweis
+
+---
+
 ## [0.27] — 2026-05-09
 
 ### Added
