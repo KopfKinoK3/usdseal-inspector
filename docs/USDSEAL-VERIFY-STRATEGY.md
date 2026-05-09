@@ -37,7 +37,7 @@
 | 1a | **Determinismus-Mechanik** (deterministisches Sealing) | CLI-Plan-Chat | usdseal CLI | ✅ Pflicht | M |
 | 1b | **Self-Tests im Inspector-UI** (Determinismus + Avalanche-Visualisierung) | **Inspector-Chat** | usdseal-inspector | ✅ Pflicht | M |
 | 2 | **Algorithmus-Spec** (Hash, Feld-Reihenfolge, Floats, Composition, etc.) | CLI-Plan-Chat + übergreifend | `docs/USDSEAL-SPEC-v1.0.md` (CLI-Repo) | ✅ Pflicht | L |
-| 3 | **Python-Verify-Referenz-Skript** (~50 Zeilen, `usd-core`) | CLI-Plan-Chat | neues Repo `usdseal-verify` ODER CLI-Repo `tools/` | ✅ Pflicht | S–M |
+| 3 | **Python-Verify-Referenz-Skript** (~120 Zeilen, ohne `usd-core`) | CLI-Plan-Chat | [github.com/KopfKinoK3/usdseal-verify](https://github.com/KopfKinoK3/usdseal-verify) (public, Apache-2.0) | ✅ DONE | S |
 | 4 | **Test-Vektoren** (5–10 USD-Files mit expected signatures + CI) | CLI-Plan-Chat | CLI-Repo `test-vectors/` | ✅ Pflicht | M |
 | 5 | **Landingpage "Verify it yourself"** (DE+EN, Code-Snippet, Spec-Link) | **Inspector-Chat** + PR-Chat | usdseal-inspector landingpage | ✅ Pflicht | S |
 | 6 | **Threat Model** (was schützt es / was nicht) | CLI-Plan-Chat + übergreifend | `docs/USDSEAL-THREAT-MODEL.md` | ⚠️ vor Launch ratsam | S–M |
@@ -106,7 +106,7 @@ USDseal-Signaturen sind deterministisch und unabhängig prüfbar.
 4. Vergleiche → muss übereinstimmen.
 
 Vollständige Spec: [USDSEAL-SPEC-v1.0.md]
-Python-Verify-Skript: [github.com/.../usdseal-verify]
+Python-Verify-Skript: https://github.com/KopfKinoK3/usdseal-verify
 Test-Vektoren: [github.com/.../test-vectors/]
 ```
 

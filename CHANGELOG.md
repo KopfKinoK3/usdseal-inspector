@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.27.2] — 2026-05-09
+
+### Fixed
+- **Layer-2-Feldname-Fix** (ADR-41): `manifest.pre_seal_sha256` → `manifest.subject_asset?.sha256` (Optional-Chaining). Tatsächlicher Feldname laut `usdseal_verify.py:104` und Live-Manifest-Diagnose. v0.27 hatte den falschen Key angenommen — Feld war die ganze Zeit vorhanden.
+- **Layer-2-Soft-Check-Anzeige**: beide Hashes jetzt sichtbar — Erwartet (Manifest: `subject_asset.sha256`) und Aktuell (Datei: WebCrypto `crypto.subtle.digest` live). Soft-Check-Erklärung DE+EN: Differenz ist by design, da Manifest nach Sealing in USDZ injiziert wird und ZIP-Struktur verändert.
+- **PDF-VERIFY Layer 2**: analog UI — beide Hashes + Soft-Check-Hinweis-Zeile.
+
+### Added
+- **`sha256Hex(buf)`-Hilfsfunktion**: `crypto.subtle.digest('SHA-256', buf)` → Hex-String. Nativ WebCrypto, kein neuer Dep.
+- **i18n 5 neue Keys** (`layer2_expected_label`, `layer2_actual_label`, `layer2_diff_explain`, `layer2_no_hash`) DE+EN. `layer2_preseal` erweitert um "(Soft-Check)".
+- **`fileHash` in `_currentReport`** gespeichert — PDF-Generator kann live File-Hash ausgeben.
+
+### Architecture
+- **ADR-41** (Layer-2-Feldname-Korrektur + Soft-Check-Anzeige, 2026-05-09): Phase-5.0-Diagnose (ADR-PC4) hat `manifest.pre_seal_sha256` als falschen Feldnamen identifiziert. Tatsächlich: `manifest.subject_asset.sha256`. Layer 2 ist Spec-§4-Soft-Check by design — Manifest wird nach Sealing injiziert, ZIP-Struktur ändert sich, Differenz zwischen Manifest-Hash und aktuellem File-Hash ist erwartet. Inspector zeigt jetzt beide Hashes transparent statt "nicht im Manifest".
+- **ADR-39-Korrektur** (2026-05-09): ADR-39 beschrieb Layer 2 als "Phase-2-Feature weil `pre_seal_sha256` nicht vorhanden" — Annahme falsch. Feld existiert als `subject_asset.sha256`. Siehe ADR-41 für Korrektur-Patch.
+
+### Notes
+- `INSPECTOR_VERSION = '0.27.2'` (ADR-38-Konstante; UI-Badge + PDF-Header automatisch)
+- 18/18 PASS (Headless-Pool unverändert)
+- Browser-Verifikation: DIEGOsat Layer 2 — Manifest-Hash `789d6527…`, File-Hash `b2b8d24e…`, Soft-Check-Text korrekt
+
+---
+
 ## [0.27.1] — 2026-05-09
 
 ### Added
@@ -31,7 +54,7 @@ All notable changes to this project will be documented in this file.
 - `window._currentRawBuf` gespeichert in `processFile()` für Avalanche-Demo-Byte-Zugriff.
 
 ### Architecture
-- **ADR-39** (Verify-UI Self-Tests + Diff-View + Avalanche-Demo, 2026-05-09): v0.26.x hat PDF-Audit-Report material-vollständig gemacht. USDSEAL-VERIFY-STRATEGY.md (2026-05-07) und CLI-Spec v1.0 (Bytestream-Hashing, ADR-PC6) lagen vor. Inspector zeigte Trust bislang als opakes "Signiert & versiegelt"-Banner — die 3-Layer-Architektur war im UI unsichtbar. Sub-Sektion "VERIFY · 3-LAYER-TRUST" innerhalb USDseal-Trust-Block. Layer 2 ehrlich als Phase-2-Feature markiert weil `pre_seal_sha256` in aktuellen Manifesten nicht vorhanden (ADR-PC4). WebCrypto SubtleCrypto nativ im Browser — kein neuer Dep. Single-File-Anker bestätigt.
+- **ADR-39** (Verify-UI Self-Tests + Diff-View + Avalanche-Demo, 2026-05-09): v0.26.x hat PDF-Audit-Report material-vollständig gemacht. USDSEAL-VERIFY-STRATEGY.md (2026-05-07) und CLI-Spec v1.0 (Bytestream-Hashing, ADR-PC6) lagen vor. Inspector zeigte Trust bislang als opakes "Signiert & versiegelt"-Banner — die 3-Layer-Architektur war im UI unsichtbar. Sub-Sektion "VERIFY · 3-LAYER-TRUST" innerhalb USDseal-Trust-Block. Layer 2 ehrlich als Phase-2-Feature markiert weil `pre_seal_sha256` in aktuellen Manifesten nicht vorhanden (ADR-PC4). WebCrypto SubtleCrypto nativ im Browser — kein neuer Dep. Single-File-Anker bestätigt. — *Korrektur 2026-05-09: Phase-5.0-Diagnose hatte Feldname `pre_seal_sha256` angenommen — tatsächlich `subject_asset.sha256`. Siehe ADR-41 für Korrektur-Patch.*
 
 ### Notes
 - `INSPECTOR_VERSION = '0.27'` (ADR-38-Konstante hält)

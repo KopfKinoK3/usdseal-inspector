@@ -119,7 +119,7 @@ hero → #modi → #demo → #funktionen → #ar-quick-look →
 |---|---|---|
 | Inspector öffnen | Open Inspector | `https://kopfkinok3.github.io/usdseal-inspector/` |
 | Verify-Strategy ansehen | View Verify Strategy | `https://github.com/KopfKinoK3/usdseal-inspector/blob/main/docs/USDSEAL-VERIFY-STRATEGY.md` |
-| Independent Verifier (Python) | Independent Verifier (Python) | placeholder — *"demnächst public auf GitHub"* falls `usdseal-verify`-Repo noch privat. **Phase 5.0 prüft Status.** |
+| Independent Verifier (Python) | Independent Verifier (Python) | [github.com/KopfKinoK3/usdseal-verify](https://github.com/KopfKinoK3/usdseal-verify) (public, Apache-2.0) — Inspector verlinkt direkt |
 
 **Falls Verifier-Repo noch privat:** Link aus dem CTA-Block raus, dafür Hinweis-Zeile *"Independent Verifier wird kommende Woche öffentlich"* — ehrlich, kein Tot-Link. ADR-PC4-konform.
 
