@@ -18,6 +18,7 @@ ADR-43 Two-File-Pattern (2026-05-24):
   Beide Files sind single-file, file://-öffenbar, keine externen Deps zur Laufzeit.
 """
 import re
+import shutil
 from pathlib import Path
 
 SRC     = Path("src/inspector.html")
@@ -65,12 +66,19 @@ def main():
     STD.write_text(std_html, encoding="utf-8")
     print(f"OK: {STD} ({STD.stat().st_size / 1024:.1f} KB)")
 
-    # ── Advanced-Build: STANDARD-ONLY entfernen + BUILD-INJECT auflösen ──
+    # ── Advanced-Build: STANDARD-ONLY entfernen + Bundle separat kopieren ──
     ADV.parent.mkdir(exist_ok=True)
     adv_html = strip_blocks(src, "STANDARD-ONLY")
-    adv_html = inject_vendor(adv_html)
+    adv_html = inject_vendor(adv_html)   # no-op wenn kein BUILD-INJECT-Marker im Src
     ADV.write_text(adv_html, encoding="utf-8")
     print(f"OK: {ADV} ({ADV.stat().st_size / 1024:.1f} KB)")
+
+    # ── v0.28.0.2 ADR-45: Bundle als separates File (Lazy-Load) ──────────
+    bundle_src = VENDOR / "three-usdloader-r184-bundle.js"
+    bundle_dst = ADV.parent / "three-usdloader-r184-bundle.js"
+    if bundle_src.exists():
+        shutil.copy2(bundle_src, bundle_dst)
+        print(f"OK: {bundle_dst} ({bundle_dst.stat().st_size / 1024:.1f} KB, kopiert)")
 
     # ── .nojekyll — Versicherungspolice für GitHub Pages + künftige Unterordner ──
     if not NOJEKYLL.exists():

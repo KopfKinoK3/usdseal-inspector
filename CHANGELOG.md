@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.28.0.2] — 2026-05-25
+
+### Changed (Inspector Advanced)
+- **Lazy-Load Three.js-Bundle** (ADR-45): Bundle (~1 MB) wird nicht mehr beim Page-Load injiziert, sondern on-demand on-click geladen. `advanced/index.html` sinkt von ~1244 KB auf ~217 KB Initialgröße. Bundle wird als separates File `advanced/three-usdloader-r184-bundle.js` ausgeliefert.
+- **Opt-in Player** (ADR-45): 3D-Preview startet nicht mehr automatisch beim File-Drop. User sieht nach Drop einen aktivierten `▶ 3D-Preview starten`-Button. Player-Bereich ist ab dem ersten Advanced-Load immer sichtbar (nicht mehr `display:none` auf der Section).
+- **Try/Catch um die gesamte Player-Pipeline** (ADR-45): `loadThreeBundle()` → `loader.parse()` → Scene-Setup vollständig abgesichert. Crash zeigt Fehler-Toast mit ausklappbarem Detail (`adv_error_detail`) — Standard-Report darunter unberührt. Safari-Freeze bei Frankfurt-Asset unmöglich, solange User nicht aktiv klickt.
+- **Render-Reihenfolge explizit** (ADR-45): Standard-Report rendert synchron zuerst, Player-Bereich zeigt Platzhalter mit Button. Keine Kaskade-Abhängigkeit mehr.
+- **i18n 4 neue Keys** (ADR-45): `adv_pre_drop`, `adv_start_btn`, `adv_loading_bundle`, `adv_error_detail` — DE+EN.
+- **`build.py`** erweitert: kopiert Bundle nach `advanced/three-usdloader-r184-bundle.js` statt es inline zu injizieren.
+
+### Architecture
+- **ADR-45** (Graceful Degradation für Advanced-Player, 2026-05-25): Three.js USDLoader r184 ist für die viSales-Asset-Klasse nicht produktionsreif (Erst-Test 2026-05-25: SalmonPasta ✓, DIEGOsat schwarz, Frankfurt Safari-Freeze). Entscheidung: Player opt-in + lazy-load + vollständiger try/catch + immer-sichtbarer Beta-Bereich. Single-File-Anker für Advanced bewusst gelockert: `advanced/` ist jetzt Two-File-Distribution (HTML + Bundle). Begründung: Schlank-Anker schlägt Single-File-Anker für Advanced — 217 KB Initial-Download statt 1244 KB. Vorbereitung für v0.28.0.3 Asset-Klassifikation (Player-Bereich ist jetzt isolierter Layer).
+
+### Notes
+- `INSPECTOR_VERSION = '0.28.0.2'`
+- 18/18 PASS (Headless-Pool — Standard-Pipeline unverändert)
+- Standard-Build: 200.4 KB — unverändert
+- Advanced-Build initial: ~217 KB (Bundle on-demand: ~1033 KB)
+- Befund-Kontext Erst-Test 2026-05-25: SalmonPasta rendert sauber, DIEGOsat schwarzer Canvas, Frankfurt friert Safari ein
+
+---
+
 ## [0.28.0] — 2026-05-25
 
 ### Added

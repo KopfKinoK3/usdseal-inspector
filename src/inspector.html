@@ -1392,7 +1392,7 @@
 
 <div id="dashboard">
 <!-- ADVANCED-ONLY:START three-js-preview -->
-<div id="adv-3d-section" style="display:none">
+<div id="adv-3d-section">
   <div class="section-head">
     <span class="section-label" id="adv-section-label">🎬 3D-Preview (Beta)</span>
     <span class="badge-advanced" id="adv-badge">Advanced</span>
@@ -1402,7 +1402,11 @@
     <span id="adv-limit-text-en" style="display:none">3D-Preview Beta — geometry and standard materials. Complex materials → <a href="#findings-anchor" class="adv-anchor-link">Inspection Report</a></span>
   </div>
   <div id="adv-toast-container"></div>
-  <div id="adv-canvas-wrap">
+  <div id="adv-start-area">
+    <p id="adv-pre-drop-text">USDZ ziehen um 3D-Preview zu aktivieren</p>
+    <button id="adv-start-btn" disabled>▶ 3D-Preview starten</button>
+  </div>
+  <div id="adv-canvas-wrap" style="display:none">
     <canvas id="adv-canvas"></canvas>
     <div id="adv-spinner">
       <div class="adv-spinner-ring"></div>
@@ -1410,7 +1414,7 @@
     </div>
     <div id="adv-error-msg" style="display:none"></div>
   </div>
-  <div id="adv-controls-hint">
+  <div id="adv-controls-hint" style="display:none">
     <span id="adv-hint-de">Drag: Rotieren · Scroll: Zoom</span>
     <span id="adv-hint-en" style="display:none">Drag: Rotate · Scroll: Zoom</span>
   </div>
@@ -1431,7 +1435,7 @@
    Inspector spiegelt CLI-Schema-Disziplin (CLI-ADR §11.14).
    Erweiterung der Whitelist = neue Render-Funktion + Eintrag.
    Siehe COMPATIBILITY.md für Versions-Matrix. */
-const INSPECTOR_VERSION = '0.28.0';
+const INSPECTOR_VERSION = '0.28.0.2';
 const SUPPORTED_SPEC_VERSIONS = ['0.1', '0.2'];
 const TEXTURE_TABLE_THRESHOLD = 20;
 
@@ -1577,8 +1581,13 @@ const I18N = {
   adv_toast_variants: { de: 'Diese USDZ enthält Variants — werden im 3D-Preview nicht aufgelöst', en: 'This USDZ contains Variants — not resolved in 3D-Preview' },
   adv_toast_anim:   { de: 'Animation wird im 3D-Preview nicht abgespielt', en: 'Animation not played in 3D-Preview' },
   adv_toast_usdc:   { de: 'USDC-Binary-Materialien teilweise — siehe Inspection-Report', en: 'USDC binary materials partial — see Inspection Report' },
-  adv_hint:         { de: 'Drag: Rotieren · Scroll: Zoom', en: 'Drag: Rotate · Scroll: Zoom' },
-  adv_limit_banner: { de: '3D-Preview Beta — Geometrie und Standard-Materialien. Komplexe Materialien → Inspection-Report', en: '3D-Preview Beta — geometry and standard materials. Complex materials → Inspection Report' },
+  adv_hint:           { de: 'Drag: Rotieren · Scroll: Zoom', en: 'Drag: Rotate · Scroll: Zoom' },
+  adv_limit_banner:   { de: '3D-Preview Beta — Geometrie und Standard-Materialien. Komplexe Materialien → Inspection-Report', en: '3D-Preview Beta — geometry and standard materials. Complex materials → Inspection Report' },
+  // v0.28.0.2 Lazy-Load + Opt-in (ADR-45)
+  adv_pre_drop:       { de: 'USDZ ziehen um 3D-Preview zu aktivieren', en: 'Drop USDZ to activate 3D Preview' },
+  adv_start_btn:      { de: '▶ 3D-Preview starten', en: '▶ Start 3D Preview' },
+  adv_loading_bundle: { de: 'Bundle wird geladen…', en: 'Loading bundle…' },
+  adv_error_detail:   { de: 'Fehler anzeigen', en: 'Show error' },
   // USDC-Binary-Material-Limitation (v0.25.8 ADR-33)
   usdc_mat_hint: {
     de: 'Diese USDZ enthält USDC-Binary-Materials. Inspector kann Material-Bindings nicht analysieren. Texture-Status zeigt "unknown" statt "used/unused".',
@@ -2602,9 +2611,9 @@ async function processFile(file) {
     showLoading('render', 1, 1);
     hideLoading();
     render(file.name, file.size, manifest, members, usdMeta, textures, channelInfo, geoStats, _currentBlobUrl, fileHash);
-    // v0.28.0 ADR-44: Three.js 3D-Preview — nur im Advanced-Build (window.USDLoader gesetzt)
-    if (typeof window.USDLoader !== 'undefined') {
-      initThreePreview(buf, file.name, manifest, channelInfo);
+    // v0.28.0.2 ADR-45: Player ist opt-in — kein Auto-Start mehr
+    if (typeof setPlayerReady === 'function') {
+      setPlayerReady(buf, file.name, manifest, channelInfo);
     }
   } catch (e) {
     hideLoading();
@@ -5009,7 +5018,8 @@ document.addEventListener('DOMContentLoaded', () => {
 </dialog>
 
 <!-- ADVANCED-ONLY:START three-js-bundle -->
-<!-- BUILD-INJECT: vendor/three-usdloader-r184-bundle.js -->
+<!-- v0.28.0.2 ADR-45: Bundle wird lazy on-click geladen via loadThreeBundle() -->
+<!-- Auslieferung: advanced/three-usdloader-r184-bundle.js (von build.py kopiert) -->
 <!-- ADVANCED-ONLY:END three-js-bundle -->
 
 <!-- ADVANCED-ONLY:START three-js-preview -->
@@ -5128,16 +5138,49 @@ document.addEventListener('DOMContentLoaded', () => {
   text-align: center;
   margin-top: 6px;
 }
+#adv-start-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--bg-section);
+  border: 1px solid var(--border-outer);
+  border-radius: 8px;
+}
+#adv-pre-drop-text {
+  font-size: 12px;
+  color: var(--text-desc);
+  margin: 0;
+}
+#adv-start-btn {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 6px;
+  border: 1.5px solid var(--primary);
+  background: transparent;
+  color: var(--primary-dark);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+#adv-start-btn:enabled:hover { background: var(--primary); color: #fff; }
+#adv-start-btn:disabled { border-color: var(--border-outer); color: var(--text-desc); cursor: default; }
 </style>
 
 <script>
-/* ── Inspector Advanced: Three.js 3D-Preview (v0.28.0 ADR-44) ────────
-   Globals nach Bundle-Load: window.THREE, window.USDLoader,
-   window.OrbitControls. Wird über BUILD-INJECT eingebettet.
+/* ── Inspector Advanced: Three.js 3D-Preview (v0.28.0.2 ADR-45) ──────
+   Lazy-Load: Bundle wird erst on-click geladen, nicht beim Page-Load.
    Dieses Script ist ONLY im Advanced-Build vorhanden. */
 
 let _advRenderer = null;
 let _advAnimFrame = null;
+let _bundleLoaded = false;
+let _playerReadyBuf = null;
+let _playerReadyManifest = null;
+let _playerReadyChanInfo = null;
 
 function _advLang() { return (typeof CURRENT_LANG !== 'undefined') ? CURRENT_LANG : 'de'; }
 function _advT(key) { return (typeof t === 'function') ? t(key) : key; }
@@ -5246,80 +5289,154 @@ function advFrameModel(camera, controls, object) {
   controls.update();
 }
 
-/* ─ Haupt-Funktion ──────────────────────────────────────────────── */
-async function initThreePreview(buf, filename, manifest, channelInfo) {
-  const section = document.getElementById('adv-3d-section');
-  const spinner = document.getElementById('adv-spinner');
-  const spinnerText = document.getElementById('adv-spinner-text');
-  const errorDiv = document.getElementById('adv-error-msg');
-  const canvas = document.getElementById('adv-canvas');
-  if (!section || !canvas) return;
+/* ─ Lazy-Load Bundle ────────────────────────────────────────────── */
+function loadThreeBundle() {
+  return new Promise((resolve, reject) => {
+    if (_bundleLoaded) return resolve();
+    const script = document.createElement('script');
+    script.src = 'three-usdloader-r184-bundle.js';
+    script.onload = () => { _bundleLoaded = true; resolve(); };
+    script.onerror = () => reject(new Error('Bundle-Load fehlgeschlagen'));
+    document.head.appendChild(script);
+  });
+}
 
-  // Cleanup vorherigen Renderer
-  resetThreePreview();
-
-  section.style.display = 'block';
-  spinner.style.display = 'flex';
-  errorDiv.style.display = 'none';
-
-  // i18n hints
+/* ─ Player bereit-setzen (nach File-Drop) ───────────────────────── */
+function setPlayerReady(buf, filename, manifest, channelInfo) {
+  _playerReadyBuf      = buf;
+  _playerReadyManifest = manifest;
+  _playerReadyChanInfo = channelInfo;
+  // Banner-Sprache synchronisieren
   const lang = _advLang();
-  const hintDe = document.getElementById('adv-hint-de');
-  const hintEn = document.getElementById('adv-hint-en');
-  if (hintDe) hintDe.style.display = lang === 'de' ? '' : 'none';
-  if (hintEn) hintEn.style.display = lang === 'en' ? '' : 'none';
   const limitDe = document.getElementById('adv-limit-text-de');
   const limitEn = document.getElementById('adv-limit-text-en');
   if (limitDe) limitDe.style.display = lang === 'de' ? '' : 'none';
   if (limitEn) limitEn.style.display = lang === 'en' ? '' : 'none';
-  if (spinnerText) spinnerText.textContent = _advT('adv_spinner_text');
+  // Hint-Text ausblenden, Button aktivieren
+  const hint = document.getElementById('adv-pre-drop-text');
+  if (hint) hint.style.display = 'none';
+  const btn = document.getElementById('adv-start-btn');
+  if (btn) btn.disabled = false;
+}
 
-  // Pre-Renderer-Check
-  const warnings = advPreCheck(manifest, channelInfo);
-  warnings.forEach(w => advShowToast(w.msg, w.key));
+/* ─ Player starten (on-click, vollständig in try/catch) ─────────── */
+async function startPlayer() {
+  if (!_playerReadyBuf) return;
+  const startArea   = document.getElementById('adv-start-area');
+  const canvasWrap  = document.getElementById('adv-canvas-wrap');
+  const spinner     = document.getElementById('adv-spinner');
+  const spinnerText = document.getElementById('adv-spinner-text');
+  const errorDiv    = document.getElementById('adv-error-msg');
+  const canvas      = document.getElementById('adv-canvas');
+  const btn         = document.getElementById('adv-start-btn');
+  if (!canvas) return;
+
+  _advStopRenderLoop();
+  const toasts = document.getElementById('adv-toast-container');
+  if (toasts) toasts.innerHTML = '';
+
+  if (btn)        btn.disabled = true;
+  if (startArea)  startArea.style.display  = 'none';
+  if (canvasWrap) canvasWrap.style.display = 'block';
+  if (spinner)    spinner.style.display    = 'flex';
+  if (errorDiv)   errorDiv.style.display   = 'none';
+  if (spinnerText) spinnerText.textContent = _advT('adv_loading_bundle');
 
   try {
+    await loadThreeBundle();
+    if (spinnerText) spinnerText.textContent = _advT('adv_spinner_text');
+
+    const warnings = advPreCheck(_playerReadyManifest, _playerReadyChanInfo);
+    warnings.forEach(w => advShowToast(w.msg, w.key));
+
     const { renderer, scene, camera, controls, resizeObs } = advSetupScene(canvas);
     _advRenderer = renderer;
 
     const loader = new window.USDLoader();
-    const group = await Promise.resolve(loader.parse(buf));
+    const group  = await Promise.resolve(loader.parse(_playerReadyBuf));
     scene.add(group);
     advFrameModel(camera, controls, group);
 
-    spinner.style.display = 'none';
+    if (spinner) spinner.style.display = 'none';
 
-    // Render-Loop
+    const lang   = _advLang();
+    const hint   = document.getElementById('adv-controls-hint');
+    const hintDe = document.getElementById('adv-hint-de');
+    const hintEn = document.getElementById('adv-hint-en');
+    if (hint)   hint.style.display   = '';
+    if (hintDe) hintDe.style.display = lang === 'de' ? '' : 'none';
+    if (hintEn) hintEn.style.display = lang === 'en' ? '' : 'none';
+
     function animate() {
       _advAnimFrame = requestAnimationFrame(animate);
       controls.update();
       renderer.render(scene, camera);
     }
     animate();
-
-    // Cleanup-Ref für resetThreePreview
     _advRenderer._resizeObs = resizeObs;
+
   } catch (err) {
-    console.error('[Inspector Advanced] Three.js USDLoader error:', err);
-    spinner.style.display = 'none';
-    errorDiv.style.display = 'flex';
-    errorDiv.textContent = _advT('adv_error_text');
+    console.error('[v0.28.0.2] Player-Crash:', err);
+    if (spinner)    spinner.style.display    = 'none';
+    if (canvasWrap) canvasWrap.style.display = 'none';
+    if (startArea)  startArea.style.display  = 'flex';
+    _showPlayerError(err, btn);
   }
 }
 
-/* ─ Reset (beim Neue-Datei-Laden) ───────────────────────────────── */
-function resetThreePreview() {
+function _showPlayerError(err, btn) {
+  const container = document.getElementById('adv-toast-container');
+  if (!container) return;
+  const toast = document.createElement('div');
+  toast.className = 'adv-toast';
+  toast.style.cssText = 'background:#FEE2E2;border-color:#EF4444';
+  const detail = _advT('adv_error_detail');
+  const msg    = (err && err.message) ? err.message : String(err);
+  toast.innerHTML = `<span>${_advT('adv_error_text')} — <details style="display:inline"><summary style="cursor:pointer;color:#991B1B">${detail}</summary><code style="font-size:10px;word-break:break-all">${msg}</code></details></span>`;
+  container.appendChild(toast);
+  if (btn) {
+    btn.disabled    = false;
+    btn.textContent = _advLang() === 'de' ? '↺ Nochmal versuchen' : '↺ Try again';
+  }
+}
+
+/* ─ Stop Render-Loop (intern) ───────────────────────────────────── */
+function _advStopRenderLoop() {
   if (_advAnimFrame) { cancelAnimationFrame(_advAnimFrame); _advAnimFrame = null; }
   if (_advRenderer) {
     if (_advRenderer._resizeObs) _advRenderer._resizeObs.disconnect();
     _advRenderer.dispose();
     _advRenderer = null;
   }
-  const section = document.getElementById('adv-3d-section');
-  if (section) section.style.display = 'none';
-  const toasts = document.getElementById('adv-toast-container');
-  if (toasts) toasts.innerHTML = '';
 }
+
+/* ─ Reset (beim Neue-Datei-Laden, ADR-38-Konvention) ────────────── */
+function resetThreePreview() {
+  _advStopRenderLoop();
+  const canvasWrap = document.getElementById('adv-canvas-wrap');
+  const startArea  = document.getElementById('adv-start-area');
+  const hint       = document.getElementById('adv-controls-hint');
+  const preDrop    = document.getElementById('adv-pre-drop-text');
+  const btn        = document.getElementById('adv-start-btn');
+  const toasts     = document.getElementById('adv-toast-container');
+  if (canvasWrap) canvasWrap.style.display = 'none';
+  if (startArea)  startArea.style.display  = 'flex';
+  if (hint)       hint.style.display       = 'none';
+  if (preDrop)    preDrop.style.display    = '';
+  if (btn)        { btn.disabled = true; btn.textContent = _advT('adv_start_btn'); }
+  if (toasts)     toasts.innerHTML = '';
+}
+
+/* ─ DOMContentLoaded: Button-Click + Initiale i18n ─────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('adv-start-btn');
+  if (btn) {
+    btn.textContent = _advT('adv_start_btn');
+    btn.addEventListener('click', startPlayer);
+  }
+  const preDrop = document.getElementById('adv-pre-drop-text');
+  if (preDrop) preDrop.textContent = _advT('adv_pre_drop');
+});
 </script>
 <!-- ADVANCED-ONLY:END three-js-preview -->
 
