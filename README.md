@@ -4,7 +4,21 @@
 
 Drop any USDZ into your browser and see exactly what's inside. AR Quick Look diagnosis with plain-language fix hints, asset inventory, USD metadata, texture thumbnails, and full Provenance / Lineage panels for USDseal-sealed files. Everything runs locally — no data leaves your machine.
 
-→ **[Try it live](https://kopfkinok3.github.io/usdseal-inspector/)** (GitHub Pages)
+→ **[Try it live](https://kopfkinok3.github.io/usdseal-inspector/)** (GitHub Pages — Standard)  
+→ **[Inspector Advanced](https://kopfkinok3.github.io/usdseal-inspector/advanced/)** — includes desktop 3D preview powered by Three.js r184 (inline, no CDN)
+
+---
+
+## Two distributions
+
+| | Standard | Advanced |
+|---|---|---|
+| **Size** | ~200 KB | ~1.2 MB |
+| **Privacy** | ✓ No CDN, single-file | ✓ No CDN, single-file |
+| **AR Quick Look check** | ✓ | ✓ |
+| **Manifest / provenance** | ✓ | ✓ |
+| **3D Desktop Preview** | — | ✓ Three.js r184, Orbit |
+| **Build** | `python3 build.py` | same command |
 
 ---
 

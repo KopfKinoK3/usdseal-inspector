@@ -1337,12 +1337,29 @@
     line-height: 1.5;
   }
 </style>
-
+<!-- ADVANCED-ONLY:START advanced-header-css -->
+<style>
+  /* ── Advanced-Header-Branding (v0.28.0 · ADVANCED-ONLY) ── */
+  .logo-advanced-badge { color: var(--primary-dark); font-weight: 700; }
+  .adv-back-link {
+    font-size: 11px;
+    color: var(--text-desc);
+    text-decoration: none;
+    margin-left: 8px;
+    padding: 3px 8px;
+    border: 1px solid var(--border-inner);
+    border-radius: 100px;
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .adv-back-link:hover { color: var(--text-body); border-color: var(--text-desc); }
+</style>
+<!-- ADVANCED-ONLY:END advanced-header-css -->
 </head>
 <body>
 
 <div class="topbar">
-  <div class="logo">USD<span>seal</span> <span class="logo-accent" style="font-weight:400;">Inspector</span></div>
+  <div class="logo">USD<span>seal</span> <span class="logo-accent" style="font-weight:400;">Inspector<!-- ADVANCED-ONLY:START logo-advanced --> <strong class="logo-advanced-badge">Advanced</strong><!-- ADVANCED-ONLY:END logo-advanced --></span></div><!-- ADVANCED-ONLY:START back-link --><a href="../" class="adv-back-link" id="adv-back-link">← Standard-Inspector</a><!-- ADVANCED-ONLY:END back-link -->
   <div class="version-badge" id="version-badge"></div>
   <button id="cache-clear-btn" class="btn-cache-clear" type="button" onclick="clearCache()" title="Lokal gespeicherte Manifest-IDs aus signierten USDZs löschen" style="display:none;">Cache (<span id="cache-count">0</span>)</button>
   <button id="btn-export-pdf" class="btn-export-pdf" type="button" onclick="generatePDF()" style="display:none;"></button>
@@ -1374,7 +1391,31 @@
 </div>
 
 <div id="dashboard">
-
+<!-- ADVANCED-ONLY:START three-js-preview -->
+<div id="adv-3d-section" style="display:none">
+  <div class="section-head">
+    <span class="section-label" id="adv-section-label">🎬 3D-Preview (Beta)</span>
+    <span class="badge-advanced" id="adv-badge">Advanced</span>
+  </div>
+  <div id="adv-limit-banner" class="adv-limit-banner">
+    <span id="adv-limit-text-de">3D-Preview Beta — Geometrie und Standard-Materialien. Komplexe Materialien → <a href="#findings-anchor" class="adv-anchor-link">Inspection-Report</a></span>
+    <span id="adv-limit-text-en" style="display:none">3D-Preview Beta — geometry and standard materials. Complex materials → <a href="#findings-anchor" class="adv-anchor-link">Inspection Report</a></span>
+  </div>
+  <div id="adv-toast-container"></div>
+  <div id="adv-canvas-wrap">
+    <canvas id="adv-canvas"></canvas>
+    <div id="adv-spinner">
+      <div class="adv-spinner-ring"></div>
+      <div id="adv-spinner-text">3D-Preview wird gerendert…</div>
+    </div>
+    <div id="adv-error-msg" style="display:none"></div>
+  </div>
+  <div id="adv-controls-hint">
+    <span id="adv-hint-de">Drag: Rotieren · Scroll: Zoom</span>
+    <span id="adv-hint-en" style="display:none">Drag: Rotate · Scroll: Zoom</span>
+  </div>
+</div>
+<!-- ADVANCED-ONLY:END three-js-preview -->
   <div id="dash-content"></div>
 </div>
 
@@ -4967,9 +5008,320 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 </dialog>
 
+<!-- ADVANCED-ONLY:START three-js-bundle -->
+<!-- BUILD-INJECT: vendor/three-usdloader-r184-bundle.js -->
+<!-- ADVANCED-ONLY:END three-js-bundle -->
 
+<!-- ADVANCED-ONLY:START three-js-preview -->
+<style>
+/* ── Inspector Advanced: Three.js 3D-Preview (v0.28.0 ADR-44) ── */
+#adv-3d-section {
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 0 24px 20px;
+}
+#adv-3d-section .section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-heading);
+}
+.badge-advanced {
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--primary-dark);
+  color: #fff;
+  border-radius: 4px;
+  padding: 2px 6px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.adv-limit-banner {
+  font-size: 11px;
+  color: var(--text-desc);
+  background: var(--bg-section);
+  border: 1px solid var(--border-outer);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+}
+.adv-limit-banner .adv-anchor-link { color: var(--accent-dark); text-decoration: underline; }
+#adv-toast-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.adv-toast {
+  font-size: 11px;
+  background: #FEF3C7;
+  border: 1px solid #F59E0B;
+  border-radius: 6px;
+  padding: 7px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.adv-toast-close {
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-desc);
+  background: none;
+  border: none;
+  padding: 0 2px;
+  line-height: 1;
+}
+#adv-canvas-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #1a1a2e;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-outer);
+}
+#adv-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#adv-spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #1a1a2e;
+  color: #ccc;
+  font-size: 12px;
+}
+.adv-spinner-ring {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255,255,255,0.15);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: adv-spin 0.8s linear infinite;
+}
+@keyframes adv-spin { to { transform: rotate(360deg); } }
+#adv-error-msg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a1a2e;
+  color: #f87171;
+  font-size: 12px;
+  padding: 16px;
+  text-align: center;
+}
+#adv-controls-hint {
+  font-size: 11px;
+  color: var(--text-desc);
+  text-align: center;
+  margin-top: 6px;
+}
+</style>
 
+<script>
+/* ── Inspector Advanced: Three.js 3D-Preview (v0.28.0 ADR-44) ────────
+   Globals nach Bundle-Load: window.THREE, window.USDLoader,
+   window.OrbitControls. Wird über BUILD-INJECT eingebettet.
+   Dieses Script ist ONLY im Advanced-Build vorhanden. */
 
+let _advRenderer = null;
+let _advAnimFrame = null;
+
+function _advLang() { return (typeof CURRENT_LANG !== 'undefined') ? CURRENT_LANG : 'de'; }
+function _advT(key) { return (typeof t === 'function') ? t(key) : key; }
+
+/* ─ Pre-Renderer-Check ─────────────────────────────────────────────
+   Scannt Manifest + channelInfo auf bekannte Limit-Trigger.
+   Gibt Array von {key, msg} zurück. */
+function advPreCheck(manifest, channelInfo) {
+  const warnings = [];
+  // USDC-Binary-Materialien
+  if (channelInfo && channelInfo.usdcBinaryMaterials) {
+    warnings.push({ key: 'usdc', msg: _advT('adv_toast_usdc') });
+  }
+  if (!manifest) return warnings;
+  // Variants
+  try {
+    const inv = manifest.asset_inventory || [];
+    const hasVariants = inv.some(item => {
+      const meta = item.usd_meta || {};
+      return meta.variantSets && Object.keys(meta.variantSets).length > 0;
+    });
+    if (hasVariants) warnings.push({ key: 'variants', msg: _advT('adv_toast_variants') });
+  } catch(e) {}
+  // Animation (timeSamples in provenance hints)
+  try {
+    const prov = manifest.provenance || [];
+    const hasAnim = prov.some(p => p.notes && /timeSamples|animation/i.test(p.notes));
+    if (hasAnim) warnings.push({ key: 'anim', msg: _advT('adv_toast_anim') });
+  } catch(e) {}
+  return warnings;
+}
+
+/* ─ Toast-System ────────────────────────────────────────────────── */
+function advShowToast(msg, key) {
+  const dismissed = JSON.parse(localStorage.getItem('adv-toast-dismissed') || '{}');
+  if (dismissed[key]) return;
+  const container = document.getElementById('adv-toast-container');
+  if (!container) return;
+  const toast = document.createElement('div');
+  toast.className = 'adv-toast';
+  toast.dataset.key = key;
+  toast.innerHTML = `<span>${msg}</span><button class="adv-toast-close" aria-label="Schließen">✕</button>`;
+  toast.querySelector('.adv-toast-close').addEventListener('click', () => {
+    const d = JSON.parse(localStorage.getItem('adv-toast-dismissed') || '{}');
+    d[key] = true;
+    localStorage.setItem('adv-toast-dismissed', JSON.stringify(d));
+    toast.remove();
+  });
+  container.appendChild(toast);
+}
+
+/* ─ Three.js Scene Setup ────────────────────────────────────────── */
+function advSetupScene(canvas) {
+  const THREE = window.THREE;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x1a1a2e);
+
+  const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.01, 1000);
+  camera.position.set(0, 1, 3);
+
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+  scene.add(ambientLight);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+  dirLight.position.set(5, 10, 7);
+  scene.add(dirLight);
+
+  const controls = new window.OrbitControls(camera, renderer.domElement);
+  controls.enablePan = false;
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.minDistance = 0.1;
+  controls.maxDistance = 100;
+
+  // Responsive resize
+  const resizeObs = new ResizeObserver(() => {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  });
+  resizeObs.observe(canvas.parentElement);
+
+  return { renderer, scene, camera, controls, resizeObs };
+}
+
+/* ─ Auto-Frame Model ────────────────────────────────────────────── */
+function advFrameModel(camera, controls, object) {
+  const THREE = window.THREE;
+  const box = new THREE.Box3().setFromObject(object);
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z);
+  if (maxDim === 0) return;
+  const dist = maxDim * 1.8;
+  camera.position.set(center.x, center.y + maxDim * 0.3, center.z + dist);
+  camera.near = maxDim * 0.001;
+  camera.far  = maxDim * 100;
+  camera.updateProjectionMatrix();
+  controls.target.copy(center);
+  controls.update();
+}
+
+/* ─ Haupt-Funktion ──────────────────────────────────────────────── */
+async function initThreePreview(buf, filename, manifest, channelInfo) {
+  const section = document.getElementById('adv-3d-section');
+  const spinner = document.getElementById('adv-spinner');
+  const spinnerText = document.getElementById('adv-spinner-text');
+  const errorDiv = document.getElementById('adv-error-msg');
+  const canvas = document.getElementById('adv-canvas');
+  if (!section || !canvas) return;
+
+  // Cleanup vorherigen Renderer
+  resetThreePreview();
+
+  section.style.display = 'block';
+  spinner.style.display = 'flex';
+  errorDiv.style.display = 'none';
+
+  // i18n hints
+  const lang = _advLang();
+  const hintDe = document.getElementById('adv-hint-de');
+  const hintEn = document.getElementById('adv-hint-en');
+  if (hintDe) hintDe.style.display = lang === 'de' ? '' : 'none';
+  if (hintEn) hintEn.style.display = lang === 'en' ? '' : 'none';
+  const limitDe = document.getElementById('adv-limit-text-de');
+  const limitEn = document.getElementById('adv-limit-text-en');
+  if (limitDe) limitDe.style.display = lang === 'de' ? '' : 'none';
+  if (limitEn) limitEn.style.display = lang === 'en' ? '' : 'none';
+  if (spinnerText) spinnerText.textContent = _advT('adv_spinner_text');
+
+  // Pre-Renderer-Check
+  const warnings = advPreCheck(manifest, channelInfo);
+  warnings.forEach(w => advShowToast(w.msg, w.key));
+
+  try {
+    const { renderer, scene, camera, controls, resizeObs } = advSetupScene(canvas);
+    _advRenderer = renderer;
+
+    const loader = new window.USDLoader();
+    const group = await Promise.resolve(loader.parse(buf));
+    scene.add(group);
+    advFrameModel(camera, controls, group);
+
+    spinner.style.display = 'none';
+
+    // Render-Loop
+    function animate() {
+      _advAnimFrame = requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Cleanup-Ref für resetThreePreview
+    _advRenderer._resizeObs = resizeObs;
+  } catch (err) {
+    console.error('[Inspector Advanced] Three.js USDLoader error:', err);
+    spinner.style.display = 'none';
+    errorDiv.style.display = 'flex';
+    errorDiv.textContent = _advT('adv_error_text');
+  }
+}
+
+/* ─ Reset (beim Neue-Datei-Laden) ───────────────────────────────── */
+function resetThreePreview() {
+  if (_advAnimFrame) { cancelAnimationFrame(_advAnimFrame); _advAnimFrame = null; }
+  if (_advRenderer) {
+    if (_advRenderer._resizeObs) _advRenderer._resizeObs.disconnect();
+    _advRenderer.dispose();
+    _advRenderer = null;
+  }
+  const section = document.getElementById('adv-3d-section');
+  if (section) section.style.display = 'none';
+  const toasts = document.getElementById('adv-toast-container');
+  if (toasts) toasts.innerHTML = '';
+}
+</script>
+<!-- ADVANCED-ONLY:END three-js-preview -->
 
 </body>
 </html>

@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.28.0] — 2026-05-25
+
+### Added
+- **Inspector Advanced** (`advanced/index.html`): Neue Distribution mit Three.js Desktop-3D-Preview. Inline-eingebettet, kein CDN, single-file, `file://`-öffenbar. Rendert USDA, USDC und USDZ mit Orbit-Controls.
+- **Two-File-Pattern** (ADR-43): `src/inspector.html` als gemeinsame Quelle mit `<!-- ADVANCED-ONLY:START/END -->` und `<!-- STANDARD-ONLY:START/END -->` Markern. `build.py` erzeugt beide Distributions automatisch.
+- **`build.py`** Build-Script: Standard- und Advanced-Build aus einer Quelle. Unterstützt `BUILD-INJECT:` Vendor-Files (`<script>`-gewrapped).
+- **Three.js r184 IIFE-Bundle** (`vendor/three-usdloader-r184-bundle.js`, ~1 MB): Inline-Bundle aus `three.core.min.js` + `three.module.min.js` + fflate + USDAParser + USDCParser + USDComposer + USDLoader + OrbitControls. Erzeugt von `vendor/bundle.py`. Globals: `window.THREE` (451 Keys), `window.USDLoader`, `window.OrbitControls`.
+- **Click-Through-Button** im Standard-Footer: `Mehr Features → Inspector Advanced` (STANDARD-ONLY, kein CTA im Advanced).
+- **Zurück-Link** im Advanced-Header: `← Standard-Inspector` (ADVANCED-ONLY).
+- **`Advanced`-Badge** im Logo (ADVANCED-ONLY).
+
+### Architecture
+- **ADR-43** (Two-File-Pattern, 2026-05-25): Single Source → zwei Single-File Distributions. Standard ~200 KB, Advanced ~1.2 MB. Beide privacy-first, keine externen Deps zur Laufzeit.
+- **ADR-44** (Three.js r184 inline-embedded, 2026-05-25): `USDZLoader` deprecated seit r179 → `USDLoader`. r184 kein UMD mehr (nur ESM). Manuelles IIFE-Bundle via `vendor/bundle.py`. Block-Scope-Isolation gegen minifizierte Konstanten-Kollisionen (`const e` in core + module). window.THREE enthält alle 444 Core-Exports + 7 Module-Exports.
+
+### Notes
+- `INSPECTOR_VERSION = '0.28.0'`
+- 18/18 PASS (Headless-Pool, Standard-Build)
+- Standard-Build: 200.0 KB — keine Three.js-Abhängigkeit
+- Advanced-Build: ~1244 KB — vollständige Three.js-Runtime inline
+
+---
+
 ## [0.27.3] — 2026-05-09
 
 ### Changed
