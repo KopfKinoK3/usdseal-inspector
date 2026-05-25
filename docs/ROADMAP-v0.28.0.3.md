@@ -13,6 +13,19 @@
 
 v0.28.0.2 hat den Player ausfall-tolerant gemacht — Standard-Report läuft IMMER, Player ist opt-in. Aber: der User weiß nicht im voraus, ob sein Klick auf *"3D-Preview starten"* Erfolg hat. Er klickt, wartet auf den Spinner, sieht im schlimmsten Fall den Fallback-Toast — und denkt *"war wohl Pech, probiere ich nochmal"*.
 
+**Live-Test 2026-05-25 hat das Muster geschärft:** Vier Real-World-Assets getestet, drei davon sind **Variants-Assets** (RENZ_Showtime_Demo, Frankfurt_Varianten_TK, DIEGOsat_TK_280426 vermutlich auch). Three.js USDLoader r184 verhält sich konsistent: Variants werden ignoriert, nur defaultPrim wird gerendert. Ergebnisse:
+
+| Asset | Variants? | USDC? | Render-Resultat |
+|---|---|---|---|
+| SalmonPasta | nein | nein | ✓ PASS |
+| DIEGOsat_TK | ja | ja | ⚠ Geo OK, Material teilweise dunkel |
+| RENZ_Showtime | ja | ja | ❌ Schwarz (silent failure, kein Toast) |
+| Frankfurt_Varianten | ja | ? | ❌ Player-Start-Fail (kein Toast) |
+
+**Strategisch wichtige Erkenntnis:** Die Variants-Asset-Klasse ist nicht "Edge-Case", sondern **die Norm im B2B-Vertrieb** — Produktkonfiguratoren, Möbel-Varianten, Maschinen-Optionen. Damit ist Three.js USDLoader für viSales-Kunden-Assets **strukturell limitiert**.
+
+**Konsequenz für die Story:** Inspector Advanced positioniert die 3D-Preview ehrlich als *"Demo-Klasse für einfache Assets"*. Für Variants-Auflösung wird auf USDconfig verwiesen — viSales' kuratiertes Konfigurator-System, das durch eine non-web-Software die Asset-Vorbereitung übernimmt (kein on-the-fly im Browser möglich). Das ist ehrlich, technisch korrekt, und positioniert USDconfig als Lösung ohne den Inspector zu unterminieren.
+
 **Bessere User-Experience:** Inspector Advanced **prädiziert vorab**, ob das gedroppte USDZ render-kompatibel ist, und kommuniziert das im Button-Text:
 
 - *"▶ 3D-Preview starten ✓"* — Asset gehört zur SalmonPasta-Klasse, Rendering wahrscheinlich erfolgreich
@@ -142,12 +155,70 @@ Beta-Banner aus v0.28.0.2 wird je nach Klassifikation ergänzt:
 
 Doku wird in Banner verlinkt: *"Welche Assets gehen, welche nicht? → Compatibility-Doku"*
 
-### 3.5 Was NICHT in v0.28.0.3
+### 3.6 USDconfig-Brücke unter dem Player (NEU, aus Live-Test 2026-05-25)
+
+Unter dem Player-Bereich (oberhalb des Standard-Reports) erscheint ein Erklär-Block, der die Three.js-Grenzen ehrlich einordnet und auf USDconfig verweist:
+
+**Block-Layout (DE):**
+```
+ⓘ Warum die 3D-Preview Grenzen hat
+
+Die Preview nutzt Three.js USDLoader — den einzigen
+quelloffenen USDZ-Renderer für den Browser. Er rendert
+zuverlässig einfache USDZs mit einer Geometrie und
+Standard-Materialien (etwa Pixar-Beispiel-Assets).
+
+Was er heute NICHT zuverlässig kann:
+• Variants (Produktvarianten aus einem Master-Asset)
+• USDC-Binary-Materialien
+• Multi-Layer-Komposition (References / Payloads)
+• Animation
+
+Das betrifft genau die Asset-Klasse, mit der B2B-Vertrieb
+arbeitet — Produktkonfiguratoren mit Variants.
+
+→ Für Variant-Vorschau auf B2B-Asset-Klasse: USDconfig
+
+USDconfig wandelt durch eine non-web-software erst ein
+solches asset um. diesen prozess kann man nicht via dem
+kostenlosen USDseal Inspector umsetzen.
+
+[→ Mehr zu USDconfig]
+```
+
+(Duke-Text 2026-05-25, wortgetreu übernommen — Code-Chat passt nur Typografie/Casing an, der Inhalt bleibt.)
+
+**Block-Layout (EN):** sinngemäße Übersetzung, Code-Chat formuliert.
+
+**Verlinkung:** Button "→ Mehr zu USDconfig" zeigt auf `https://kopfkinok3.github.io/USDconfig-demo-player/landingpage/deutsch/` (DE) bzw. die EN-Variante.
+
+**Position:** Unter dem Player-Canvas, vor dem Standard-Inspection-Report. Sichtbar IMMER (unabhängig von Player-State PASS/CAUTION/BLOCK) — die Botschaft gilt für alle Variants-Assets, nicht nur bei BLOCK.
+
+**i18n:** 7-9 neue Keys DE+EN (`player_limits_title`, `player_limits_intro`, `player_limits_list_*`, `player_limits_b2b_note`, `player_limits_usdconfig_pitch`, `player_limits_usdconfig_cta`).
+
+**CSS:** dezent, kein Marketing-Banner — Info-Box-Stil analog Beta-Banner aus v0.28.0.2.
+
+### 3.7 Befunde-Patches aus Live-Test 2026-05-25 (NEU)
+
+Drei Patches, die aus dem Live-Test mit v0.28.0.2 hervorgegangen sind und in v0.28.0.3 mit eingearbeitet werden:
+
+**3.7.a — Crash-Detection mit Post-Render-Verifikation (RENZ-Schwarz-Fall):**
+Nach `initSceneWithGroup(group)` läuft eine kurze Post-Render-Verifikation (1-2 Frames). Wenn Canvas **komplett leer** ist (alle Pixel = Background-Color) ODER Bounding-Box der Scene = 0: Toast *"3D-Preview gerendert, aber Canvas bleibt leer — möglicherweise Variants/Komposition nicht aufgelöst. Siehe Inspection-Report."*
+
+**3.7.b — Parse-Fail-Toast (Frankfurt_Varianten-Fall):**
+`USDLoader.parse()` kann **silent rejecten** oder ein leeres `THREE.Group` zurückgeben. Try/Catch fängt das nicht. Patch: Nach `parse()` prüfen, ob das zurückgegebene Group `.children.length > 0` hat. Wenn nein: Toast *"3D-Preview konnte das Asset nicht laden — vermutlich Variants oder Komposition. Siehe Inspection-Report."*
+
+**3.7.c — Player-Button-Farbe-Fix:**
+Aktueller Button-Orange-Ton stimmt nicht mit viSales-Warm-Tech-Palette überein (Memory-Anker User-Profil). Korrekt: Amber/Orange-700-Bereich. CSS-Klasse fixen oder Inline-Style anpassen. Trivial-Patch, ~5 min.
+
+### 3.8 Was NICHT in v0.28.0.3
 
 - **Keine USDLoader-Bugfixes** — Inspector ist nicht Three.js-Maintainer
-- **Keine alternative Renderer** (Babylon.js, model-viewer-Wrapper) — eigener Sprint, wenn Three.js sich als Sackgasse erweist
+- **Keine alternative Renderer** (Babylon.js, model-viewer-Wrapper, usd-wasm-Variant-Composer) — eigener Strategie-Sprint, vermutlich v0.29 wenn Variants-Asset-Klasse dominiert
 - **Kein Telemetrie-Crash-Log** → v0.28.0.4 oder später
 - **Keine Heuristik-Selbstlern** (z. B. "wenn 3x in Folge BLOCK-klassifiziert, immer als BLOCK") — overengineering für jetzt
+- **Keine Variant-Auswahl-UI** ("zeige Variant 2 von 5") — wäre echte Variants-Resolution, gehört zu USDconfig-Scope, nicht Inspector
+- **Keine USDconfig-Verkaufs-Cards** auf der Landingpage — der dezente Verweis unter dem Player reicht für v0.28.0.3
 
 ---
 
@@ -177,19 +248,21 @@ Doku wird in Banner verlinkt: *"Welche Assets gehen, welche nicht? → Compatibi
 
 | Phase | Dauer | Was passiert |
 |---|---|---|
-| **5.0 Spike** | 0.5-0.8 Tag | **Kritisch:** Asset-Matrix erstellen, Heuristik-Hypothesen testen, Go/No-Go-Entscheidung |
-| **5.1 Klassifikations-Funktion** | 0.2 Tag | classifyAssetForPlayer() auf Standard-Report aufsetzen, Unit-Tests gegen Asset-Matrix |
+| **5.0 Spike** | 0.4-0.6 Tag | **Kritisch:** Asset-Matrix erstellen (4 Daten-Punkte aus Live-Test sind Startpunkt), Variants-Hypothese validieren, weitere BLOCK-Trigger ableiten, Go/No-Go für dynamische Klassifikation |
+| **5.1 Klassifikations-Funktion** | 0.2 Tag | classifyAssetForPlayer() auf Standard-Report aufsetzen, Variants-Detection als ersten BLOCK-Trigger |
 | **5.2 Dynamischer Button-Text** | 0.2 Tag | UI-Anbindung, drei Zustände, i18n-Keys |
 | **5.3 Banner-Anpassung** | 0.15 Tag | Beta-Banner zeigt Klassifikations-Reason wenn CAUTION/BLOCK |
-| **5.4 Compatibility-Doku** | 0.2 Tag | docs/PLAYER-ASSET-COMPATIBILITY.md schreiben, in Banner verlinken |
-| **5.5 Browser-Verifikation** | 0.15 Tag | Chrome+Safari, alle 11 Pool-Assets durchklicken, Klassifikation gegen tatsächliches Render-Resultat checken |
-| **5.6 Headless-Pool** | 0.05 Tag | 18/18 bleibt grün |
-| **5.7 README + CHANGELOG** | 0.05 Tag | Sprint-Eintrag mit Heuristik-Übersicht |
-| **5.8 ADR-46** | inkludiert | Asset-Klassifikations-Heuristik dokumentiert |
-| **5.9 Tag v0.28.0.3 + Push** | 0.05 Tag | Tag, Push, Latenz |
-| **5.10 Memory-Update** | 0.05 Tag | inspector_project.md ergänzt v0.28.0.3-Block + Spike-Befunde |
+| **5.4 USDconfig-Brücke unter Player** | 0.2 Tag | Erklär-Block mit Duke-Text DE, EN-Übersetzung, Verlinkung auf USDconfig-Landingpage, 7-9 i18n-Keys |
+| **5.5 Befunde-Patches aus Live-Test** | 0.2 Tag | Post-Render-Verifikation (RENZ-Schwarz), Parse-Fail-Toast (Frankfurt_Varianten), Player-Button-Farbe (Warm-Tech-Orange) |
+| **5.6 Compatibility-Doku** | 0.2 Tag | docs/PLAYER-ASSET-COMPATIBILITY.md schreiben, in Banner verlinken |
+| **5.7 Browser-Verifikation** | 0.2 Tag | Chrome+Safari, alle Pool-Assets durchklicken, Klassifikation gegen tatsächliches Render-Resultat checken, USDconfig-Block sichtbar |
+| **5.8 Headless-Pool** | 0.05 Tag | 18/18 bleibt grün |
+| **5.9 README + CHANGELOG** | 0.05 Tag | Sprint-Eintrag mit Heuristik-Übersicht + USDconfig-Brücke |
+| **5.10 ADR-46** | inkludiert | Asset-Klassifikations-Heuristik + strategische Positionierung dokumentiert |
+| **5.11 Tag v0.28.0.3 + Push** | 0.05 Tag | Tag, Push, Latenz |
+| **5.12 Memory-Update** | 0.05 Tag | inspector_project.md ergänzt v0.28.0.3-Block + Spike-Befunde + USDconfig-Brücken-Story |
 
-**Total: 1.6–2.5 Tage** (mit Spike); **0.5-0.8 Tag** wenn Spike No-Go ergibt und Sprint zu statischer Doku-Variante schrumpft.
+**Total: 1.95–2.45 Tage** (mit Spike + USDconfig-Brücke + Befunde-Patches); **1.0-1.4 Tage** wenn Spike No-Go ergibt (dann ohne dynamische Klassifikation, aber MIT USDconfig-Brücke + Befunde-Patches — die sind sprint-unabhängig wertvoll).
 
 ---
 
@@ -197,8 +270,9 @@ Doku wird in Banner verlinkt: *"Welche Assets gehen, welche nicht? → Compatibi
 
 1. **Erwartungs-Management vor dem Klick** — User klickt nicht ins Leere, sondern mit Vor-Information. Reduziert Frustration drastisch.
 2. **Heuristik wird zur Marketing-Story** — *"Inspector Advanced ist ehrlich über seine eigenen Grenzen"* ist stärker als verschleiernde Fehler-Toasts.
-3. **Compatibility-Doku als SEO-Magnet** — Asset-Klassen-Beschreibung mit konkreten Beispielen ist Suchmaschinen-Futter (*"warum rendert Three.js USDZLoader mein Asset nicht"*).
-4. **Vorbereitung für v0.28.0.4 (Crash-Log) und v0.29 (LLM-Findings)** — Klassifikations-Daten sind Eingabe für beide.
+3. **USDconfig-Brücke positioniert das viSales-Produkt** — wo Inspector-Preview an Variants scheitert, wird USDconfig als Lösung sichtbar. Anti-Klau-Schutz: Inspector ist Diagnose, USDconfig ist Produkt. Sales-Vorlage für Kunden-Gespräche.
+4. **Compatibility-Doku als SEO-Magnet** — Asset-Klassen-Beschreibung mit konkreten Beispielen ist Suchmaschinen-Futter (*"warum rendert Three.js USDZLoader mein Asset nicht"*).
+5. **Vorbereitung für v0.28.0.4 (Crash-Log) und v0.29 (Renderer-Strategie + LLM-Findings)** — Klassifikations-Daten sind Eingabe für beide. Falls v0.29 zeigt dass usd-wasm/Babylon.js die Variants-Asset-Klasse besser bedient, wird die USDconfig-Brücke zur sekundären Story.
 
 ---
 
@@ -216,16 +290,19 @@ Falls beide erfüllt: *"Keine — alle Vorbedingungen erfüllt."*
 ```markdown
 ### ADR-46 Asset-Klassifikation für Player-Erwartungs-Management — 2026-05-25 (oder Sprint-Datum)
 
-**Kontext:** v0.28.0.2 hat den Player ausfall-tolerant gemacht, aber User klickt blind in den Crash. Drei Asset-Klassen wurden im Erst-Test identifiziert (PASS / SCHWARZ / FREEZE) — aber keine Heuristik, die das vorab erkennt.
+**Kontext:** v0.28.0.2 hat den Player ausfall-tolerant gemacht, aber User klickt blind in den Crash. Live-Test mit vier Real-World-Assets ergab: drei von vier sind Variants-Assets, Three.js USDLoader rendert nur den defaultPrim — bei manchen Assets sichtbar (Geometrie da), bei anderen schwarz (defaultPrim leer), bei wieder anderen Parse-Fail (Variants-Block crasht USDLoader).
+
+**Strategisch wichtig:** Variants-Asset-Klasse ist nicht Edge-Case, sondern die Norm im B2B-Vertrieb (Produktkonfiguratoren). Three.js USDLoader ist für die viSales-Kunden-Asset-Klasse strukturell limitiert. Das muss ehrlich kommuniziert UND mit Lösungs-Hinweis (USDconfig) gerahmt werden.
 
 Alternativen geprüft:
 - **Keine Heuristik, nur Beta-Banner:** Ehrlich aber unspezifisch — User lernt nicht aus dem Banner welches Asset welches Risiko hat
 - **Heuristik mit Selbst-Lern (3x BLOCK = immer BLOCK):** Overengineering für jetzt, bringt erst Wert wenn Telemetrie da ist
-- **Konservative regelbasierte Heuristik mit Compatibility-Doku:** Spike-getrieben, ehrlich, erweiterbar, kein Lern-Risiko
+- **Renderer-Wechsel auf usd-wasm/Babylon.js:** großer Strategie-Sprint, vermutlich v0.29 — nicht v0.28.0.3-Scope
+- **Konservative regelbasierte Heuristik mit Compatibility-Doku + USDconfig-Brücke:** Spike-getrieben, ehrlich, erweiterbar, kein Lern-Risiko, USDconfig wird strategisch positioniert
 
-**Entscheidung:** Konservative Heuristik mit drei Klassifikations-Stufen (PASS / CAUTION / BLOCK). Regeln aus Spike-Phase 5.0 abgeleitet, konkret: {Regeln einfügen, sobald Spike fertig}. Button-Text dynamisch, Banner zeigt Klassifikations-Reason, Compatibility-Doku verlinkt aus Banner.
+**Entscheidung:** Konservative Heuristik mit drei Klassifikations-Stufen (PASS / CAUTION / BLOCK). Regeln aus Spike-Phase 5.0 abgeleitet, mit Variants-Detection als bekanntestem BLOCK-Trigger (Hypothese aus Live-Test, Spike validiert). Button-Text dynamisch, Banner zeigt Klassifikations-Reason, Compatibility-Doku verlinkt aus Banner. Plus: **USDconfig-Brücke unter dem Player** als Erklär-Block — positioniert die 3D-Preview als Demo-Klasse, USDconfig als Lösung für Variants-Asset-Klasse. Plus drei Befunde-Patches aus Live-Test (Post-Render-Verifikation, Parse-Fail-Toast, Button-Farbe-Fix).
 
-**Konsequenz:** User klickt mit Vor-Information statt blind. Klassifikation kann später als Eingabe für Crash-Log-Sammler (v0.28.0.4?) und LLM-Findings-Erklärungen (v0.28.1) verwendet werden. Heuristik bleibt **statisch regelbasiert** — keine Selbst-Lern-Logik, keine Telemetrie nötig. Bei Three.js-Update wird Heuristik überprüft.
+**Konsequenz:** User klickt mit Vor-Information statt blind. Variants-Asset-Klasse (B2B-Norm) wird ehrlich als out-of-scope der Inspector-Preview kommuniziert, mit Brücke zu USDconfig. Klassifikation kann später als Eingabe für Crash-Log-Sammler (v0.28.0.4?) und LLM-Findings-Erklärungen (v0.28.1) verwendet werden. Heuristik bleibt **statisch regelbasiert** — keine Selbst-Lern-Logik, keine Telemetrie nötig. Renderer-Wechsel auf usd-wasm/Babylon.js bleibt **offene Strategie-Frage für v0.29** — wenn dieser Sprint zeigt dass auch mit Variants-Awareness die 3D-Preview-Story dünn bleibt, wird v0.29 die Renderer-Entscheidung neu stellen.
 ```
 
 ---

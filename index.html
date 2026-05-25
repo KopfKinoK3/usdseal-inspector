@@ -1375,6 +1375,7 @@
 
 <div id="dashboard">
 
+
   <div id="dash-content"></div>
 </div>
 
@@ -1390,7 +1391,7 @@
    Inspector spiegelt CLI-Schema-Disziplin (CLI-ADR §11.14).
    Erweiterung der Whitelist = neue Render-Funktion + Eintrag.
    Siehe COMPATIBILITY.md für Versions-Matrix. */
-const INSPECTOR_VERSION = '0.28.0.2';
+const INSPECTOR_VERSION = '0.28.0.3';
 const SUPPORTED_SPEC_VERSIONS = ['0.1', '0.2'];
 const TEXTURE_TABLE_THRESHOLD = 20;
 
@@ -1543,6 +1544,29 @@ const I18N = {
   adv_start_btn:      { de: '▶ 3D-Preview starten', en: '▶ Start 3D Preview' },
   adv_loading_bundle: { de: 'Bundle wird geladen…', en: 'Loading bundle…' },
   adv_error_detail:   { de: 'Fehler anzeigen', en: 'Show error' },
+  // v0.28.0.3 Asset-Klassifikation (ADR-46)
+  adv_btn_pass:       { de: '▶ 3D-Preview starten ✓', en: '▶ Start 3D Preview ✓' },
+  adv_btn_caution:    { de: '⚠ 3D-Preview testen', en: '⚠ Test 3D Preview' },
+  adv_btn_block:      { de: '⊘ 3D-Preview nicht empfohlen', en: '⊘ 3D Preview not recommended' },
+  adv_reason_block_sub_usdz:      { de: 'Eingebettete Sub-USDZ werden vom Player nicht verarbeitet', en: 'Embedded sub-USDZ not supported by player' },
+  adv_reason_block_multi_usdc:    { de: 'Multi-Komponenten-Szene (viele USDC-Module) — Three.js löst Komposition nicht auf', en: 'Multi-component scene — Three.js cannot resolve composition' },
+  adv_reason_block_variants_refs: { de: 'Variants/References erkannt — Three.js rendert nur Root-Layer', en: 'Variants/References detected — Three.js renders root layer only' },
+  adv_reason_caution_large_file:  { de: 'Große USDZ (>20 MB) — Render-Qualität eingeschränkt möglich', en: 'Large USDZ (>20 MB) — render quality may be limited' },
+  adv_reason_caution_multi_usdc:  { de: 'Mehrere USDC-Module — Materialien möglicherweise unvollständig', en: 'Multiple USDC modules — materials may be incomplete' },
+  adv_toast_empty_canvas:  { de: '3D-Preview gerendert, aber Canvas bleibt leer — möglicherweise Variants/Komposition nicht aufgelöst. Siehe Inspection-Report.', en: '3D-Preview rendered but canvas is empty — variants/composition may not be resolved. See Inspection Report.' },
+  adv_toast_parse_fail:    { de: '3D-Preview konnte das Asset nicht laden — vermutlich Variants oder Komposition. Siehe Inspection-Report.', en: '3D-Preview could not load the asset — likely variants or composition. See Inspection Report.' },
+  // v0.28.0.3 USDconfig-Brücke (§ 3.6)
+  player_limits_title:    { de: 'Warum die 3D-Preview Grenzen hat', en: 'Why the 3D Preview has limits' },
+  player_limits_intro:    { de: 'Die Preview nutzt Three.js USDLoader — den einzigen quelloffenen USDZ-Renderer für den Browser. Er rendert zuverlässig einfache USDZs mit einer Geometrie und Standard-Materialien (etwa Pixar-Beispiel-Assets).', en: 'The preview uses Three.js USDLoader — the only open-source USDZ renderer for the browser. It reliably renders simple USDZs with single geometry and standard materials (e.g. Pixar sample assets).' },
+  player_limits_not_title:{ de: 'Was er heute NICHT zuverlässig kann:', en: 'What it cannot reliably do today:' },
+  player_limits_item_var: { de: 'Variants (Produktvarianten aus einem Master-Asset)', en: 'Variants (product variants from a master asset)' },
+  player_limits_item_usdc:{ de: 'USDC-Binary-Materialien', en: 'USDC binary materials' },
+  player_limits_item_comp:{ de: 'Multi-Layer-Komposition (References / Payloads)', en: 'Multi-layer composition (References / Payloads)' },
+  player_limits_item_anim:{ de: 'Animation', en: 'Animation' },
+  player_limits_b2b:      { de: 'Das betrifft genau die Asset-Klasse, mit der B2B-Vertrieb arbeitet — Produktkonfiguratoren mit Variants.', en: 'This is exactly the asset class used in B2B sales — product configurators with variants.' },
+  player_limits_usdconfig_head: { de: '→ Für Variant-Vorschau auf B2B-Asset-Klasse: USDconfig', en: '→ For variant preview on B2B asset class: USDconfig' },
+  player_limits_usdconfig_pitch: { de: 'USDconfig wandelt durch eine non-web-software erst ein solches asset um. diesen prozess kann man nicht via dem kostenlosen USDseal Inspector umsetzen.', en: 'USDconfig converts such an asset using non-web software. This process cannot be done via the free USDseal Inspector.' },
+  player_limits_cta:      { de: '→ Mehr zu USDconfig', en: '→ Learn more about USDconfig' },
   // USDC-Binary-Material-Limitation (v0.25.8 ADR-33)
   usdc_mat_hint: {
     de: 'Diese USDZ enthält USDC-Binary-Materials. Inspector kann Material-Bindings nicht analysieren. Texture-Status zeigt "unknown" statt "used/unused".',
@@ -2566,9 +2590,12 @@ async function processFile(file) {
     showLoading('render', 1, 1);
     hideLoading();
     render(file.name, file.size, manifest, members, usdMeta, textures, channelInfo, geoStats, _currentBlobUrl, fileHash);
-    // v0.28.0.2 ADR-45: Player ist opt-in — kein Auto-Start mehr
+    // v0.28.0.3 ADR-46: Klassifikation vor setPlayerReady berechnen
     if (typeof setPlayerReady === 'function') {
-      setPlayerReady(buf, file.name, manifest, channelInfo);
+      const classification = (typeof classifyAssetForPlayer === 'function')
+        ? classifyAssetForPlayer(memberHashes, rootLayerData, file.size)
+        : { level: 'PASS', reason: null };
+      setPlayerReady(buf, file.name, manifest, channelInfo, classification);
     }
   } catch (e) {
     hideLoading();

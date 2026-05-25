@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.28.0.3] — 2026-05-25
+
+### Added (Inspector Advanced)
+- **Asset-Klassifikation `classifyAssetForPlayer()`** (ADR-46): Analysiert ZIP-Struktur und Root-Layer-Binary bevor der User den Player startet. Drei Stufen: PASS / CAUTION / BLOCK. Heuristik aus Spike gegen 6 Real-World-Assets empirisch abgeleitet (docs/v0.28.0.3-spike-results.md).
+  - BLOCK A: eingebettete Sub-USDZ im ZIP (Frankfurt-Muster)
+  - BLOCK B: ≥ 5 USDC-Module (Multi-Kompositions-Szene)
+  - BLOCK C: Root-USDC <100 KB + `references`/`variantSetNames` im Binary (RENZ-Muster, Tiny-Coordinator)
+  - CAUTION: Datei >20 MB oder 2–4 USDC-Module
+- **Dynamischer Button-Text**: PASS = `▶ 3D-Preview starten ✓` (orange), CAUTION = `⚠ 3D-Preview testen` (amber), BLOCK = `⊘ 3D-Preview nicht empfohlen` (grau, trotzdem klickbar). DE+EN.
+- **Klassifikations-Reason im Beta-Banner**: bei CAUTION/BLOCK erscheint der Klassifikations-Grund direkt im Banner (z. B. "Variants/References erkannt — Three.js rendert nur Root-Layer").
+- **USDconfig-Brücken-Block** unter dem Player (§ 3.6): Erklär-Box "Warum die 3D-Preview Grenzen hat" — erklärt Three.js USDLoader-Limits (Variants, USDC, Multi-Layer, Animation), B2B-Kontext, USDconfig-Pitch (Duke-Text wortgetreu). Sichtbar IMMER nach File-Drop. Link auf USDconfig-Landingpage DE/EN. 28 neue i18n-Keys (`player_limits_*`).
+- **Parse-Fail-Toast** (§ 3.7.b): Nach `loader.parse()` wird `group.children.length` geprüft. Leere Gruppe = "3D-Preview konnte das Asset nicht laden — vermutlich Variants oder Komposition." (Frankfurt-Muster). Toast-Key `adv_toast_parse_fail`.
+- **Blank-Canvas-Toast** (§ 3.7.a): 2 Frames nach Render wird Bounding-Box geprüft. `size === 0` = "Canvas bleibt leer — möglicherweise Variants/Komposition nicht aufgelöst." (RENZ-Muster). Toast-Key `adv_toast_empty_canvas`.
+- **docs/v0.28.0.3-spike-results.md**: Vollständige Spike-Dokumentation mit Asset-Matrix, Korrelationsmatrix, Heuristik-Entwurf, Go/No-Go-Begründung.
+- **docs/PLAYER-ASSET-COMPATIBILITY.md**: Kuratierte Kompatibilitäts-Dokumentation — PASS/CAUTION/BLOCK-Klassen mit Beispielen und technischer Erklärung.
+
+### Changed (Inspector Advanced)
+- **Button-Farbe** (§ 3.7.c): `#adv-start-btn` nutzt jetzt `--primary-dark` (#C2410C, Orange-700) als Basis-Fill statt outlined-Style. Warm-Tech-Orange konsistent mit viSales-Palette.
+- **`resetThreePreview()`**: Reset setzt jetzt auch Klassifikations-Banner zurück (`adv-classify-reason` versteckt, `adv-usdconfig-bridge` versteckt, `_playerReadyClassification = null`).
+- **`processFile()`**: Berechnet `classifyAssetForPlayer()` im `memberHashes`-Scope (wo `rootLayerData` verfügbar ist) und übergibt das Ergebnis als 5. Parameter an `setPlayerReady()`.
+- `console.error`-Tag aktualisiert auf `[v0.28.0.3]`.
+
+### Architecture
+- **ADR-46** (Asset-Klassifikations-Heuristik für Player-Erwartungs-Management, 2026-05-25): Spike-Befund: Variants-Asset-Klasse ist B2B-Norm (3/4 Live-Test-Assets). Three.js USDLoader r184 strukturell limitiert für diese Klasse. Konservative regelbasierte Heuristik mit 3 BLOCK-Triggern aus ZIP-Struktur + Root-Binary-Scan. USDconfig-Brücke positioniert die 3D-Preview als Demo-Klasse, USDconfig als Lösung. Details in CLAUDE-Inspector-private.md § ADR-46.
+
+### Notes
+- `INSPECTOR_VERSION = '0.28.0.3'`
+- 18/18 PASS (Headless-Pool — Standard-Pipeline unverändert)
+- Standard-Build: 204.2 KB
+- Advanced-Build: 229.1 KB (ohne Bundle, Bundle 1032.8 KB on-demand)
+- Klassifikations-Verifikation gegen 6 echte Assets: 6/6 korrekte Stufe
+
+---
+
 ## [0.28.0.2] — 2026-05-25
 
 ### Changed (Inspector Advanced)

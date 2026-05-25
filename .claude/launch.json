@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "inspector",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "7432"],
+      "runtimeExecutable": "/opt/homebrew/bin/python3.12",
+      "runtimeArgs": ["-m", "http.server", "7432", "--directory", "/Users/g/Documents/Claude/USDseal/usdseal-inspector"],
       "port": 7432
     }
   ]

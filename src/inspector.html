@@ -1400,6 +1400,7 @@
   <div id="adv-limit-banner" class="adv-limit-banner">
     <span id="adv-limit-text-de">3D-Preview Beta — Geometrie und Standard-Materialien. Komplexe Materialien → <a href="#findings-anchor" class="adv-anchor-link">Inspection-Report</a></span>
     <span id="adv-limit-text-en" style="display:none">3D-Preview Beta — geometry and standard materials. Complex materials → <a href="#findings-anchor" class="adv-anchor-link">Inspection Report</a></span>
+    <span id="adv-classify-reason" style="display:none"> · <strong id="adv-classify-level"></strong> <span id="adv-classify-reason-text"></span></span>
   </div>
   <div id="adv-toast-container"></div>
   <div id="adv-start-area">
@@ -1420,6 +1421,21 @@
   </div>
 </div>
 <!-- ADVANCED-ONLY:END three-js-preview -->
+<!-- ADVANCED-ONLY:START usdconfig-bridge -->
+<div id="adv-usdconfig-bridge" class="adv-usdconfig-bridge" style="display:none">
+  <div class="adv-usdconfig-header">
+    <span class="adv-usdconfig-icon">ⓘ</span>
+    <strong id="adv-usdconfig-title"></strong>
+  </div>
+  <p id="adv-usdconfig-intro"></p>
+  <p id="adv-usdconfig-not-title" class="adv-usdconfig-subhead"></p>
+  <ul id="adv-usdconfig-list"></ul>
+  <p id="adv-usdconfig-b2b"></p>
+  <p id="adv-usdconfig-usdconfig-head" class="adv-usdconfig-highlight"></p>
+  <p id="adv-usdconfig-pitch"></p>
+  <a id="adv-usdconfig-cta" href="https://kopfkinok3.github.io/USDconfig-demo-player/landingpage/deutsch/" target="_blank" rel="noopener" class="adv-usdconfig-cta-link"></a>
+</div>
+<!-- ADVANCED-ONLY:END usdconfig-bridge -->
   <div id="dash-content"></div>
 </div>
 
@@ -1435,7 +1451,7 @@
    Inspector spiegelt CLI-Schema-Disziplin (CLI-ADR §11.14).
    Erweiterung der Whitelist = neue Render-Funktion + Eintrag.
    Siehe COMPATIBILITY.md für Versions-Matrix. */
-const INSPECTOR_VERSION = '0.28.0.2';
+const INSPECTOR_VERSION = '0.28.0.3';
 const SUPPORTED_SPEC_VERSIONS = ['0.1', '0.2'];
 const TEXTURE_TABLE_THRESHOLD = 20;
 
@@ -1588,6 +1604,29 @@ const I18N = {
   adv_start_btn:      { de: '▶ 3D-Preview starten', en: '▶ Start 3D Preview' },
   adv_loading_bundle: { de: 'Bundle wird geladen…', en: 'Loading bundle…' },
   adv_error_detail:   { de: 'Fehler anzeigen', en: 'Show error' },
+  // v0.28.0.3 Asset-Klassifikation (ADR-46)
+  adv_btn_pass:       { de: '▶ 3D-Preview starten ✓', en: '▶ Start 3D Preview ✓' },
+  adv_btn_caution:    { de: '⚠ 3D-Preview testen', en: '⚠ Test 3D Preview' },
+  adv_btn_block:      { de: '⊘ 3D-Preview nicht empfohlen', en: '⊘ 3D Preview not recommended' },
+  adv_reason_block_sub_usdz:      { de: 'Eingebettete Sub-USDZ werden vom Player nicht verarbeitet', en: 'Embedded sub-USDZ not supported by player' },
+  adv_reason_block_multi_usdc:    { de: 'Multi-Komponenten-Szene (viele USDC-Module) — Three.js löst Komposition nicht auf', en: 'Multi-component scene — Three.js cannot resolve composition' },
+  adv_reason_block_variants_refs: { de: 'Variants/References erkannt — Three.js rendert nur Root-Layer', en: 'Variants/References detected — Three.js renders root layer only' },
+  adv_reason_caution_large_file:  { de: 'Große USDZ (>20 MB) — Render-Qualität eingeschränkt möglich', en: 'Large USDZ (>20 MB) — render quality may be limited' },
+  adv_reason_caution_multi_usdc:  { de: 'Mehrere USDC-Module — Materialien möglicherweise unvollständig', en: 'Multiple USDC modules — materials may be incomplete' },
+  adv_toast_empty_canvas:  { de: '3D-Preview gerendert, aber Canvas bleibt leer — möglicherweise Variants/Komposition nicht aufgelöst. Siehe Inspection-Report.', en: '3D-Preview rendered but canvas is empty — variants/composition may not be resolved. See Inspection Report.' },
+  adv_toast_parse_fail:    { de: '3D-Preview konnte das Asset nicht laden — vermutlich Variants oder Komposition. Siehe Inspection-Report.', en: '3D-Preview could not load the asset — likely variants or composition. See Inspection Report.' },
+  // v0.28.0.3 USDconfig-Brücke (§ 3.6)
+  player_limits_title:    { de: 'Warum die 3D-Preview Grenzen hat', en: 'Why the 3D Preview has limits' },
+  player_limits_intro:    { de: 'Die Preview nutzt Three.js USDLoader — den einzigen quelloffenen USDZ-Renderer für den Browser. Er rendert zuverlässig einfache USDZs mit einer Geometrie und Standard-Materialien (etwa Pixar-Beispiel-Assets).', en: 'The preview uses Three.js USDLoader — the only open-source USDZ renderer for the browser. It reliably renders simple USDZs with single geometry and standard materials (e.g. Pixar sample assets).' },
+  player_limits_not_title:{ de: 'Was er heute NICHT zuverlässig kann:', en: 'What it cannot reliably do today:' },
+  player_limits_item_var: { de: 'Variants (Produktvarianten aus einem Master-Asset)', en: 'Variants (product variants from a master asset)' },
+  player_limits_item_usdc:{ de: 'USDC-Binary-Materialien', en: 'USDC binary materials' },
+  player_limits_item_comp:{ de: 'Multi-Layer-Komposition (References / Payloads)', en: 'Multi-layer composition (References / Payloads)' },
+  player_limits_item_anim:{ de: 'Animation', en: 'Animation' },
+  player_limits_b2b:      { de: 'Das betrifft genau die Asset-Klasse, mit der B2B-Vertrieb arbeitet — Produktkonfiguratoren mit Variants.', en: 'This is exactly the asset class used in B2B sales — product configurators with variants.' },
+  player_limits_usdconfig_head: { de: '→ Für Variant-Vorschau auf B2B-Asset-Klasse: USDconfig', en: '→ For variant preview on B2B asset class: USDconfig' },
+  player_limits_usdconfig_pitch: { de: 'USDconfig wandelt durch eine non-web-software erst ein solches asset um. diesen prozess kann man nicht via dem kostenlosen USDseal Inspector umsetzen.', en: 'USDconfig converts such an asset using non-web software. This process cannot be done via the free USDseal Inspector.' },
+  player_limits_cta:      { de: '→ Mehr zu USDconfig', en: '→ Learn more about USDconfig' },
   // USDC-Binary-Material-Limitation (v0.25.8 ADR-33)
   usdc_mat_hint: {
     de: 'Diese USDZ enthält USDC-Binary-Materials. Inspector kann Material-Bindings nicht analysieren. Texture-Status zeigt "unknown" statt "used/unused".',
@@ -2611,9 +2650,12 @@ async function processFile(file) {
     showLoading('render', 1, 1);
     hideLoading();
     render(file.name, file.size, manifest, members, usdMeta, textures, channelInfo, geoStats, _currentBlobUrl, fileHash);
-    // v0.28.0.2 ADR-45: Player ist opt-in — kein Auto-Start mehr
+    // v0.28.0.3 ADR-46: Klassifikation vor setPlayerReady berechnen
     if (typeof setPlayerReady === 'function') {
-      setPlayerReady(buf, file.name, manifest, channelInfo);
+      const classification = (typeof classifyAssetForPlayer === 'function')
+        ? classifyAssetForPlayer(memberHashes, rootLayerData, file.size)
+        : { level: 'PASS', reason: null };
+      setPlayerReady(buf, file.name, manifest, channelInfo, classification);
     }
   } catch (e) {
     hideLoading();
@@ -5160,14 +5202,74 @@ document.addEventListener('DOMContentLoaded', () => {
   font-weight: 600;
   padding: 8px 20px;
   border-radius: 6px;
-  border: 1.5px solid var(--primary);
-  background: transparent;
-  color: var(--primary-dark);
+  border: 1.5px solid var(--primary-dark);
+  background: var(--primary-dark);
+  color: #fff;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
-#adv-start-btn:enabled:hover { background: var(--primary); color: #fff; }
-#adv-start-btn:disabled { border-color: var(--border-outer); color: var(--text-desc); cursor: default; }
+#adv-start-btn:enabled:hover { background: var(--primary); border-color: var(--primary); }
+#adv-start-btn:disabled { border-color: #D1D5DB; background: transparent; color: var(--text-desc); cursor: default; }
+#adv-start-btn.adv-btn-caution {
+  background: #D97706;
+  border-color: #D97706;
+  color: #fff;
+}
+#adv-start-btn.adv-btn-caution:enabled:hover { background: #B45309; border-color: #B45309; }
+#adv-start-btn.adv-btn-block {
+  background: transparent;
+  border-color: #9CA3AF;
+  color: #6B7280;
+}
+#adv-start-btn.adv-btn-block:enabled:hover { border-color: #6B7280; color: #374151; }
+/* USDconfig-Brücke */
+.adv-usdconfig-bridge {
+  max-width: 840px;
+  margin: 0 auto 12px;
+  padding: 14px 20px;
+  background: var(--bg-neutral);
+  border: 1px solid var(--border-inner);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text-body);
+  line-height: 1.65;
+}
+.adv-usdconfig-header {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.adv-usdconfig-icon {
+  color: var(--accent);
+  font-size: 14px;
+}
+.adv-usdconfig-header strong {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-heading);
+}
+.adv-usdconfig-bridge p { margin: 5px 0; }
+.adv-usdconfig-subhead { font-weight: 600; margin-top: 8px !important; }
+.adv-usdconfig-bridge ul {
+  margin: 4px 0 6px 16px;
+  padding: 0;
+}
+.adv-usdconfig-bridge ul li { margin-bottom: 2px; }
+.adv-usdconfig-highlight {
+  font-weight: 600;
+  margin-top: 8px !important;
+  color: var(--text-heading);
+}
+.adv-usdconfig-cta-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-dark);
+  text-decoration: underline;
+}
+.adv-usdconfig-cta-link:hover { color: var(--accent); }
 </style>
 
 <script>
@@ -5181,9 +5283,53 @@ let _bundleLoaded = false;
 let _playerReadyBuf = null;
 let _playerReadyManifest = null;
 let _playerReadyChanInfo = null;
+let _playerReadyClassification = null;
 
 function _advLang() { return (typeof CURRENT_LANG !== 'undefined') ? CURRENT_LANG : 'de'; }
 function _advT(key) { return (typeof t === 'function') ? t(key) : key; }
+
+/* ─ Asset-Klassifikation (v0.28.0.3 ADR-46) ────────────────────── */
+/* classifyAssetForPlayer: analysiert ZIP-Struktur + Root-Layer-Binary.
+   Spike-Heuristik aus docs/v0.28.0.3-spike-results.md.
+   Gibt { level: 'PASS'|'CAUTION'|'BLOCK', reason: string|null } zurück. */
+function classifyAssetForPlayer(memberHashes, rootLayerData, fileSizeBytes) {
+  const members = memberHashes || [];
+
+  // BLOCK A: eingebettete Sub-USDZ → Three.js kann nicht recursen
+  if (members.some(m => /\.usdz$/i.test(m.name))) {
+    return { level: 'BLOCK', reason: 'block_sub_usdz' };
+  }
+
+  // BLOCK B: viele USDC-Module → Multi-Kompositions-Szene
+  const usdcCount = members.filter(m => /\.usdc$/i.test(m.name)).length;
+  if (usdcCount >= 5) {
+    return { level: 'BLOCK', reason: 'block_multi_usdc' };
+  }
+
+  // BLOCK C: Tiny-Coordinator-USDC (<100 KB) + Kompositions-Arcs
+  if (rootLayerData && rootLayerData.length < 100 * 1024) {
+    const rootIsUsdc = rootLayerData[0] === 0x50 && rootLayerData[1] === 0x58 &&
+                       rootLayerData[2] === 0x52 && rootLayerData[3] === 0x2D; // PXR-
+    if (rootIsUsdc) {
+      const text = new TextDecoder('latin1').decode(rootLayerData);
+      if (text.includes('references') || text.includes('variantSetNames')) {
+        return { level: 'BLOCK', reason: 'block_variants_refs' };
+      }
+    }
+  }
+
+  // CAUTION: Große Datei → Performance-Risiko + Material-Darkness möglich
+  if (fileSizeBytes > 20 * 1024 * 1024) {
+    return { level: 'CAUTION', reason: 'caution_large_file' };
+  }
+
+  // CAUTION: 2–4 USDC-Module → partielle externe Komponenten
+  if (usdcCount >= 2) {
+    return { level: 'CAUTION', reason: 'caution_multi_usdc' };
+  }
+
+  return { level: 'PASS', reason: null };
+}
 
 /* ─ Pre-Renderer-Check ─────────────────────────────────────────────
    Scannt Manifest + channelInfo auf bekannte Limit-Trigger.
@@ -5302,21 +5448,85 @@ function loadThreeBundle() {
 }
 
 /* ─ Player bereit-setzen (nach File-Drop) ───────────────────────── */
-function setPlayerReady(buf, filename, manifest, channelInfo) {
-  _playerReadyBuf      = buf;
-  _playerReadyManifest = manifest;
-  _playerReadyChanInfo = channelInfo;
-  // Banner-Sprache synchronisieren
+function setPlayerReady(buf, filename, manifest, channelInfo, classification) {
+  _playerReadyBuf            = buf;
+  _playerReadyManifest       = manifest;
+  _playerReadyChanInfo       = channelInfo;
+  _playerReadyClassification = classification || { level: 'PASS', reason: null };
+
   const lang = _advLang();
+
+  // Banner-Sprache synchronisieren
   const limitDe = document.getElementById('adv-limit-text-de');
   const limitEn = document.getElementById('adv-limit-text-en');
   if (limitDe) limitDe.style.display = lang === 'de' ? '' : 'none';
   if (limitEn) limitEn.style.display = lang === 'en' ? '' : 'none';
-  // Hint-Text ausblenden, Button aktivieren
+
+  // Klassifikations-Reason im Banner anzeigen (CAUTION/BLOCK)
+  const classifySpan  = document.getElementById('adv-classify-reason');
+  const classifyLevel = document.getElementById('adv-classify-level');
+  const classifyText  = document.getElementById('adv-classify-reason-text');
+  if (classifySpan && classification && classification.reason) {
+    const levelLabel = classification.level === 'BLOCK'
+      ? (lang === 'de' ? 'Nicht empfohlen' : 'Not recommended')
+      : (lang === 'de' ? 'Vorsicht' : 'Caution');
+    if (classifyLevel) classifyLevel.textContent = levelLabel;
+    const reasonKey = 'adv_reason_' + classification.reason;
+    if (classifyText) classifyText.textContent = _advT(reasonKey);
+    classifySpan.style.display = '';
+  } else if (classifySpan) {
+    classifySpan.style.display = 'none';
+  }
+
+  // Button: Hint-Text ausblenden, Zustand setzen
   const hint = document.getElementById('adv-pre-drop-text');
   if (hint) hint.style.display = 'none';
   const btn = document.getElementById('adv-start-btn');
-  if (btn) btn.disabled = false;
+  if (btn) {
+    btn.disabled = false;
+    btn.className = '';
+    const level = _playerReadyClassification.level;
+    if (level === 'PASS') {
+      btn.textContent = _advT('adv_btn_pass');
+    } else if (level === 'CAUTION') {
+      btn.textContent = _advT('adv_btn_caution');
+      btn.classList.add('adv-btn-caution');
+    } else {
+      btn.textContent = _advT('adv_btn_block');
+      btn.classList.add('adv-btn-block');
+    }
+  }
+
+  // USDconfig-Brücke befüllen und anzeigen
+  _renderUsdconfigBridge(lang);
+}
+
+function _renderUsdconfigBridge(lang) {
+  const bridge = document.getElementById('adv-usdconfig-bridge');
+  if (!bridge) return;
+
+  const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+  set('adv-usdconfig-title',          _advT('player_limits_title'));
+  set('adv-usdconfig-intro',          _advT('player_limits_intro'));
+  set('adv-usdconfig-not-title',      _advT('player_limits_not_title'));
+  set('adv-usdconfig-b2b',            _advT('player_limits_b2b'));
+  set('adv-usdconfig-usdconfig-head', _advT('player_limits_usdconfig_head'));
+  set('adv-usdconfig-pitch',          _advT('player_limits_usdconfig_pitch'));
+  const cta = document.getElementById('adv-usdconfig-cta');
+  if (cta) {
+    cta.textContent = _advT('player_limits_cta');
+    const ctaUrl = lang === 'de'
+      ? 'https://kopfkinok3.github.io/USDconfig-demo-player/landingpage/deutsch/'
+      : 'https://kopfkinok3.github.io/USDconfig-demo-player/landingpage/';
+    cta.href = ctaUrl;
+  }
+  const list = document.getElementById('adv-usdconfig-list');
+  if (list) {
+    const items = ['player_limits_item_var', 'player_limits_item_usdc',
+                   'player_limits_item_comp', 'player_limits_item_anim'];
+    list.innerHTML = items.map(k => `<li>${_advT(k)}</li>`).join('');
+  }
+  bridge.style.display = '';
 }
 
 /* ─ Player starten (on-click, vollständig in try/catch) ─────────── */
@@ -5354,6 +5564,12 @@ async function startPlayer() {
 
     const loader = new window.USDLoader();
     const group  = await Promise.resolve(loader.parse(_playerReadyBuf));
+
+    // v0.28.0.3 §3.7.b — Parse-Fail-Toast (Frankfurt-Pattern: silent empty group)
+    if (!group || group.children.length === 0) {
+      advShowToast(_advT('adv_toast_parse_fail'), 'parse_fail');
+    }
+
     scene.add(group);
     advFrameModel(camera, controls, group);
 
@@ -5375,8 +5591,23 @@ async function startPlayer() {
     animate();
     _advRenderer._resizeObs = resizeObs;
 
+    // v0.28.0.3 §3.7.a — Blank-Canvas-Toast (RENZ-Pattern: renders but empty)
+    // Prüfung nach 2 Frames: Canvas leer wenn alle Pixel = Hintergrundfarbe
+    if (group && group.children.length > 0) {
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        try {
+          const THREE = window.THREE;
+          const box = new THREE.Box3().setFromObject(group);
+          const size = box.getSize(new THREE.Vector3());
+          if (size.x === 0 && size.y === 0 && size.z === 0) {
+            advShowToast(_advT('adv_toast_empty_canvas'), 'empty_canvas');
+          }
+        } catch(e) {}
+      }));
+    }
+
   } catch (err) {
-    console.error('[v0.28.0.2] Player-Crash:', err);
+    console.error('[v0.28.0.3] Player-Crash:', err);
     if (spinner)    spinner.style.display    = 'none';
     if (canvasWrap) canvasWrap.style.display = 'none';
     if (startArea)  startArea.style.display  = 'flex';
@@ -5423,8 +5654,15 @@ function resetThreePreview() {
   if (startArea)  startArea.style.display  = 'flex';
   if (hint)       hint.style.display       = 'none';
   if (preDrop)    preDrop.style.display    = '';
-  if (btn)        { btn.disabled = true; btn.textContent = _advT('adv_start_btn'); }
+  if (btn)        { btn.disabled = true; btn.className = ''; btn.textContent = _advT('adv_start_btn'); }
   if (toasts)     toasts.innerHTML = '';
+  // Klassifikations-Reason im Banner zurücksetzen
+  const classifySpan = document.getElementById('adv-classify-reason');
+  if (classifySpan) classifySpan.style.display = 'none';
+  // USDconfig-Brücke ausblenden
+  const bridge = document.getElementById('adv-usdconfig-bridge');
+  if (bridge) bridge.style.display = 'none';
+  _playerReadyClassification = null;
 }
 
 /* ─ DOMContentLoaded: Button-Click + Initiale i18n ─────────────── */
