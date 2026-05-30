@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.28.0.4] — 2026-05-30
+
+### Added
+- **Klappbarer Tester-Block** neben PDF-Report-Button (Default kollabiert): 4 optionale Felder — Name, Firma, Rolle, Notiz (textarea). Merken-Checkbox speichert via localStorage (`usdseal_inspector_tester_remember` + `usdseal_inspector_tester_data`). Felder werden bei Page-Load automatisch befüllt wenn Checkbox aktiv war. Cache-Clear-Button löscht Tester-Keys mit.
+- **PDF: Voll-Audit-Sektion** am Anfang (nach File Identity, vor AR Quick Look): orange Akzentleiste (analog v0.26.0-Geometrie-Pattern), Labels fett, Notiz mehrzeilig via `splitTextToSize`, Datum automatisch formatiert (DE: "25. Mai 2026, 14:30 Uhr" / EN: "May 25, 2026, 2:30 PM"), Selbstangabe-Disclaimer dezent. Sektion wird **komplett weggelassen** wenn alle 4 Felder leer.
+- **PDF: Footer-Zeile** auf jeder Seite mit Tester-Prefix wenn Name vorhanden: `"Geprüft von (Selbstangabe): Max Müller, viSales GmbH"` — links, kleinschrift, neben der bestehenden Inspector-Versionszeile.
+- **11 neue i18n-Keys** DE+EN: `tester_toggle`, `tester_name_label`, `tester_company_label`, `tester_role_label`, `tester_note_label`, `tester_remember_label`, `tester_date_hint`, `pdf_tester_section_title`, `pdf_tester_date_label`, `pdf_tester_disclaimer`, `pdf_tester_footer_prefix`.
+
+### Architecture
+- **ADR-47** (Tester-Selbstangabe-Pattern, 2026-05-30): Klappbarer Block opt-in, keine Pflichtfelder (ADR-PC3), keine neuen Deps (ADR-PC5). Selbstangabe-Disclaimer im PDF rechtssichert das Feature. Sektion-Skip bei leeren Feldern verhindert unprofessionelle leere Blöcke. localStorage-Merken-Checkbox als Komfort-Feature für Power-User. Details in CLAUDE-Inspector-private.md § ADR-47.
+- PDF wird zur Compliance-Dokumentation: Tester-Signatur + Datum + Notiz = offizieller Audit-Trail. B2B-Story: "Audit-Reports mit Prüfer-Signatur, bereit für Compliance- und Vertriebs-Workflows."
+
+### Notes
+- `INSPECTOR_VERSION = '0.28.0.4'`
+- 18/18 PASS (Headless-Pool — Standard-Pipeline unverändert)
+- Standard-Build: 213.4 KB (+9.2 KB gegenüber v0.28.0.3)
+- Advanced-Build: 238.2 KB
+
+---
+
 ## [0.28.0.3] — 2026-05-25
 
 ### Added (Inspector Advanced)

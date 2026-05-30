@@ -178,6 +178,75 @@
   .btn-export-pdf:hover { background: var(--primary); }
   .btn-export-pdf:disabled { background: var(--text-disabled); cursor: not-allowed; }
 
+  /* ── Tester-Block (v0.28.0.4) ── */
+  .tester-toggle-btn {
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 11px;
+    font-family: var(--font);
+    white-space: nowrap;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .tester-toggle-btn:hover { border-color: var(--primary-dark); color: var(--primary-dark); }
+  .tester-panel {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    min-width: 300px;
+    z-index: 200;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  }
+  .tester-panel label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+    margin-top: 8px;
+  }
+  .tester-panel label:first-of-type { margin-top: 0; }
+  .tester-panel input[type="text"],
+  .tester-panel textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px 8px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 12px;
+    font-family: var(--font);
+    resize: vertical;
+  }
+  .tester-panel input[type="text"]:focus,
+  .tester-panel textarea:focus { outline: none; border-color: var(--primary-dark); }
+  .tester-remember-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .tester-date-hint {
+    margin-top: 7px;
+    font-size: 10px;
+    color: var(--text-disabled);
+  }
+  .tester-wrap {
+    position: relative;
+    display: inline-block;
+  }
+
   /* ── State Banner ── */
   .state-banner {
     display: flex;
@@ -1346,6 +1415,24 @@
   <div class="version-badge" id="version-badge"></div>
   <button id="cache-clear-btn" class="btn-cache-clear" type="button" onclick="clearCache()" title="Lokal gespeicherte Manifest-IDs aus signierten USDZs löschen" style="display:none;">Cache (<span id="cache-count">0</span>)</button>
   <button id="btn-export-pdf" class="btn-export-pdf" type="button" onclick="generatePDF()" style="display:none;"></button>
+  <div class="tester-wrap" id="tester-wrap" style="display:none;">
+    <button class="tester-toggle-btn" id="tester-toggle-btn" type="button" onclick="toggleTesterPanel()">▾ <span id="tester-toggle-label"></span></button>
+    <div class="tester-panel" id="tester-panel" style="display:none;">
+      <label id="tester-name-lbl" for="tester-name"></label>
+      <input type="text" id="tester-name" maxlength="200" autocomplete="off">
+      <label id="tester-company-lbl" for="tester-company"></label>
+      <input type="text" id="tester-company" maxlength="200" autocomplete="off">
+      <label id="tester-role-lbl" for="tester-role"></label>
+      <input type="text" id="tester-role" maxlength="100" autocomplete="off">
+      <label id="tester-note-lbl" for="tester-note"></label>
+      <textarea id="tester-note" rows="3" maxlength="500"></textarea>
+      <label class="tester-remember-row">
+        <input type="checkbox" id="tester-remember">
+        <span id="tester-remember-lbl"></span>
+      </label>
+      <div class="tester-date-hint" id="tester-date-hint"></div>
+    </div>
+  </div>
   <div class="topbar-right">
     <span class="lang-toggle" id="lang-toggle" role="group" aria-label="Sprache / Language">
       <button data-lang="de" id="lang-btn-de" type="button">DE</button>
@@ -1391,7 +1478,7 @@
    Inspector spiegelt CLI-Schema-Disziplin (CLI-ADR §11.14).
    Erweiterung der Whitelist = neue Render-Funktion + Eintrag.
    Siehe COMPATIBILITY.md für Versions-Matrix. */
-const INSPECTOR_VERSION = '0.28.0.3';
+const INSPECTOR_VERSION = '0.28.0.4';
 const SUPPORTED_SPEC_VERSIONS = ['0.1', '0.2'];
 const TEXTURE_TABLE_THRESHOLD = 20;
 
@@ -1591,6 +1678,18 @@ const I18N = {
   pdf_tex_col_resolution: { de: 'Aufloesung', en: 'Resolution' },
   pdf_tex_col_channel:    { de: 'Channel',    en: 'Channel' },
   pdf_tex_col_status:     { de: 'Status',     en: 'Status' },
+  // Tester-Signatur (v0.28.0.4)
+  tester_toggle:              { de: 'Geprüft von', en: 'Reviewed by' },
+  tester_name_label:          { de: 'Name', en: 'Name' },
+  tester_company_label:       { de: 'Firma', en: 'Company' },
+  tester_role_label:          { de: 'Rolle', en: 'Role' },
+  tester_note_label:          { de: 'Notiz', en: 'Note' },
+  tester_remember_label:      { de: 'Angaben merken (lokal in diesem Browser)', en: 'Remember entries (locally in this browser)' },
+  tester_date_hint:           { de: 'Datum wird automatisch beim PDF-Export gesetzt.', en: 'Date is set automatically when exporting the PDF.' },
+  pdf_tester_section_title:   { de: 'Prüfer-Signatur (Selbstangabe)', en: 'Reviewer Signature (self-declared)' },
+  pdf_tester_date_label:      { de: 'Datum', en: 'Date' },
+  pdf_tester_disclaimer:      { de: 'Pruefer-Angaben sind Selbstangaben des User-Eingabefelds im Browser und nicht durch viSales verifiziert.', en: 'Reviewer entries are self-declared via the browser input field and not verified by viSales.' },
+  pdf_tester_footer_prefix:   { de: 'Geprueft von (Selbstangabe):', en: 'Reviewed by (self-declared):' },
   pdf_ch_BaseColor:    { de: 'BaseColor', en: 'BaseColor' },
   pdf_ch_Normal:       { de: 'Normal', en: 'Normal' },
   pdf_ch_Roughness:    { de: 'Roughness', en: 'Roughness' },
@@ -1661,6 +1760,16 @@ if (_backLink) _backLink.textContent = t('back_to_standard');
 /* ─── PDF-Button Label (v0.23) ────────────────────────────────── */
 document.getElementById('btn-export-pdf').textContent = t('pdf_export_btn') + ' ↓';
 
+/* ─── Tester-Block Labels (v0.28.0.4) ──────────────────────────── */
+document.getElementById('tester-toggle-label').textContent = t('tester_toggle');
+document.getElementById('tester-name-lbl').textContent     = t('tester_name_label');
+document.getElementById('tester-company-lbl').textContent  = t('tester_company_label');
+document.getElementById('tester-role-lbl').textContent     = t('tester_role_label');
+document.getElementById('tester-note-lbl').textContent     = t('tester_note_label');
+document.getElementById('tester-remember-lbl').textContent = t('tester_remember_label');
+document.getElementById('tester-date-hint').textContent    = t('tester_date_hint');
+testerLoadFromStorage();
+
 function getRuleText(rule, field) {
   const v = rule[field];
   if (!v) return '';
@@ -1716,7 +1825,61 @@ function clearCache() {
     : `Locally stored manifest traces (${count} entr${count === 1 ? 'y' : 'ies'}) will be deleted. Loaded USDZs remain unchanged.`;
   if (!confirm(msg)) return;
   try { localStorage.removeItem(CACHE_KEY); } catch (e) {}
+  try { localStorage.removeItem('usdseal_inspector_tester_remember'); } catch (e) {}
+  try { localStorage.removeItem('usdseal_inspector_tester_data'); } catch (e) {}
   updateCacheCounter();
+}
+
+/* ─── Tester-Signatur — v0.28.0.4 ───────────────────────────────
+   localStorage-Keys: usdseal_inspector_tester_remember (bool)
+                      usdseal_inspector_tester_data (JSON)
+   ADR-PC3: keine Pflichtfelder. ADR-PC5: kein neuer Dep. */
+
+function testerLoadFromStorage() {
+  try {
+    const remember = JSON.parse(localStorage.getItem('usdseal_inspector_tester_remember') || 'false');
+    if (remember) {
+      const data = JSON.parse(localStorage.getItem('usdseal_inspector_tester_data') || '{}');
+      document.getElementById('tester-name').value    = data.name    || '';
+      document.getElementById('tester-company').value = data.company || '';
+      document.getElementById('tester-role').value    = data.role    || '';
+      document.getElementById('tester-note').value    = data.note    || '';
+      document.getElementById('tester-remember').checked = true;
+    }
+  } catch (e) {}
+}
+
+function testerGetValues() {
+  return {
+    name:    document.getElementById('tester-name').value.trim(),
+    company: document.getElementById('tester-company').value.trim(),
+    role:    document.getElementById('tester-role').value.trim(),
+    note:    document.getElementById('tester-note').value.trim(),
+  };
+}
+
+function testerSaveIfRemember() {
+  try {
+    const remember = document.getElementById('tester-remember').checked;
+    localStorage.setItem('usdseal_inspector_tester_remember', JSON.stringify(remember));
+    if (remember) {
+      localStorage.setItem('usdseal_inspector_tester_data', JSON.stringify(testerGetValues()));
+    } else {
+      localStorage.removeItem('usdseal_inspector_tester_data');
+    }
+  } catch (e) {}
+}
+
+function toggleTesterPanel() {
+  const panel = document.getElementById('tester-panel');
+  const btn   = document.getElementById('tester-toggle-btn');
+  const open  = panel.style.display === 'none';
+  panel.style.display = open ? '' : 'none';
+  btn.textContent = (open ? '▴ ' : '▾ ') + t('tester_toggle');
+}
+
+function testerShowWrap(show) {
+  document.getElementById('tester-wrap').style.display = show ? '' : 'none';
 }
 
 function updateCacheCounter() {
@@ -3400,6 +3563,7 @@ function render(filename, filesize, manifest, members, usdMeta, textures, channe
     fileHash,
   };
   document.getElementById('btn-export-pdf').style.display = 'inline-block';
+  testerShowWrap(true);
 
   document.getElementById('dash-content').innerHTML = html;
 }
@@ -3624,6 +3788,7 @@ async function processFiles(files) {
   dropZone.style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
   document.getElementById('btn-export-pdf').style.display = 'none';
+  testerShowWrap(false);
   document.getElementById('dash-content').innerHTML =
     `<div class="loading-wrap"><div class="loading-text">Lade ${files.length} Dateien…</div></div>`;
 
@@ -4225,6 +4390,7 @@ function resetDash() {
   // v0.23: PDF-Button zurücksetzen
   window._currentReport = null;
   document.getElementById('btn-export-pdf').style.display = 'none';
+  testerShowWrap(false);
   // v0.28.0 ADR-44: Three.js-Preview zurücksetzen (Advanced-Build only)
   if (typeof resetThreePreview !== 'undefined') resetThreePreview();
   dropZone.style.display = 'block';
@@ -4329,6 +4495,38 @@ function generatePDF() {
     kvRow(t('pdf_generated_label'), tsISO+' UTC');
     kvRow(t('pdf_version_label'), 'USDseal Inspector v'+INSPECTOR_VERSION);
     y += 4;
+
+    // ── TESTER-SIGNATUR (v0.28.0.4) ─────────────────────────────
+    const testerVals = testerGetValues();
+    const hasTester  = !!(testerVals.name || testerVals.company || testerVals.role || testerVals.note);
+    testerSaveIfRemember();
+    if (hasTester) {
+      y += 2;
+      secHeader(t('pdf_tester_section_title'));
+      const tsFmt = CURRENT_LANG === 'de'
+        ? now.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'})
+          + ', ' + now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}) + ' Uhr'
+        : now.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})
+          + ', ' + now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+      if (testerVals.name)    kvRow(t('tester_name_label'),    testerVals.name);
+      if (testerVals.company) kvRow(t('tester_company_label'), testerVals.company);
+      if (testerVals.role)    kvRow(t('tester_role_label'),    testerVals.role);
+      kvRow(t('pdf_tester_date_label'), tsFmt);
+      if (testerVals.note) {
+        chk(6);
+        doc.setFontSize(8.5); doc.setFont('helvetica','normal');
+        doc.setTextColor(...CD); doc.text(ps(t('tester_note_label'))+':', ML, y); y += 5;
+        doc.setTextColor(...CH);
+        const noteLines = doc.splitTextToSize(ps(testerVals.note), TW - 4);
+        noteLines.forEach(l => { chk(5.5); doc.text(l, ML+4, y); y += 5.5; });
+      }
+      y += 3;
+      doc.setFontSize(7); doc.setFont('helvetica','italic'); doc.setTextColor(...CK);
+      const disclaimerLines = doc.splitTextToSize(ps(t('pdf_tester_disclaimer')), TW);
+      disclaimerLines.forEach(l => { chk(4.5); doc.text(l, ML, y); y += 4.5; });
+      doc.setTextColor(...CH);
+      y += 4;
+    }
 
     // ── AR QUICK LOOK · DIAGNOSE ────────────────────────────────
     y += 4;
@@ -4915,11 +5113,19 @@ function generatePDF() {
 
     // ── FOOTERS post-pass ────────────────────────────────────────
     const totalPgs = doc.internal.getNumberOfPages();
+    const testerFooterName = testerVals ? testerVals.name : '';
+    const testerFooterCompany = testerVals ? testerVals.company : '';
     for (let p=1; p<=totalPgs; p++) {
       doc.setPage(p);
       doc.setDrawColor(...CE);
-      doc.line(ML, FOOTER_Y-3, PW-MR, FOOTER_Y-3);
+      const footerLineY = testerFooterName ? FOOTER_Y - 8 : FOOTER_Y - 3;
+      doc.line(ML, footerLineY, PW-MR, footerLineY);
       doc.setFontSize(7.5); doc.setFont('helvetica','normal'); doc.setTextColor(...CK);
+      if (testerFooterName) {
+        const testerLine = ps(t('pdf_tester_footer_prefix')) + ' ' +
+          ps(testerFooterName) + (testerFooterCompany ? ', ' + ps(testerFooterCompany) : '');
+        doc.text(testerLine, ML, footerLineY + 4);
+      }
       doc.text(
         `USDseal Inspector v${INSPECTOR_VERSION}  |  ${ps(rep.filename)}  |  Page ${p} of ${totalPgs}`,
         PW-MR, FOOTER_Y, {align:'right'}
