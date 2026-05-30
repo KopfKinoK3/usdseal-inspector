@@ -180,7 +180,7 @@
 
   /* ── Tester-Block (v0.28.0.4) ── */
   .tester-toggle-btn {
-    padding: 6px 12px;
+    padding: 8px 14px;
     background: transparent;
     border: 1px solid var(--border);
     border-radius: 100px;
@@ -190,20 +190,28 @@
     font-family: var(--font);
     white-space: nowrap;
     transition: border-color 0.15s, color 0.15s;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
   }
   .tester-toggle-btn:hover { border-color: var(--primary-dark); color: var(--primary-dark); }
+  .tester-toggle-arrow {
+    font-size: 1.35em;
+    line-height: 1;
+  }
   .tester-panel {
     position: absolute;
     top: 100%;
     right: 0;
     margin-top: 6px;
-    background: var(--surface);
+    background: var(--bg-canvas);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 14px 16px;
     min-width: 300px;
-    z-index: 200;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    z-index: 1000;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
   }
   .tester-panel label {
     display: block;
@@ -1433,7 +1441,7 @@
   <button id="cache-clear-btn" class="btn-cache-clear" type="button" onclick="clearCache()" title="Lokal gespeicherte Manifest-IDs aus signierten USDZs löschen" style="display:none;">Cache (<span id="cache-count">0</span>)</button>
   <button id="btn-export-pdf" class="btn-export-pdf" type="button" onclick="generatePDF()" style="display:none;"></button>
   <div class="tester-wrap" id="tester-wrap" style="display:none;">
-    <button class="tester-toggle-btn" id="tester-toggle-btn" type="button" onclick="toggleTesterPanel()">▾ <span id="tester-toggle-label"></span></button>
+    <button class="tester-toggle-btn" id="tester-toggle-btn" type="button" onclick="toggleTesterPanel()"><span class="tester-toggle-arrow" id="tester-toggle-arrow">▾</span><span id="tester-toggle-label"></span></button>
     <div class="tester-panel" id="tester-panel" style="display:none;">
       <label id="tester-name-lbl" for="tester-name"></label>
       <input type="text" id="tester-name" maxlength="200" autocomplete="off">
@@ -1538,7 +1546,7 @@
    Inspector spiegelt CLI-Schema-Disziplin (CLI-ADR §11.14).
    Erweiterung der Whitelist = neue Render-Funktion + Eintrag.
    Siehe COMPATIBILITY.md für Versions-Matrix. */
-const INSPECTOR_VERSION = '0.28.0.4';
+const INSPECTOR_VERSION = '0.28.0.5';
 const SUPPORTED_SPEC_VERSIONS = ['0.1', '0.2'];
 const TEXTURE_TABLE_THRESHOLD = 20;
 
@@ -1935,7 +1943,7 @@ function toggleTesterPanel() {
   const btn   = document.getElementById('tester-toggle-btn');
   const open  = panel.style.display === 'none';
   panel.style.display = open ? '' : 'none';
-  btn.textContent = (open ? '▴ ' : '▾ ') + t('tester_toggle');
+  document.getElementById('tester-toggle-arrow').textContent = open ? '▴' : '▾';
 }
 
 function testerShowWrap(show) {

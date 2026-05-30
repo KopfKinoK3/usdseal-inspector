@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.28.0.5] — 2026-05-30
+
+### Fixed
+- **Tester-Panel transparent:** `background: var(--surface)` → `var(--bg-canvas)` — `--surface` war undefiniert und fiel auf `transparent` zurück. Panel liegt jetzt vollständig opak über dem Report-Content.
+- **Trigger-Pfeil zu klein:** Arrow-Unicode in eigenem `<span class="tester-toggle-arrow">` mit `font-size: 1.35em`. Button-Padding auf `8px 14px` + `min-height: 32px` für ausreichende Klick-Trefferfläche. Toggle-Funktion updatet nur den Arrow-Span (statt `btn.textContent` komplett).
+- **z-index:** 200 → 1000, `box-shadow` leicht verstärkt (0.12 → 0.15 alpha). Panel ist nun dropdown-typisch abgehoben.
+
+### Notes
+- `INSPECTOR_VERSION = '0.28.0.5'`
+- CSS-only-Patch (minimaler HTML/JS-Touch für Arrow-Span)
+- 18/18 PASS (Headless-Pool unverändert)
+- Standard-Build: 213.6 KB, Advanced-Build: 238.5 KB
+
+---
+
 ## [0.28.0.4] — 2026-05-30
 
 ### Added
