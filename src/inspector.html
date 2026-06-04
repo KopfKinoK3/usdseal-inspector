@@ -182,7 +182,7 @@
   .tester-toggle-btn {
     padding: 8px 14px;
     background: transparent;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-inner);
     border-radius: 100px;
     color: var(--text-muted);
     cursor: pointer;
@@ -206,7 +206,7 @@
     right: 0;
     margin-top: 6px;
     background: var(--bg-canvas);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-inner);
     border-radius: 8px;
     padding: 14px 16px;
     min-width: 300px;
@@ -1553,7 +1553,7 @@
    Inspector spiegelt CLI-Schema-Disziplin (CLI-ADR §11.14).
    Erweiterung der Whitelist = neue Render-Funktion + Eintrag.
    Siehe COMPATIBILITY.md für Versions-Matrix. */
-const INSPECTOR_VERSION = '0.28.0.6';
+const INSPECTOR_VERSION = '0.28.0.7';
 const SUPPORTED_SPEC_VERSIONS = ['0.1', '0.2'];
 const TEXTURE_TABLE_THRESHOLD = 20;
 
@@ -4054,7 +4054,7 @@ function renderMiniDashboard(r, index) {
         ${manifestIdHtml}
       </div>
     </div>
-    ${error ? `<div style="color:var(--red);font-size:12px;">Fehler: ${esc(error)}</div>` : ''}
+    ${error ? `<div style="color:#DC2626;font-size:12px;">Fehler: ${esc(error)}</div>` : ''}
     ${geoStats ? `<div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:6px;">
       ${[
         [t('geo_geoms'), geoStats.geomCount],
@@ -5315,8 +5315,8 @@ document.addEventListener('DOMContentLoaded', () => {
 .adv-limit-banner {
   font-size: 11px;
   color: var(--text-desc);
-  background: var(--bg-section);
-  border: 1px solid var(--border-outer);
+  background: var(--bg-neutral);
+  border: 1px solid var(--border-card);
   border-radius: 6px;
   padding: 8px 12px;
   margin-bottom: 8px;
@@ -5355,7 +5355,7 @@ document.addEventListener('DOMContentLoaded', () => {
   background: #1a1a2e;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid var(--border-outer);
+  border: 1px solid var(--border-card);
 }
 #adv-canvas {
   width: 100%;
@@ -5409,8 +5409,8 @@ document.addEventListener('DOMContentLoaded', () => {
   gap: 12px;
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: var(--bg-section);
-  border: 1px solid var(--border-outer);
+  background: var(--bg-neutral);
+  border: 1px solid var(--border-card);
   border-radius: 8px;
 }
 #adv-pre-drop-text {

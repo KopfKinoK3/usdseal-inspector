@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.28.0.7] — 2026-06-04
+
+### Fixed
+- **`var(--border)` undefiniert** (Zeilen 185, 209): `.tester-toggle-btn` + `.tester-panel` → `var(--border-inner)`
+- **`var(--bg-section)` undefiniert** (Zeilen 5318, 5412): `.adv-limit-banner` + `#adv-start-area` → `var(--bg-neutral)`
+- **`var(--border-outer)` undefiniert** (Zeilen 5319, 5358, 5413): `.adv-limit-banner`, `#adv-canvas-wrap`, `#adv-start-area` → `var(--border-card)`
+- **`var(--red)` undefiniert** (Zeile 4057): Inline-Fehlertext → hartkodiert `#DC2626` (kein Rot im Theme-System)
+
+### Added
+- **`docs/CSS-THEME-REFERENCE.md`**: Vollständige Liste aller 20 definierten CSS-Variablen, gruppiert nach Zweck (Brand, Text, Background, Border, Typografie). Sektion "Häufige Anti-Pattern" mit konkreten Mappings aus v0.28.0.5 + v0.28.0.6. Konvention für künftige Sprints.
+- **`build.py` Theme-Check**: beim Build werden alle `var(--*)` extrahiert und mit `:root`-Deklarationen verglichen. Undefinierte Variablen → `⚠ THEME-VARIABLE-WARNING` mit Liste + Verweis auf Doku. Build stoppt nicht.
+
+### Architecture
+- **Root-Cause-Pattern**: v0.28.0.5 + v0.28.0.6 zeigten zweimal dieselbe Klasse von Bug — Code-Chats greifen intuitiv plausible Variablennamen (`--border`, `--surface`, `--bg`, `--text`) die NICHT im Theme definiert sind. Browser fällt auf `transparent`/`inherit` zurück → unsichtbare UI-Elemente. Hygiene-Sprint v0.28.0.7 schließt strukturell: Doku + Build-Warnung.
+
+### Notes
+- `INSPECTOR_VERSION = '0.28.0.7'`
+- src-only-Patch (4 CSS-Fixes, keine Logik-Änderung)
+- Build-Check jetzt dauerhaft aktiv
+- 18/18 PASS (Headless-Pool unverändert)
+- Standard-Build: 213.8 KB, Advanced-Build: 238.7 KB
+
+---
+
 ## [0.28.0.6] — 2026-06-04
 
 ### Fixed

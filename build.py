@@ -21,6 +21,24 @@ import re
 import shutil
 from pathlib import Path
 
+
+def check_theme_variables(src_html: str) -> None:
+    """
+    Vergleicht var(--*)-Calls mit :root-Deklarationen.
+    Gibt WARNING aus bei undefinierten Variablen — stoppt den Build nicht.
+    """
+    defined = set(re.findall(r'--([a-zA-Z0-9_-]+)\s*:', src_html))
+    used = set(re.findall(r'var\(--([a-zA-Z0-9_-]+)', src_html))
+    undefined = used - defined
+    if undefined:
+        print("\n⚠  THEME-VARIABLE-WARNING: Folgende var(--*)-Calls haben keine :root-Deklaration:")
+        for v in sorted(undefined):
+            print(f"   var(--{v})")
+        print("   → Mapping-Hilfe: docs/CSS-THEME-REFERENCE.md")
+        print("   (Build läuft weiter — bitte vor dem Commit prüfen)\n")
+    else:
+        print("   Theme-Check: alle var(--*) definiert ✓")
+
 SRC     = Path("src/inspector.html")
 STD     = Path("index.html")
 ADV     = Path("advanced/index.html")
@@ -60,6 +78,9 @@ def main():
         raise SystemExit(1)
 
     src = SRC.read_text(encoding="utf-8")
+
+    # ── Theme-Variable-Check ──────────────────────────────────────────────────
+    check_theme_variables(src)
 
     # ── Standard-Build: ADVANCED-ONLY entfernen, BUILD-INJECT NICHT auflösen ──
     std_html = strip_blocks(src, "ADVANCED-ONLY")
