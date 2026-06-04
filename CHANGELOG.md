@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.28.0.6] — 2026-06-04
+
+### Fixed
+- **Tester-Panel-Felder naked:** `var(--border)` und `var(--bg)` waren undefiniert → Inputs weiß-auf-weiß ohne Kontur. Ersetzt durch `var(--border-inner)` + `var(--bg-neutral)`. Padding von 5px 8px auf 8px 10px erhöht.
+- **Focus-State:** Browser-Default-Blau durch Warm-Tech-Orange ersetzt — `border-color: var(--primary)` + `outline: 2px solid rgba(249,115,22,0.2)`.
+- **Textarea min-height:** explizit auf 60px gesetzt damit Audit-Notiz-Feld mehrzeilig bleibt.
+- **Labels:** `font-weight: 500` + `color: var(--text-secondary)` statt `--text-muted` — besser lesbar neben den hellen Inputs.
+
+### Notes
+- `INSPECTOR_VERSION = '0.28.0.6'`
+- CSS-only-Patch (~15 Zeilen)
+- 18/18 PASS (Headless-Pool unverändert)
+- Standard-Build: 213.8 KB, Advanced-Build: 238.6 KB
+
+---
+
 ## [0.28.0.5] — 2026-05-30
 
 ### Fixed
