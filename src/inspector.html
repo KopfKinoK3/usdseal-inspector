@@ -177,6 +177,17 @@
   }
   .btn-export-pdf:hover { background: var(--primary); }
   .btn-export-pdf:disabled { background: var(--text-disabled); cursor: not-allowed; }
+  .pdf-explain-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .pdf-explain-wrap input[type="checkbox"] { cursor: pointer; accent-color: var(--primary-dark); }
 
   /* ── Tester-Block (v0.28.0.4) ── */
   .tester-toggle-btn {
@@ -1160,6 +1171,10 @@
   .finding-card.error::before { background: #DC2626; }
   .finding-card.warn::before  { background: var(--primary); }
   .finding-card.info::before  { background: var(--accent); }
+  details.finding-card > summary {
+    list-style: none;
+  }
+  details.finding-card > summary::-webkit-details-marker { display: none; }
   .finding-head {
     display: flex;
     align-items: baseline;
@@ -1168,6 +1183,15 @@
     cursor: pointer;
     user-select: none;
   }
+  .finding-head::after {
+    content: '▶';
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: auto;
+    transition: transform 0.15s;
+    flex-shrink: 0;
+  }
+  details[open] .finding-head::after { transform: rotate(90deg); }
   .finding-sev {
     font-size: 9px;
     font-weight: 700;
@@ -1192,19 +1216,13 @@
     color: var(--text-muted);
     text-transform: lowercase;
   }
-  .finding-toggle {
-    font-size: 12px;
-    color: var(--text-muted);
-    transition: transform 0.15s;
-  }
-  .finding-card.expanded .finding-toggle { transform: rotate(90deg); }
   .finding-body {
     display: none;
     margin-top: 10px;
     padding-top: 10px;
     border-top: 1px dashed var(--border-inner);
   }
-  .finding-card.expanded .finding-body { display: block; }
+  details[open] .finding-body { display: block; }
   .finding-explanation {
     font-size: 12px;
     color: var(--text-body);
@@ -1447,6 +1465,10 @@
   <div class="version-badge" id="version-badge"></div>
   <button id="cache-clear-btn" class="btn-cache-clear" type="button" onclick="clearCache()" title="Lokal gespeicherte Manifest-IDs aus signierten USDZs löschen" style="display:none;">Cache (<span id="cache-count">0</span>)</button>
   <button id="btn-export-pdf" class="btn-export-pdf" type="button" onclick="generatePDF()" style="display:none;"></button>
+  <label class="pdf-explain-wrap" id="pdf-explain-wrap" style="display:none;">
+    <input type="checkbox" id="pdf-explain-chk">
+    <span id="pdf-explain-lbl"></span>
+  </label>
   <div class="tester-wrap" id="tester-wrap" style="display:none;">
     <button class="tester-toggle-btn" id="tester-toggle-btn" type="button" onclick="toggleTesterPanel()"><span class="tester-toggle-arrow" id="tester-toggle-arrow">▾</span><span id="tester-toggle-label"></span></button>
     <div class="tester-panel" id="tester-panel" style="display:none;">
@@ -1553,7 +1575,7 @@
    Inspector spiegelt CLI-Schema-Disziplin (CLI-ADR §11.14).
    Erweiterung der Whitelist = neue Render-Funktion + Eintrag.
    Siehe COMPATIBILITY.md für Versions-Matrix. */
-const INSPECTOR_VERSION = '0.28.0.7';
+const INSPECTOR_VERSION = '0.28.1';
 const SUPPORTED_SPEC_VERSIONS = ['0.1', '0.2'];
 const TEXTURE_TABLE_THRESHOLD = 20;
 
@@ -1619,6 +1641,7 @@ const I18N = {
   reimport_seen_at: { de: 'gesehen am', en: 'last seen' },
   // PDF (v0.23)
   pdf_export_btn:              { de: 'PDF-Report', en: 'PDF Report' },
+  pdf_explain_chk:             { de: 'mit Erklärungen', en: 'with explanations' },
   pdf_file_identity:           { de: 'Datei-Identität', en: 'File Identity' },
   pdf_filename:                { de: 'Dateiname', en: 'Filename' },
   pdf_sha256_label:            { de: 'SHA-256', en: 'SHA-256' },
@@ -1834,6 +1857,7 @@ if (_backLink) _backLink.textContent = t('back_to_standard');
 
 /* ─── PDF-Button Label (v0.23) ────────────────────────────────── */
 document.getElementById('btn-export-pdf').textContent = t('pdf_export_btn') + ' ↓';
+document.getElementById('pdf-explain-lbl').textContent = t('pdf_explain_chk');
 
 /* ─── Tester-Block Labels (v0.28.0.4) ──────────────────────────── */
 document.getElementById('tester-toggle-label').textContent = t('tester_toggle');
@@ -3638,6 +3662,7 @@ function render(filename, filesize, manifest, members, usdMeta, textures, channe
     fileHash,
   };
   document.getElementById('btn-export-pdf').style.display = 'inline-block';
+  document.getElementById('pdf-explain-wrap').style.display = 'inline-flex';
   testerShowWrap(true);
 
   document.getElementById('dash-content').innerHTML = html;
@@ -3863,6 +3888,7 @@ async function processFiles(files) {
   dropZone.style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
   document.getElementById('btn-export-pdf').style.display = 'none';
+  document.getElementById('pdf-explain-wrap').style.display = 'none';
   testerShowWrap(false);
   document.getElementById('dash-content').innerHTML =
     `<div class="loading-wrap"><div class="loading-text">Lade ${files.length} Dateien…</div></div>`;
@@ -4243,13 +4269,12 @@ function renderFindingsSection(findings) {
     const cat = esc(t(f.category));
     const expl = esc(getRuleText(f, 'explanation'));
     const fix = getRuleText(f, 'fixHint');
-    return `<div class="finding-card ${sev}" onclick="this.classList.toggle('expanded')">
-      <div class="finding-head">
+    return `<details class="finding-card ${sev}">
+      <summary class="finding-head">
         <span class="finding-sev">${esc(sevLabel)}</span>
         <span class="finding-id">${esc(f.id)}</span>
         <span class="finding-cat">${cat}</span>
-        <span class="finding-toggle">▶</span>
-      </div>
+      </summary>
       <div class="finding-body">
         <div class="finding-explanation">${expl}</div>
         ${fix ? `<div class="finding-fix">
@@ -4257,7 +4282,7 @@ function renderFindingsSection(findings) {
           ${esc(fix)}
         </div>` : ''}
       </div>
-    </div>`;
+    </details>`;
   }).join('');
 
   return `<div class="section">
@@ -4465,6 +4490,7 @@ function resetDash() {
   // v0.23: PDF-Button zurücksetzen
   window._currentReport = null;
   document.getElementById('btn-export-pdf').style.display = 'none';
+  document.getElementById('pdf-explain-wrap').style.display = 'none';
   testerShowWrap(false);
   // v0.28.0 ADR-44: Three.js-Preview zurücksetzen (Advanced-Build only)
   if (typeof resetThreePreview !== 'undefined') resetThreePreview();
@@ -4477,6 +4503,7 @@ function resetDash() {
 function generatePDF() {
   const rep = window._currentReport;
   if (!rep) return;
+  const includeExplanations = document.getElementById('pdf-explain-chk')?.checked || false;
   if (!window.jspdf) {
     alert(CURRENT_LANG === 'de' ? 'jsPDF nicht geladen (CDN-Fehler).' : 'jsPDF not loaded (CDN error).');
     return;
@@ -4613,7 +4640,7 @@ function generatePDF() {
     const arTcMap  = {red:CR,   orange:CO,   green:[15,118,55]};
     const arTxtMap = {
       red:    CURRENT_LANG==='de'?'AR Quick Look: bricht':'AR Quick Look: Breaks',
-      orange: CURRENT_LANG==='de'?'Laeuft mit Vorbehalt':'Runs with Caveats',
+      orange: CURRENT_LANG==='de'?'Läuft mit Vorbehalt':'Runs with Caveats',
       green:  CURRENT_LANG==='de'?'AR Quick Look: sauber':'AR Quick Look: Clean',
     };
     const arAmpel = rep.ampel||'green';
@@ -4656,13 +4683,18 @@ function generatePDF() {
         const sevBg  = {error:BG_R, warn:BG_O, info:BG_B}[sev]||BG_N;
         const sevLabel = ({error:t('count_errors'),warn:t('count_warns'),info:t('count_infos')}[sev]||sev).toUpperCase();
 
-        doc.setFontSize(8.5);
-        const expl = ps(getRuleText(f,'explanation'));
-        const fix  = ps(getRuleText(f,'fixHint'));
-        const explLines = doc.splitTextToSize(expl, TW-30);
-        doc.setFontSize(8);
-        const fixLines = fix ? doc.splitTextToSize(fix, TW-30) : [];
-        const cardH = 8 + explLines.length*4.5 + (fixLines.length ? fixLines.length*4+3 : 0) + 4;
+        let explLines = [], fixLines = [];
+        if (includeExplanations) {
+          doc.setFontSize(8.5);
+          const expl = ps(getRuleText(f,'explanation'));
+          const fix  = ps(getRuleText(f,'fixHint'));
+          explLines = doc.splitTextToSize(expl, TW-30);
+          doc.setFontSize(8);
+          fixLines = fix ? doc.splitTextToSize(fix, TW-30) : [];
+        }
+        const cardH = includeExplanations
+          ? 8 + explLines.length*4.5 + (fixLines.length ? fixLines.length*4+3 : 0) + 4
+          : 11;
 
         chk(cardH+3);
         doc.setFillColor(...sevBg); doc.setDrawColor(...sevCol);
@@ -4680,13 +4712,15 @@ function generatePDF() {
         doc.setFont('helvetica','normal'); doc.setTextColor(...CD);
         doc.text(ps(t(f.category)), idX+doc.getTextWidth(f.id)+3, y+6);
 
-        let ly = y+13;
-        doc.setFontSize(8.5); doc.setFont('helvetica','normal'); doc.setTextColor(...CB);
-        explLines.forEach(l => { doc.text(l, ML+4, ly); ly += 4.5; });
-        if (fixLines.length>0) {
-          ly += 1;
-          doc.setFontSize(8); doc.setFont('helvetica','italic'); doc.setTextColor(...CC);
-          fixLines.forEach(l => { doc.text(l, ML+4, ly); ly += 4; });
+        if (includeExplanations) {
+          let ly = y+13;
+          doc.setFontSize(8.5); doc.setFont('helvetica','normal'); doc.setTextColor(...CB);
+          explLines.forEach(l => { doc.text(l, ML+4, ly); ly += 4.5; });
+          if (fixLines.length>0) {
+            ly += 1;
+            doc.setFontSize(8); doc.setFont('helvetica','italic'); doc.setTextColor(...CC);
+            fixLines.forEach(l => { doc.text(l, ML+4, ly); ly += 4; });
+          }
         }
         y += cardH+3;
       });

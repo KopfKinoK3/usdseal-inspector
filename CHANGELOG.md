@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.28.1] — 2026-06-04
+
+### Added
+- **Erklärbär — Findings-Klartext (ADR-48)**: Alle 21 AR_QL_RULES-Findings können per Klick aufgeklappt werden — Klartext-Erklärung + konkreter Fix-Vorschlag, DE+EN. Kein LLM, kein API, vollständig lokal. Daten leben direkt in den bestehenden `explanation`/`fixHint`-Feldern der Regeln — kein Daten-Duplikat.
+- **Native `<details>`/`<summary>` für Finding-Cards**: UI-Aufklapp ohne JS-Toggle. Pfeil dreht sich bei `[open]` via CSS. Alle Browser nativ unterstützt.
+- **PDF-Checkbox "mit Erklärungen"**: Neben dem PDF-Report-Button, default deaktiviert. Wenn aktiv: PDF rendert Erklärung + Fix-Vorschlag unter jedem Finding. Kein localStorage-Merken — jeder Export ist bewusste Entscheidung. Compliance-Audits bekommen knappes Original by default.
+
+### Fixed
+- **"Laeuft mit Vorbehalt"** im PDF-AR-State-Banner: `ä` war hartcodiert als `ae` (Zeile 4643) — Umlaut-Fix.
+
+### Architecture
+- **Konvention v0.28.1.x**: Neue Finding-Codes müssen `explanation` + `fixHint` (DE+EN) mitliefern — sonst kein Aufklapp-Trigger in der UI. Dokumentiert in `docs/AR-QL-RULES.md`.
+
+### Notes
+- `INSPECTOR_VERSION = '0.28.1'`
+- Phase 5.0-Befund: FINDING_EXPLANATIONS als separates JS-Objekt entfällt — Daten sind vollständig in AR_QL_RULES vorhanden (ADR-PC3-konform: kein Duplikat).
+- 18/18 PASS (Headless-Pool unverändert)
+- Standard-Build: 215.0 KB (+1.2 KB durch Checkbox-CSS/HTML/i18n), Advanced-Build: 239.9 KB
+
+---
+
 ## [0.28.0.7] — 2026-06-04
 
 ### Fixed
