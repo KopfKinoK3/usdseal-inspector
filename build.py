@@ -101,6 +101,15 @@ def main():
         shutil.copy2(bundle_src, bundle_dst)
         print(f"OK: {bundle_dst} ({bundle_dst.stat().st_size / 1024:.1f} KB, kopiert)")
 
+    # ── v0.28.2 ADR-49: Polyfill-Bundles als separate Files (On-Demand-Lazy-Load) ──
+    for polyfill_name in ("ktx2-polyfill-bundle.js", "tiff-polyfill-bundle.js", "basis_transcoder.wasm"):
+        p_src = VENDOR / polyfill_name
+        p_dst = ADV.parent / polyfill_name
+        if p_src.exists():
+            shutil.copy2(p_src, p_dst)
+            size = p_dst.stat().st_size
+            print(f"OK: {p_dst} ({size / 1024:.1f} KB, kopiert)")
+
     # ── .nojekyll — Versicherungspolice für GitHub Pages + künftige Unterordner ──
     if not NOJEKYLL.exists():
         NOJEKYLL.touch()

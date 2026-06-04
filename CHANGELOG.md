@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.28.2] — 2026-06-04
+
+### Added
+- **KTX2-Preview im Texture-Modal (ADR-49)**: Inspector Advanced kann KTX2-Texturen jetzt visuell darstellen — Polyfill lädt on-demand wenn USDZ tatsächlich KTX2 enthält. Unterstützt uncompressed (VK_FORMAT_R8G8B8A8_UNORM, RGB, Grayscale) und komprimierte Formate (ETC1S/BasisLZ, UASTC) via Basis Universal Transcoder. Einziger Browser-USDZ-Inspector im OpenUSD-Ökosystem mit KTX2-Preview.
+- **TIFF-Preview im Texture-Modal**: UTIF.js Polyfill (Photopea, MIT) decodes TIFF on-demand. LZW, PackBits, uncompressed — alle gängigen TIFF-Varianten in CAD/Architektur-Workflows.
+- **On-Demand Lazy-Load**: Polyfills laden beim ersten KTX2/TIFF-Treffer im USDZ (background pre-load), nicht beim Page-Load und nicht erst beim Modal-Klick. Spinner während Decode. Graceful Degradation bei Fehler via Toast im Modal.
+- **`vendor/ktx2-polyfill-bundle.js`** (75 KB): ktx-parse v1.1.0 + Basis Universal Transcoder JS-Wrapper. Exposes `window.KTXParse` + `window.BasisTranscoderFactory`.
+- **`vendor/tiff-polyfill-bundle.js`** (57 KB): UTIF.js v1 (Photopea). Exposes `window.UTIF`.
+- **`vendor/basis_transcoder.wasm`** (515 KB): Basis Universal WASM-Binary. Wird by `ktx2-polyfill-bundle.js` on-demand via `locateFile` geladen.
+- **Polyfill-Hinweis-Text** im Texture-Block: KTX2/TIFF-Texturen zeigen `· Vorschau (Polyfill lädt bei Klick)` in der tex-meta-Zeile.
+- **5 neue i18n-Keys**: `polyfill_loading_ktx2/tiff`, `polyfill_decode_failed_ktx2/tiff`, `polyfill_preview_hint` (DE+EN).
+- **Synthetisches Test-Asset** `test_ktx2_tiff.usdz` im review-pool (2×2px RGBA8 KTX2 + TIFF, kein Manifest).
+
+### Architecture
+- **ADR-49** (Polyfill-Lazy-Load-Pattern): Modal-only Preview, On-Demand-Lazy-Load. Separate Bundles in `vendor/` (analog Three.js-Bundle ADR-44). Build-Step kopiert Bundles nach `advanced/`. Loader-Funktionen analog `loadThreeBundle()` (ADR-45) mit Promise-Caching. Standard bleibt vollständig unangetastet — Polyfills nur in Advanced.
+- **Standard nicht byte-identisch zu v0.28.1**: Minimale Änderungen in shared code (`analyzeTexture()` rawData-Hook, `renderTexturesSection()` `data-raw-name` Attr, processFile pre-load check). Standard-Verhalten und -Erscheinung identisch zu v0.28.1.
+- **Konvention v0.28.2.x**: Neue Polyfill-Bundles in `vendor/README.md` dokumentieren.
+
+### Notes
+- `INSPECTOR_VERSION = '0.28.2'`
+- 19/19 PASS (Headless-Pool: 14 Pool-Files + 5 Reader-Tests, +1 neues KTX2/TIFF-Asset)
+- Standard-Build: 216.6 KB (+1.6 KB), Advanced-Build: 253.0 KB (+13.1 KB HTML; on-demand: +647 KB Polyfill-Bundles)
+- Nächster Sprint: v0.28.2.1 (ASTC-Polyfill) oder v0.28.3 (USDC-Parser, Hosting-Klärung nötig)
+
+---
+
 ## [0.28.1] — 2026-06-04
 
 ### Added

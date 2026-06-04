@@ -645,6 +645,7 @@
     margin-top: 3px;
     font-family: var(--mono);
   }
+  .tex-polyfill-hint { color: var(--accent); font-style: italic; }
   .tex-stats {
     text-align: right;
     font-family: var(--mono);
@@ -1575,7 +1576,7 @@
    Inspector spiegelt CLI-Schema-Disziplin (CLI-ADR §11.14).
    Erweiterung der Whitelist = neue Render-Funktion + Eintrag.
    Siehe COMPATIBILITY.md für Versions-Matrix. */
-const INSPECTOR_VERSION = '0.28.1';
+const INSPECTOR_VERSION = '0.28.2';
 const SUPPORTED_SPEC_VERSIONS = ['0.1', '0.2'];
 const TEXTURE_TABLE_THRESHOLD = 20;
 
@@ -1761,6 +1762,11 @@ const I18N = {
     de: 'USDC-Binary-Materials können nicht analysiert werden — Texture-Verwendung unklar',
     en: 'USDC binary materials cannot be parsed — texture usage unknown'
   },
+  polyfill_loading_ktx2: { de: 'KTX2-Polyfill wird geladen…', en: 'Loading KTX2 polyfill…' },
+  polyfill_loading_tiff: { de: 'TIFF-Polyfill wird geladen…', en: 'Loading TIFF polyfill…' },
+  polyfill_decode_failed_ktx2: { de: 'KTX2-Decode fehlgeschlagen — Format-Info bleibt im Report sichtbar.', en: 'KTX2 decode failed — format info remains visible in the report.' },
+  polyfill_decode_failed_tiff: { de: 'TIFF-Decode fehlgeschlagen — Format-Info bleibt im Report sichtbar.', en: 'TIFF decode failed — format info remains visible in the report.' },
+  polyfill_preview_hint: { de: 'Vorschau (Polyfill lädt bei Klick)', en: 'Preview (polyfill loads on click)' },
   pdf_tex_title:       { de: 'TEXTUREN', en: 'TEXTURES' },
   pdf_tex_empty:       { de: 'Keine Texturen im USDZ-Container.', en: 'No textures in USDZ container.' },
   pdf_tex_channel:     { de: 'Channel', en: 'Channel' },
@@ -2852,6 +2858,14 @@ async function processFile(file) {
     showLoading('render', 1, 1);
     hideLoading();
     render(file.name, file.size, manifest, members, usdMeta, textures, channelInfo, geoStats, _currentBlobUrl, fileHash);
+    // v0.28.2 ADR-49: Polyfill on-demand pre-load bei erstem KTX2/TIFF-Treffer
+    if (typeof loadKtx2Polyfill === 'function' && textures.some(tx => /^(ktx2)$/i.test(tx.extension) || (tx.colorType && tx.colorType.startsWith('KTX2')))) {
+      loadKtx2Polyfill().catch(() => {});
+    }
+    if (typeof loadTiffPolyfill === 'function' && textures.some(tx => /^(tif|tiff)$/i.test(tx.extension) || (tx.colorType && tx.colorType.startsWith('TIFF')))) {
+      loadTiffPolyfill().catch(() => {});
+    }
+
     // v0.28.0.3 ADR-46: Klassifikation vor setPlayerReady berechnen
     if (typeof setPlayerReady === 'function') {
       const classification = (typeof classifyAssetForPlayer === 'function')
@@ -3164,12 +3178,14 @@ async function analyzeTexture({ name, data, size, sha }) {
     if (dims) { result.width = dims.w; result.height = dims.h; result.colorType = 'WebP'; }
   } else if (isKtx2) {
     result.colorType = 'KTX2 (GPU-Texture, kein Browser-Preview)';
+    if (window._texRawDataMap) window._texRawDataMap[name] = data;
   } else if (isAvif) {
     result.colorType = 'AVIF';
   } else if (isHeic) {
     result.colorType = 'HEIC';
   } else if (isTiff) {
     result.colorType = 'TIFF (kein nativer Browser-Support)';
+    if (window._texRawDataMap) window._texRawDataMap[name] = data;
   } else if (isAstc) {
     result.colorType = 'ASTC (GPU-compressed, kein Browser-Preview)';
   }
@@ -4403,9 +4419,10 @@ function renderTexturesSection(textures, channelInfo = {}) {
     const blobAttr = t.thumbnail
       ? ` data-blob="${t.thumbnail}" data-filename="${esc(t.name.split('/').pop())}"`
       : '';
+    const isPolyfillFmt = !t.thumbnail && /^(ktx2|tif|tiff)$/i.test(t.extension);
     const thumb = t.thumbnail
       ? `<img class="tex-thumb" src="${t.thumbnail}" alt=""${blobAttr}>`
-      : `<div class="tex-thumb placeholder">${t.extension.toUpperCase().substring(0,3)}</div>`;
+      : `<div class="tex-thumb placeholder"${isPolyfillFmt ? ` data-raw-name="${esc(t.name)}" data-fmt="${esc(t.extension.toLowerCase())}"` : ''}>${t.extension.toUpperCase().substring(0,3)}</div>`;
 
     const dims = (t.width && t.height)
       ? `<span class="dim">${t.width}×${t.height}</span>`
@@ -4434,7 +4451,7 @@ function renderTexturesSection(textures, channelInfo = {}) {
       ${thumb}
       <div class="tex-info">
         <div class="tex-path">${esc(t.name)}</div>
-        <div class="tex-meta">${esc(meta)}</div>
+        <div class="tex-meta">${esc(meta)}${isPolyfillFmt ? `<span class="tex-polyfill-hint"> · ${esc(t('polyfill_preview_hint'))}</span>` : ''}</div>
         ${badgesHtml}
       </div>
       <div class="tex-stats">
@@ -5318,6 +5335,254 @@ document.addEventListener('DOMContentLoaded', () => {
 <!-- v0.28.0.2 ADR-45: Bundle wird lazy on-click geladen via loadThreeBundle() -->
 <!-- Auslieferung: advanced/three-usdloader-r184-bundle.js (von build.py kopiert) -->
 <!-- ADVANCED-ONLY:END three-js-bundle -->
+
+<!-- ADVANCED-ONLY:START ktx2-tiff-polyfills -->
+<!-- v0.28.2 ADR-49: KTX2 + TIFF Polyfill-Lazy-Load (ktx2-polyfill-bundle.js + tiff-polyfill-bundle.js) -->
+<!-- Auslieferung: advanced/ktx2-polyfill-bundle.js + advanced/tiff-polyfill-bundle.js (build.py kopiert) -->
+<script>
+/* ── KTX2/TIFF Polyfill-Loader (v0.28.2 · ADVANCED-ONLY) ──────────────────
+   Lazy-Load analog loadThreeBundle() aus v0.28.0.2.
+   Polyfills laden nur wenn USDZ tatsächlich KTX2 oder TIFF enthält.
+   Promise-Caching: mehrere gleichzeitige Aufrufe warten auf dieselbe Promise. */
+
+window._texRawDataMap = {};
+
+let _ktx2Loaded = false;
+let _ktx2LoadPromise = null;
+let _tiffLoaded = false;
+let _tiffLoadPromise = null;
+
+function loadKtx2Polyfill() {
+  if (_ktx2Loaded) return Promise.resolve();
+  if (_ktx2LoadPromise) return _ktx2LoadPromise;
+  _ktx2LoadPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'ktx2-polyfill-bundle.js';
+    script.onload = () => { _ktx2Loaded = true; resolve(); };
+    script.onerror = () => reject(new Error('KTX2-Polyfill-Load fehlgeschlagen'));
+    document.head.appendChild(script);
+  });
+  return _ktx2LoadPromise;
+}
+
+function loadTiffPolyfill() {
+  if (_tiffLoaded) return Promise.resolve();
+  if (_tiffLoadPromise) return _tiffLoadPromise;
+  _tiffLoadPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'tiff-polyfill-bundle.js';
+    script.onload = () => { _tiffLoaded = true; resolve(); };
+    script.onerror = () => reject(new Error('TIFF-Polyfill-Load fehlgeschlagen'));
+    document.head.appendChild(script);
+  });
+  return _tiffLoadPromise;
+}
+
+/* ── Basis Universal Transcoder initialisieren ────────────────────────────
+   Wird lazily beim ersten KTX2-Decode-Aufruf initialisiert.
+   BasisTranscoderFactory ist nach ktx2-polyfill-bundle.js-Load verfügbar. */
+let _basisModule = null;
+let _basisInitPromise = null;
+
+async function ensureBasisModule() {
+  if (_basisModule) return _basisModule;
+  if (_basisInitPromise) return _basisInitPromise;
+  _basisInitPromise = (async () => {
+    if (typeof window.BasisTranscoderFactory !== 'function') throw new Error('BasisTranscoderFactory nicht gefunden');
+    _basisModule = await window.BasisTranscoderFactory({
+      locateFile: (path) => path  // WASM liegt relativ zu advanced/index.html
+    });
+    _basisModule.initializeBasis();
+    return _basisModule;
+  })();
+  return _basisInitPromise;
+}
+
+/* ── KTX2 → Canvas-Render ─────────────────────────────────────────────────
+   Unterstützt: uncompressed RGBA/RGB (direkt) + ETC1S/UASTC via Basis Universal.
+   Gibt { dataUrl, width, height, formatInfo } zurück. */
+async function decodeKtx2ToDataUrl(rawData) {
+  if (!window.KTXParse) throw new Error('KTXParse nicht geladen');
+  const kp = window.KTXParse;
+  const container = kp.read(rawData);
+  const { vkFormat, pixelWidth: w, pixelHeight: h } = container;
+  const supercomp = container.supercompressionScheme;
+
+  // Uncompressed-Formate: direkt in Canvas
+  const UNCOMPRESSED = new Set([
+    kp.VK_FORMAT_R8G8B8A8_UNORM, kp.VK_FORMAT_R8G8B8A8_SRGB,
+    kp.VK_FORMAT_B8G8R8A8_UNORM, kp.VK_FORMAT_R8G8B8_UNORM, kp.VK_FORMAT_R8G8B8_SRGB,
+    kp.VK_FORMAT_R8G8_UNORM, kp.VK_FORMAT_R8_UNORM,
+  ]);
+
+  if (UNCOMPRESSED.has(vkFormat) && supercomp === kp.KHR_SUPERCOMPRESSION_NONE) {
+    const levelData = container.levels[0].levelData;
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    let rgba;
+    if (vkFormat === kp.VK_FORMAT_R8G8B8_UNORM || vkFormat === kp.VK_FORMAT_R8G8B8_SRGB) {
+      // RGB → RGBA konvertieren
+      rgba = new Uint8ClampedArray(w * h * 4);
+      for (let i = 0; i < w * h; i++) {
+        rgba[i*4]   = levelData[i*3];
+        rgba[i*4+1] = levelData[i*3+1];
+        rgba[i*4+2] = levelData[i*3+2];
+        rgba[i*4+3] = 255;
+      }
+    } else if (vkFormat === kp.VK_FORMAT_R8_UNORM) {
+      rgba = new Uint8ClampedArray(w * h * 4);
+      for (let i = 0; i < w * h; i++) {
+        rgba[i*4] = rgba[i*4+1] = rgba[i*4+2] = levelData[i]; rgba[i*4+3] = 255;
+      }
+    } else if (vkFormat === kp.VK_FORMAT_B8G8R8A8_UNORM) {
+      rgba = new Uint8ClampedArray(w * h * 4);
+      for (let i = 0; i < w * h; i++) {
+        rgba[i*4]   = levelData[i*4+2];
+        rgba[i*4+1] = levelData[i*4+1];
+        rgba[i*4+2] = levelData[i*4];
+        rgba[i*4+3] = levelData[i*4+3];
+      }
+    } else {
+      rgba = new Uint8ClampedArray(levelData.buffer, levelData.byteOffset, w * h * 4);
+    }
+    ctx.putImageData(new ImageData(rgba, w, h), 0, 0);
+    return { dataUrl: canvas.toDataURL('image/png'), width: w, height: h, formatInfo: 'Uncompressed' };
+  }
+
+  // BasisLZ / ETC1S / UASTC → Basis Universal Transcoder
+  if (supercomp === kp.KHR_SUPERCOMPRESSION_BASISLZ ||
+      container.dataFormatDescriptor[0]?.colorModel === kp.KHR_DF_MODEL_ETC1S ||
+      container.dataFormatDescriptor[0]?.colorModel === kp.KHR_DF_MODEL_UASTC) {
+    const basisMod = await ensureBasisModule();
+    const isBasisLZ = supercomp === kp.KHR_SUPERCOMPRESSION_BASISLZ;
+    const colorModel = container.dataFormatDescriptor[0]?.colorModel;
+    const isUASTC = colorModel === kp.KHR_DF_MODEL_UASTC;
+
+    // Transcoder-Format: RGBA32 (Format 13) — cross-browser, kein GPU-Support nötig
+    const TranscoderFormat = basisMod.transcoder_format;
+    const targetFmt = TranscoderFormat.cTFRGBA32;
+
+    let imageDesc = null;
+    if (isBasisLZ && container.globalData) {
+      // ETC1S via globalData
+      const transcoder = new basisMod.LowLevelETC1SImageTranscoder();
+      const gd = container.globalData;
+      transcoder.decode_palettes(gd.endpointCount, gd.endpointsData, gd.selectorCount, gd.selectorsData);
+      transcoder.decode_tables(gd.tablesData);
+      const imgDesc = gd.imageDescs[0];
+      const rgbData = new Uint8Array(container.levels[0].levelData.buffer,
+        container.levels[0].levelData.byteOffset + imgDesc.rgbSliceByteOffset, imgDesc.rgbSliceByteLength);
+      const alphaData = imgDesc.alphaSliceByteLength > 0
+        ? new Uint8Array(container.levels[0].levelData.buffer,
+            container.levels[0].levelData.byteOffset + imgDesc.alphaSliceByteOffset, imgDesc.alphaSliceByteLength)
+        : new Uint8Array(0);
+      const result = transcoder.transcode_image(targetFmt, rgbData, alphaData, 0, w, h, 0, false, false);
+      transcoder.delete();
+      if (!result.transcodedImage) throw new Error('ETC1S-Transcode fehlgeschlagen');
+      const pixels = result.transcodedImage.get_typed_memory_view();
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(pixels.buffer, pixels.byteOffset, pixels.byteLength), w, h), 0, 0);
+      result.transcodedImage.delete();
+      return { dataUrl: canvas.toDataURL('image/png'), width: w, height: h, formatInfo: 'ETC1S/BasisLZ' };
+    } else if (isUASTC) {
+      // UASTC Transcoder
+      const transcoder = new basisMod.UastcImageTranscoder();
+      const imgData = container.levels[0].levelData;
+      const result = transcoder.transcode_image(targetFmt, imgData, 0, w, h, 0, false, false, -1, -1, -1, 0, 0, false);
+      transcoder.delete();
+      if (!result.transcodedImage) throw new Error('UASTC-Transcode fehlgeschlagen');
+      const pixels = result.transcodedImage.get_typed_memory_view();
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(pixels.buffer, pixels.byteOffset, pixels.byteLength), w, h), 0, 0);
+      result.transcodedImage.delete();
+      return { dataUrl: canvas.toDataURL('image/png'), width: w, height: h, formatInfo: 'UASTC' };
+    }
+  }
+  throw new Error(`KTX2-Format nicht unterstützt (vkFormat=${vkFormat}, supercomp=${supercomp})`);
+}
+
+/* ── TIFF → Canvas-Render ─────────────────────────────────────────────────
+   UTIF.js: decode → ImageData → Canvas. */
+function decodeTiffToDataUrl(rawData) {
+  if (!window.UTIF) throw new Error('UTIF nicht geladen');
+  const ifds = window.UTIF.decode(rawData.buffer);
+  if (!ifds || !ifds.length) throw new Error('TIFF: keine IFDs gefunden');
+  window.UTIF.decodeImage(rawData.buffer, ifds[0]);
+  const { width: w, height: h } = ifds[0];
+  const rgba = window.UTIF.toRGBA8(ifds[0]);
+  const canvas = document.createElement('canvas');
+  canvas.width = w; canvas.height = h;
+  canvas.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(rgba.buffer), w, h), 0, 0);
+  return { dataUrl: canvas.toDataURL('image/png'), width: w, height: h, formatInfo: 'TIFF' };
+}
+
+/* ── Modal-Handler: KTX2/TIFF Polyfill-Pfad (ADVANCED-ONLY) ──────────────
+   Greift in den bestehenden tex-modal ein wenn data-raw-name vorhanden. */
+document.addEventListener('DOMContentLoaded', () => {
+  const modal   = document.getElementById('tex-modal');
+  const img     = document.getElementById('tex-modal-img');
+  const dl      = document.getElementById('tex-modal-dl');
+  const fnSpan  = document.getElementById('tex-modal-filename');
+
+  document.addEventListener('click', async (e) => {
+    const thumb = e.target.closest('.tex-thumb.placeholder[data-raw-name]');
+    if (!thumb) return;
+    const rawName = thumb.dataset.rawName;
+    const fmt     = (thumb.dataset.fmt || '').toLowerCase();
+    const isKtx2  = fmt === 'ktx2';
+    const isTiff  = fmt === 'tif' || fmt === 'tiff';
+    if (!isKtx2 && !isTiff) return;
+
+    const rawData = window._texRawDataMap && window._texRawDataMap[rawName];
+    if (!rawData) return;
+
+    const filename = rawName.split('/').pop();
+    fnSpan.textContent = filename;
+    img.src = '';
+    img.style.display = 'none';
+
+    // Spinner anzeigen
+    let spinnerEl = modal.querySelector('.tex-polyfill-spinner');
+    if (!spinnerEl) {
+      spinnerEl = document.createElement('div');
+      spinnerEl.className = 'tex-polyfill-spinner';
+      spinnerEl.style.cssText = 'padding:32px;text-align:center;color:var(--text-desc);font-size:13px;';
+      modal.querySelector('.tex-modal-img-wrap').appendChild(spinnerEl);
+    }
+    const loadKey = isKtx2 ? 'polyfill_loading_ktx2' : 'polyfill_loading_tiff';
+    spinnerEl.textContent = (typeof t === 'function') ? t(loadKey) : loadKey;
+    spinnerEl.style.display = '';
+    modal.showModal();
+
+    try {
+      if (isKtx2) {
+        await loadKtx2Polyfill();
+        const { dataUrl, width, height } = await decodeKtx2ToDataUrl(rawData);
+        img.src = dataUrl;
+        img.style.display = '';
+        dl.href = dataUrl;
+        dl.download = filename.replace(/\.ktx2$/i, '.png');
+      } else {
+        await loadTiffPolyfill();
+        const { dataUrl } = decodeTiffToDataUrl(rawData);
+        img.src = dataUrl;
+        img.style.display = '';
+        dl.href = dataUrl;
+        dl.download = filename.replace(/\.(tif|tiff)$/i, '.png');
+      }
+      spinnerEl.style.display = 'none';
+    } catch (err) {
+      const failKey = isKtx2 ? 'polyfill_decode_failed_ktx2' : 'polyfill_decode_failed_tiff';
+      spinnerEl.textContent = ((typeof t === 'function') ? t(failKey) : failKey) + ' (' + err.message + ')';
+      spinnerEl.style.cssText += 'color:#DC2626;';
+    }
+  });
+});
+</script>
+<!-- ADVANCED-ONLY:END ktx2-tiff-polyfills -->
 
 <!-- ADVANCED-ONLY:START three-js-preview -->
 <style>

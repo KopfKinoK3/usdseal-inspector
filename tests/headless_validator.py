@@ -530,6 +530,8 @@ EXPECTED = {
     'SalmonPastaWithInfo.usdz':              {'ampel': 'orange', 'state': 'NO_MANIFEST'},
     # Duke nachgereicht 2026-05-06 (v0.25.4.1-Sweep)
     'DIEGOsat_TK_280426_01.usdz':           {'ampel': 'orange', 'state': 'SIGNED'},
+    # v0.28.2 synthetisches KTX2+TIFF-Test-Asset (2×2px, keine USDseal-Signatur)
+    'test_ktx2_tiff.usdz':                  {'ampel': 'orange', 'state': 'NO_MANIFEST'},
 }
 
 

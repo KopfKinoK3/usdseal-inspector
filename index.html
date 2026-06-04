@@ -645,6 +645,7 @@
     margin-top: 3px;
     font-family: var(--mono);
   }
+  .tex-polyfill-hint { color: var(--accent); font-style: italic; }
   .tex-stats {
     text-align: right;
     font-family: var(--mono);
@@ -1515,7 +1516,7 @@
    Inspector spiegelt CLI-Schema-Disziplin (CLI-ADR §11.14).
    Erweiterung der Whitelist = neue Render-Funktion + Eintrag.
    Siehe COMPATIBILITY.md für Versions-Matrix. */
-const INSPECTOR_VERSION = '0.28.1';
+const INSPECTOR_VERSION = '0.28.2';
 const SUPPORTED_SPEC_VERSIONS = ['0.1', '0.2'];
 const TEXTURE_TABLE_THRESHOLD = 20;
 
@@ -1701,6 +1702,11 @@ const I18N = {
     de: 'USDC-Binary-Materials können nicht analysiert werden — Texture-Verwendung unklar',
     en: 'USDC binary materials cannot be parsed — texture usage unknown'
   },
+  polyfill_loading_ktx2: { de: 'KTX2-Polyfill wird geladen…', en: 'Loading KTX2 polyfill…' },
+  polyfill_loading_tiff: { de: 'TIFF-Polyfill wird geladen…', en: 'Loading TIFF polyfill…' },
+  polyfill_decode_failed_ktx2: { de: 'KTX2-Decode fehlgeschlagen — Format-Info bleibt im Report sichtbar.', en: 'KTX2 decode failed — format info remains visible in the report.' },
+  polyfill_decode_failed_tiff: { de: 'TIFF-Decode fehlgeschlagen — Format-Info bleibt im Report sichtbar.', en: 'TIFF decode failed — format info remains visible in the report.' },
+  polyfill_preview_hint: { de: 'Vorschau (Polyfill lädt bei Klick)', en: 'Preview (polyfill loads on click)' },
   pdf_tex_title:       { de: 'TEXTUREN', en: 'TEXTURES' },
   pdf_tex_empty:       { de: 'Keine Texturen im USDZ-Container.', en: 'No textures in USDZ container.' },
   pdf_tex_channel:     { de: 'Channel', en: 'Channel' },
@@ -2792,6 +2798,14 @@ async function processFile(file) {
     showLoading('render', 1, 1);
     hideLoading();
     render(file.name, file.size, manifest, members, usdMeta, textures, channelInfo, geoStats, _currentBlobUrl, fileHash);
+    // v0.28.2 ADR-49: Polyfill on-demand pre-load bei erstem KTX2/TIFF-Treffer
+    if (typeof loadKtx2Polyfill === 'function' && textures.some(tx => /^(ktx2)$/i.test(tx.extension) || (tx.colorType && tx.colorType.startsWith('KTX2')))) {
+      loadKtx2Polyfill().catch(() => {});
+    }
+    if (typeof loadTiffPolyfill === 'function' && textures.some(tx => /^(tif|tiff)$/i.test(tx.extension) || (tx.colorType && tx.colorType.startsWith('TIFF')))) {
+      loadTiffPolyfill().catch(() => {});
+    }
+
     // v0.28.0.3 ADR-46: Klassifikation vor setPlayerReady berechnen
     if (typeof setPlayerReady === 'function') {
       const classification = (typeof classifyAssetForPlayer === 'function')
@@ -3104,12 +3118,14 @@ async function analyzeTexture({ name, data, size, sha }) {
     if (dims) { result.width = dims.w; result.height = dims.h; result.colorType = 'WebP'; }
   } else if (isKtx2) {
     result.colorType = 'KTX2 (GPU-Texture, kein Browser-Preview)';
+    if (window._texRawDataMap) window._texRawDataMap[name] = data;
   } else if (isAvif) {
     result.colorType = 'AVIF';
   } else if (isHeic) {
     result.colorType = 'HEIC';
   } else if (isTiff) {
     result.colorType = 'TIFF (kein nativer Browser-Support)';
+    if (window._texRawDataMap) window._texRawDataMap[name] = data;
   } else if (isAstc) {
     result.colorType = 'ASTC (GPU-compressed, kein Browser-Preview)';
   }
@@ -4343,9 +4359,10 @@ function renderTexturesSection(textures, channelInfo = {}) {
     const blobAttr = t.thumbnail
       ? ` data-blob="${t.thumbnail}" data-filename="${esc(t.name.split('/').pop())}"`
       : '';
+    const isPolyfillFmt = !t.thumbnail && /^(ktx2|tif|tiff)$/i.test(t.extension);
     const thumb = t.thumbnail
       ? `<img class="tex-thumb" src="${t.thumbnail}" alt=""${blobAttr}>`
-      : `<div class="tex-thumb placeholder">${t.extension.toUpperCase().substring(0,3)}</div>`;
+      : `<div class="tex-thumb placeholder"${isPolyfillFmt ? ` data-raw-name="${esc(t.name)}" data-fmt="${esc(t.extension.toLowerCase())}"` : ''}>${t.extension.toUpperCase().substring(0,3)}</div>`;
 
     const dims = (t.width && t.height)
       ? `<span class="dim">${t.width}×${t.height}</span>`
@@ -4374,7 +4391,7 @@ function renderTexturesSection(textures, channelInfo = {}) {
       ${thumb}
       <div class="tex-info">
         <div class="tex-path">${esc(t.name)}</div>
-        <div class="tex-meta">${esc(meta)}</div>
+        <div class="tex-meta">${esc(meta)}${isPolyfillFmt ? `<span class="tex-polyfill-hint"> · ${esc(t('polyfill_preview_hint'))}</span>` : ''}</div>
         ${badgesHtml}
       </div>
       <div class="tex-stats">
@@ -5253,6 +5270,8 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   </div>
 </dialog>
+
+
 
 
 

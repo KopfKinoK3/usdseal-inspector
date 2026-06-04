@@ -56,3 +56,72 @@ Erstellt: Phase 5.3 Sprint v0.28.0 (2026-05-24)
 ---
 
 **ADR-Referenzen:** ADR-43 Two-File-Pattern, ADR-44 Three.js Desktop-3D-Preview
+
+---
+
+## ktx2-polyfill-bundle.js (v0.28.2)
+
+**Größe:** 75 KB  
+**Exposes:** `window.KTXParse` (read, write, VK_FORMAT_*, KHR_SUPERCOMPRESSION_*, KHR_DF_MODEL_*), `window.BasisTranscoderFactory`  
+**Auslieferung:** Als separate Datei `advanced/ktx2-polyfill-bundle.js` (via `build.py shutil.copy2`)
+
+### Was ist drin
+
+| Quelle | Version | Zweck |
+|---|---|---|
+| `ktx-parse.modern.min.js` | 1.1.0 | KTX2-Container-Parser (ESM → IIFE konvertiert) |
+| `basis_transcoder.js` | Three.js r184 | Basis Universal Transcoder JS-Wrapper |
+
+Zusätzlich: `vendor/basis_transcoder.wasm` (515 KB) — wird separat nach `advanced/` kopiert.
+
+### Konsolidierungs-Schritte
+
+1. `ktx-parse.modern.min.js` von `https://cdn.jsdelivr.net/npm/ktx-parse@1.1.0/dist/ktx-parse.modern.min.js` herunterladen
+2. `basis_transcoder.js` + `basis_transcoder.wasm` von `https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/libs/basis/` herunterladen
+3. `python3 -c "..."` Konsolidierungsskript (siehe `bundle.py`-Muster) ausführen: ESM-Export entfernen, IIFE wrappen, `window.KTXParse` + `window.BasisTranscoderFactory` setzen
+4. `python3 build.py` ausführen
+5. Browser-Test: KTX2-USDZ laden, Modal öffnen, Polyfill-Preview prüfen
+
+### Version-Pin
+
+```
+ktx-parse: 1.1.0
+basis_transcoder: Three.js 0.184.0
+Quelle: https://cdn.jsdelivr.net/npm/ktx-parse@1.1.0/ + https://cdn.jsdelivr.net/npm/three@0.184.0/
+Erstellt: Sprint v0.28.2 (2026-06-04)
+```
+
+---
+
+## tiff-polyfill-bundle.js (v0.28.2)
+
+**Größe:** 57 KB  
+**Exposes:** `window.UTIF` (via `self.UTIF = UTIF` innerhalb UTIF.js)  
+**Auslieferung:** Als separate Datei `advanced/tiff-polyfill-bundle.js` (via `build.py shutil.copy2`)
+
+### Was ist drin
+
+| Quelle | Version | Zweck |
+|---|---|---|
+| `UTIF.js` | Photopea latest | TIFF-Decoder (LZW, PackBits, uncompressed) |
+
+Keine WASM-Abhängigkeit. Rein JavaScript.
+
+### Konsolidierungs-Schritte
+
+1. `UTIF.js` von `https://cdn.jsdelivr.net/npm/utif/UTIF.js` herunterladen
+2. Header-Kommentar voranstellen (Lizenz, Version, Expose-Info)
+3. Datei als `vendor/tiff-polyfill-bundle.js` speichern
+4. `python3 build.py` ausführen
+
+### Version-Pin
+
+```
+UTIF.js: Photopea (npm utif, latest)
+Quelle: https://cdn.jsdelivr.net/npm/utif/UTIF.js
+Erstellt: Sprint v0.28.2 (2026-06-04)
+```
+
+---
+
+**ADR-Referenzen:** ADR-43 Two-File-Pattern, ADR-44 Three.js Bundle, ADR-45 Lazy-Load, ADR-49 Polyfill-Lazy-Load
