@@ -1576,7 +1576,7 @@
    Inspector spiegelt CLI-Schema-Disziplin (CLI-ADR §11.14).
    Erweiterung der Whitelist = neue Render-Funktion + Eintrag.
    Siehe COMPATIBILITY.md für Versions-Matrix. */
-const INSPECTOR_VERSION = '0.28.2';
+const INSPECTOR_VERSION = '0.28.2.1';
 const SUPPORTED_SPEC_VERSIONS = ['0.1', '0.2'];
 const TEXTURE_TABLE_THRESHOLD = 20;
 
@@ -1663,8 +1663,8 @@ const I18N = {
   pdf_disclaimer_title:        { de: 'Disclaimer', en: 'Disclaimer' },
   pdf_no_findings:             { de: 'Keine Findings.', en: 'No findings.' },
   pdf_uncompressed:            { de: 'unkomprimiert', en: 'uncompressed' },
-  pdf_state_signed_title:      { de: 'Signiert & versiegelt', en: 'Signed & Sealed' },
-  pdf_state_signed_sub:        { de: 'COSE_Sign1 / Ed25519 - Manifest kryptographisch gesiegelt', en: 'COSE_Sign1 / Ed25519 - manifest cryptographically sealed' },
+  pdf_state_signed_title:      { de: 'Versiegelt · Integrität geprüft', en: 'Sealed · Integrity Verified' },
+  pdf_state_signed_sub:        { de: 'Hash-Integrität geprüft · Signatur-Verify ab v0.3 (Ed25519)', en: 'Hash integrity verified · Signature verify in v0.3 (Ed25519)' },
   pdf_state_draft_title:       { de: 'Draft - noch nicht signiert', en: 'Draft - Not Yet Signed' },
   pdf_state_draft_sub:         { de: 'usdseal init ausgefuehrt, sign steht noch aus', en: 'usdseal init executed, sign pending' },
   pdf_state_invalid_title:     { de: 'Signatur ungueltig', en: 'Signature Invalid' },
@@ -3504,7 +3504,7 @@ function render(filename, filesize, manifest, members, usdMeta, textures, channe
   const ampel = ampelStatus(findings);
 
   const stateConf = {
-    'SIGNED':      { cls:'signed',      icon:'✓', title:'Signiert & versiegelt', sub:'COSE_Sign1 / Ed25519 — Manifest ist kryptographisch gesiegelt' },
+    'SIGNED':      { cls:'signed',      icon:'✓', title:'Versiegelt · Integrität geprüft', sub:'Hash-Integrität geprüft · Signatur-Verify ab v0.3 (Ed25519)' },
     'DRAFT':       { cls:'draft',       icon:'⏳', title:'Draft — noch nicht signiert', sub:'usdseal init ausgeführt, sign steht noch aus' },
     'INVALID':     { cls:'invalid',     icon:'✗', title:'Signatur ungültig', sub:'Manifest oder Inhalt wurde nach dem Siegeln verändert' },
     'NO_MANIFEST': { cls:'no_manifest', icon:'○', title:'Kein Manifest vorhanden', sub:'usdseal init noch nicht ausgeführt' },
@@ -4030,7 +4030,7 @@ function renderMulti(results) {
 function renderMiniDashboard(r, index) {
   const { filename, filesize, manifest, members, usdMeta, textures, channelInfo, geoStats, error } = r;
   const stateConf = {
-    'SIGNED':      { cls:'signed',      icon:'✓', title:'Signiert & versiegelt' },
+    'SIGNED':      { cls:'signed',      icon:'✓', title:'Versiegelt · Integrität geprüft' },
     'DRAFT':       { cls:'draft',       icon:'⏳', title:'Draft' },
     'INVALID':     { cls:'invalid',     icon:'✗', title:'Signatur ungültig' },
     'NO_MANIFEST': { cls:'no_manifest', icon:'○', title:'Kein Manifest' },

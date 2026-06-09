@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.28.2.1] — 2026-06-09
+
+### Fixed
+- **Banner-Wording an tatsächlichen Verifikations-Stand angeglichen (ADR-50)**: Bisheriger Banner-Text "kryptographisch gesiegelt" / "cryptographically sealed" overclaimte gegenüber dem realen Verify-Stand. Inspector prüft nur Hash-Integrität (value_base64 vorhanden, Hash-Mismatch == 0) — keine kryptographische Signatur-Verifikation via `crypto.subtle.verify`/`importKey`. Echte Ed25519-Signatur-Verifikation kommt in v0.3.
+  - `stateConf['SIGNED'].title` DE: "Signiert & versiegelt" → "Versiegelt · Integrität geprüft"
+  - `stateConf['SIGNED'].title` EN: "Signed & sealed" → "Sealed · Integrity verified"
+  - `stateConf['SIGNED'].sub` DE: "kryptographisch gesiegelt" → "Hash-Integrität geprüft · Signatur-Verify ab v0.3 (Ed25519)"
+  - `stateConf['SIGNED'].sub` EN analog
+  - `pdf_state_signed_title` + `pdf_state_signed_sub` (i18n) mitgezogen
+  - Zweite `stateConf`-Definition (Mini-Dashboard) mitgezogen
+  - Befund: Cross-Repo-Analyse 2026-06-09 (Inspector vs. usdseal-verify/usdseal_verify.py)
+
+### Notes
+- `INSPECTOR_VERSION = '0.28.2.1'`
+- Reine Wording-Änderung — keine Logik, keine State-Änderung, keine CSP-Änderung
+- Banner-Farbe bleibt Cyan/Teal (war nie Grün — `#0891B2` / `var(--accent)`)
+- 19/19 PASS
+
+---
+
 ## [0.28.2] — 2026-06-04
 
 ### Added
